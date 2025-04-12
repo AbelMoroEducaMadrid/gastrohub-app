@@ -1,6 +1,5 @@
 package com.abel.gastrohub.entity;
 
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
