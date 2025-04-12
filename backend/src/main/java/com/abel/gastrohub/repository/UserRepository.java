@@ -12,4 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Devuelve un usuario por ID con deleted_at nulo
     Optional<User> findByIdAndDeletedAtIsNull(Integer id);
+
+    // Busca un usuario por su email
+    Optional<Object> findByEmail(String email);
 }
