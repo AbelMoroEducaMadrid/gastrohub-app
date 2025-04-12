@@ -5,6 +5,7 @@ import com.abel.gastrohub.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,12 +21,12 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findByDeletedAtIsNull();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = userRepository.findById(id);
+    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
+        Optional<User> user = userRepository.findByIdAndDeletedAtIsNull(id);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -35,8 +36,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        Optional<User> userOptional = userRepository.findById(id);
+    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User userDetails) {
+        Optional<User> userOptional = userRepository.findByIdAndDeletedAtIsNull(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setName(userDetails.getName());
@@ -53,8 +54,11 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setDeletedAt(Instant.now());
+            userRepository.save(user);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
