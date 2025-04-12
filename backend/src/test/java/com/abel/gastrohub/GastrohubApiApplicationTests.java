@@ -1,4 +1,4 @@
-package com.abel.gastrohub.api;
+package com.abel.gastrohub;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
