@@ -4,6 +4,7 @@ import com.abel.gastrohub.entity.MtRole;
 import com.abel.gastrohub.service.MtRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class MtRoleController {
 
     // Obtener todos los roles
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<List<MtRole>> getAllRoles() {
         List<MtRole> roles = roleService.getAllRoles();
         return ResponseEntity.ok(roles);
@@ -28,6 +30,7 @@ public class MtRoleController {
 
     // Obtener un rol por ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<MtRole> getRoleById(@PathVariable Integer id) {
         MtRole role = roleService.getRoleById(id);
         return ResponseEntity.ok(role);
@@ -35,6 +38,7 @@ public class MtRoleController {
 
     // Crear un nuevo rol
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<MtRole> createRole(@RequestBody MtRole role) {
         MtRole savedRole = roleService.createRole(role);
         return ResponseEntity.status(201).body(savedRole);
@@ -42,6 +46,7 @@ public class MtRoleController {
 
     // Actualizar un rol
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<MtRole> updateRole(@PathVariable Integer id, @RequestBody MtRole roleDetails) {
         MtRole updatedRole = roleService.updateRole(id, roleDetails);
         return ResponseEntity.ok(updatedRole);
@@ -49,6 +54,7 @@ public class MtRoleController {
 
     // Eliminar un rol (borrado lógico)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<Void> deleteRole(@PathVariable Integer id) {
         roleService.deleteRole(id);
         return ResponseEntity.noContent().build();

@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public List<UserResponseDTO> getAllUsers() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("Usuario: " + auth.getName() + ", Roles: " + auth.getAuthorities());
@@ -36,32 +36,37 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Integer id) {
         User user = userService.getUserById(id);
         return ResponseEntity.ok(new UserResponseDTO(user));
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User savedUser = userService.createUser(user);
         return ResponseEntity.status(201).body(savedUser);
     }
 
     @PostMapping("/{id}/change-password")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<Void> changePassword(@PathVariable Integer id, @RequestBody UserChangePasswordDTO changePasswordDTO) {
         userService.changePassword(id, changePasswordDTO.getNewPassword());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User userDetails) {
         User updatedUser = userService.updateUser(id, userDetails);
         return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
+    public ResponseEntity<User> deleteUser(@PathVariable Integer id) {
+        User deletedUser = userService.deleteUser(id);
+        return ResponseEntity.ok(deletedUser);
     }
 }
