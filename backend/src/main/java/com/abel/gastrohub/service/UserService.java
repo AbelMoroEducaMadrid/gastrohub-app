@@ -2,6 +2,7 @@ package com.abel.gastrohub.service;
 
 import com.abel.gastrohub.entity.MtRole;
 import com.abel.gastrohub.entity.User;
+import com.abel.gastrohub.repository.MtRoleRepository;
 import com.abel.gastrohub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,12 +17,14 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MtRoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     // Inyección de dependencias mediante constructor
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, MtRoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -41,10 +44,10 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("El email " + user.getEmail() + " ya está registrado");
         }
-        // TODO - Repositorios y todo lo necesario para master_data, roles, etc.
-        // MtRole defaultRole = roleRepository.findById(1);
+        MtRole defaultRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Rol por defecto no encontrado"));
+        user.setRole(defaultRole);
         user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
-        // user.setRole(defaultRole);
         return userRepository.save(user);
     }
 
