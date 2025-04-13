@@ -8,9 +8,13 @@ INSERT INTO mt_units (name, symbol) VALUES
 
 -- 2. Roles (mt_roles)
 INSERT INTO mt_roles (name, description) VALUES
-('dueño', 'Dueño del restaurante'),
-('camarero', 'Camarero del restaurante'),
-('cocinero', 'Cocinero del restaurante');
+('ROLE_ADMIN', 'Administrador de GastroHUB'),
+('ROLE_SYSTEM', 'Sistema de GastroHUB'),
+('ROLE_USER', 'Usuario de GastroHUB'),
+('ROLE_OWNER', 'Dueño del restaurante'),
+('ROLE_MANAGER', 'Encargado del restaurante'),
+('ROLE_WAITER', 'Camarero del restaurante'),
+('ROLE_COOK', 'Cocinero del restaurante');
 
 -- 3. Usuarios (users)
 -- Nota: Para password_hash, usamos un valor placeholder. En producción, usa un hash real (ej. bcrypt).
