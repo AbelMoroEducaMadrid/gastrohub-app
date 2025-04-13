@@ -1,6 +1,6 @@
 package com.abel.gastrohub.service;
 
-import com.abel.gastrohub.entity.CustomUserDetails;
+import com.abel.gastrohub.util.CustomUserDetails;
 import com.abel.gastrohub.entity.User;
 import com.abel.gastrohub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

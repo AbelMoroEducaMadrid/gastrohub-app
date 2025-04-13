@@ -1,4 +1,4 @@
-package com.abel.gastrohub.entity;
+package com.abel.gastrohub.util;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

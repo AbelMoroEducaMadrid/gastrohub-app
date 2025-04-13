@@ -1,6 +1,5 @@
 package com.abel.gastrohub.util;
 
-import com.abel.gastrohub.entity.CustomUserDetails;
 import com.abel.gastrohub.entity.IAuditable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
