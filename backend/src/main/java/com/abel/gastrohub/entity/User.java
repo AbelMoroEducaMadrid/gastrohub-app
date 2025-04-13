@@ -1,5 +1,6 @@
 package com.abel.gastrohub.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -16,7 +17,7 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "password_hash", nullable = false)
@@ -43,8 +44,8 @@ public class User {
     @Column(name = "updated_by")
     private Integer updatedBy;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private Instant createdAt;
 
     @Column(name = "updated_at")
@@ -55,6 +56,11 @@ public class User {
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+    }
 
     public Integer getId() {
         return id;
