@@ -12,3 +12,4 @@ backend/*.jar
 frontend/build/
 frontend/*.apk
 frontend/*.aab
+.vscode/settings.json
