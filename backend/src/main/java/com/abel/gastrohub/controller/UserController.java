@@ -1,5 +1,6 @@
 package com.abel.gastrohub.controller;
 
+import com.abel.gastrohub.dto.UserChangePasswordDTO;
 import com.abel.gastrohub.dto.UserLoginDTO;
 import com.abel.gastrohub.dto.UserRegistrationDTO;
 import com.abel.gastrohub.dto.UserResponseDTO;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,14 +23,16 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserResponseDTO> getAllUsers() {
+        return userService.getAllUsers().stream()
+                .map(UserResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Integer id) {
         User user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(new UserResponseDTO(user));
     }
 
     @PostMapping
@@ -56,6 +60,12 @@ public class UserController {
         User user = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
         UserResponseDTO responseDTO = new UserResponseDTO(user);
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @PostMapping("/{id}/change-password")
+    public ResponseEntity<Void> changePassword(@PathVariable Integer id, @RequestBody UserChangePasswordDTO changePasswordDTO) {
+        userService.changePassword(id, changePasswordDTO.getNewPassword());
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")

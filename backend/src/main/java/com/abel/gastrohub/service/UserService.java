@@ -1,5 +1,6 @@
 package com.abel.gastrohub.service;
 
+import com.abel.gastrohub.entity.MtRole;
 import com.abel.gastrohub.entity.User;
 import com.abel.gastrohub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,10 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("El email " + user.getEmail() + " ya está registrado");
         }
-
+        // TODO - Repositorios y todo lo necesario para master_data, roles, etc.
+        // MtRole defaultRole = roleRepository.findById(1);
         user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+        // user.setRole(defaultRole);
         return userRepository.save(user);
     }
 
@@ -51,11 +54,11 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
         user.setName(userDetails.getName());
         user.setEmail(userDetails.getEmail());
-        user.setPasswordHash(userDetails.getPasswordHash());
-        user.setRole(userDetails.getRole());
         user.setPhone(userDetails.getPhone());
-        user.setRestaurant(userDetails.getRestaurant());
         user.setStatus(userDetails.getStatus());
+        if (userDetails.getPasswordHash() != null && !userDetails.getPasswordHash().isEmpty()) {
+            user.setPasswordHash(passwordEncoder.encode(userDetails.getPasswordHash()));
+        }
         return userRepository.save(user);
     }
 
@@ -76,5 +79,13 @@ public class UserService {
         }
         user.setLastLogin(LocalDateTime.now());
         return userRepository.save(user);
+    }
+
+    // Cambio de contraseña
+    public void changePassword(Integer id, String newPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }
