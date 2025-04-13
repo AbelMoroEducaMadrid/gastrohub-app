@@ -1,13 +1,14 @@
 package com.abel.gastrohub.controller;
 
 import com.abel.gastrohub.dto.UserChangePasswordDTO;
-import com.abel.gastrohub.dto.UserLoginDTO;
-import com.abel.gastrohub.dto.UserRegistrationDTO;
 import com.abel.gastrohub.dto.UserResponseDTO;
 import com.abel.gastrohub.entity.User;
 import com.abel.gastrohub.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +26,10 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
     public List<UserResponseDTO> getAllUsers() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Usuario: " + auth.getName() + ", Roles: " + auth.getAuthorities());
         return userService.getAllUsers().stream()
                 .map(UserResponseDTO::new)
                 .collect(Collectors.toList());
@@ -41,27 +45,6 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User savedUser = userService.createUser(user);
         return ResponseEntity.status(201).body(savedUser);
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRegistrationDTO userDTO) {
-        User user = new User();
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setPasswordHash(userDTO.getPassword()); // Texto plano, se hasheará en UserService
-        user.setPhone(userDTO.getPhone());
-        user.setStatus(userDTO.getStatus() != null ? userDTO.getStatus() : "active");
-
-        User savedUser = userService.createUser(user);
-        UserResponseDTO responseDTO = new UserResponseDTO(savedUser);
-        return ResponseEntity.status(201).body(responseDTO);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<UserResponseDTO> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
-        User user = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
-        UserResponseDTO responseDTO = new UserResponseDTO(user);
-        return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping("/{id}/change-password")

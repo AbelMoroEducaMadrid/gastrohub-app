@@ -74,7 +74,7 @@ public class UserService {
     }
 
     // Log in de usuario
-    public User login(String email, String password) {
+    public User authenticate(String email, String password) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         User user = userOpt.orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
