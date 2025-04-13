@@ -66,11 +66,11 @@ public class UserService {
     }
 
     // Borrado lógico de un usuario
-    public void deleteUser(Integer id) {
+    public User deleteUser(Integer id) {
         User user = userRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
         user.setDeletedAt(LocalDateTime.now());
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     // Log in de usuario
