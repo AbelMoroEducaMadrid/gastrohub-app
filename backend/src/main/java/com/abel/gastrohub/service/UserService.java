@@ -2,6 +2,7 @@ package com.abel.gastrohub.service;
 
 import com.abel.gastrohub.entity.User;
 import com.abel.gastrohub.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -15,6 +16,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     // Inyección de dependencias mediante constructor
+    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -32,7 +34,6 @@ public class UserService {
 
     // Crear un nuevo usuario
     public User createUser(User user) {
-        // Ejemplo de validación: verificar si el email ya existe
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("El email " + user.getEmail() + " ya está registrado");
         }
