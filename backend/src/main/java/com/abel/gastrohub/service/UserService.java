@@ -3,6 +3,7 @@ package com.abel.gastrohub.service;
 import com.abel.gastrohub.entity.User;
 import com.abel.gastrohub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,11 +15,13 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     // Inyección de dependencias mediante constructor
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     // Obtener todos los usuarios no eliminados
@@ -37,6 +40,8 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("El email " + user.getEmail() + " ya está registrado");
         }
+
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         return userRepository.save(user);
     }
 
@@ -66,7 +71,7 @@ public class UserService {
     public User login(String email, String password) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         User user = userOpt.orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
-        if (!password.equals(user.getPasswordHash())) {
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new IllegalArgumentException("Credenciales inválidas");
         }
         user.setLastLogin(LocalDateTime.now());

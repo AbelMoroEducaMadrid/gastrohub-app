@@ -1,6 +1,8 @@
 package com.abel.gastrohub.controller;
 
-import com.abel.gastrohub.dto.LoginRequest;
+import com.abel.gastrohub.dto.UserLoginDTO;
+import com.abel.gastrohub.dto.UserRegistrationDTO;
+import com.abel.gastrohub.dto.UserResponseDTO;
 import com.abel.gastrohub.entity.User;
 import com.abel.gastrohub.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -36,15 +38,24 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRegistrationDTO userDTO) {
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPasswordHash(userDTO.getPassword()); // Texto plano, se hasheará en UserService
+        user.setPhone(userDTO.getPhone());
+        user.setStatus(userDTO.getStatus() != null ? userDTO.getStatus() : "active");
+
         User savedUser = userService.createUser(user);
-        return ResponseEntity.status(201).body(savedUser);
+        UserResponseDTO responseDTO = new UserResponseDTO(savedUser);
+        return ResponseEntity.status(201).body(responseDTO);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> loginUser(@RequestBody LoginRequest loginRequest) {
-        User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserResponseDTO> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
+        User user = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+        UserResponseDTO responseDTO = new UserResponseDTO(user);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/{id}")
