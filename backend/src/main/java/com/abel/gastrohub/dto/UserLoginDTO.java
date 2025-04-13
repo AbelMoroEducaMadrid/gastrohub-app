@@ -1,6 +1,6 @@
 package com.abel.gastrohub.dto;
 
-public class LoginRequest {
+public class UserLoginDTO {
     private String email;
     private String password;
 
