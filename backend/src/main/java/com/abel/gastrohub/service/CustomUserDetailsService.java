@@ -1,5 +1,6 @@
 package com.abel.gastrohub.service;
 
+import com.abel.gastrohub.entity.CustomUserDetails;
 import com.abel.gastrohub.entity.User;
 import com.abel.gastrohub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
-        return new org.springframework.security.core.userdetails.User(
+        return new CustomUserDetails(
+                user.getId(),
                 user.getEmail(),
                 user.getPasswordHash(),
-                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()))
+                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName())),
+                true
         );
     }
 }

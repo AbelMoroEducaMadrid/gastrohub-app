@@ -1,13 +1,15 @@
 package com.abel.gastrohub.entity;
 
+import com.abel.gastrohub.util.AuditListener;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditListener.class)
 @jakarta.persistence.Table(name = "users")
-public class User {
+public class User implements IAuditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
