@@ -1,5 +1,6 @@
 package com.abel.gastrohub.controller;
 
+import com.abel.gastrohub.dto.LoginRequest;
 import com.abel.gastrohub.entity.User;
 import com.abel.gastrohub.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,18 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User savedUser = userService.createUser(user);
         return ResponseEntity.status(201).body(savedUser);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        User savedUser = userService.createUser(user);
+        return ResponseEntity.status(201).body(savedUser);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<User> loginUser(@RequestBody LoginRequest loginRequest) {
+        User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{id}")

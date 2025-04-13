@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -58,5 +59,16 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
         user.setDeletedAt(Instant.now());
         userRepository.save(user);
+    }
+
+    // Log in de usuario
+    public User login(String email, String password) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        User user = userOpt.orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
+        if (!password.equals(user.getPasswordHash())) {
+            throw new IllegalArgumentException("Credenciales inválidas");
+        }
+        user.setLastLogin(Instant.now());
+        return userRepository.save(user);
     }
 }
