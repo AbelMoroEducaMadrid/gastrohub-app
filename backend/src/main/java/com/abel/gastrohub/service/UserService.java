@@ -5,7 +5,7 @@ import com.abel.gastrohub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -58,7 +58,7 @@ public class UserService {
     public void deleteUser(Integer id) {
         User user = userRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
-        user.setDeletedAt(Instant.now());
+        user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
     }
 
@@ -69,7 +69,7 @@ public class UserService {
         if (!password.equals(user.getPasswordHash())) {
             throw new IllegalArgumentException("Credenciales inválidas");
         }
-        user.setLastLogin(Instant.now());
+        user.setLastLogin(LocalDateTime.now());
         return userRepository.save(user);
     }
 }

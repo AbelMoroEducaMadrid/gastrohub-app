@@ -1,10 +1,9 @@
 package com.abel.gastrohub.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @jakarta.persistence.Table(name = "users")
@@ -45,21 +44,20 @@ public class User {
     private Integer updatedBy;
 
     @Column(name = "created_at")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "last_login")
-    private Instant lastLogin;
+    private LocalDateTime lastLogin;
 
     @Column(name = "deleted_at")
-    private Instant deletedAt;
+    private LocalDateTime deletedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = Instant.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     public Integer getId() {
@@ -142,35 +140,35 @@ public class User {
         this.updatedBy = updatedBy;
     }
 
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Instant getLastLogin() {
+    public LocalDateTime getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(Instant lastLogin) {
+    public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
 
-    public Instant getDeletedAt() {
+    public LocalDateTime getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(Instant deletedAt) {
+    public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
 
