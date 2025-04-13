@@ -13,3 +13,4 @@ frontend/build/
 frontend/*.apk
 frontend/*.aab
 .vscode/settings.json
+backend/src/main/java/com/abel/gastrohub/util/KeyGenerator.java
