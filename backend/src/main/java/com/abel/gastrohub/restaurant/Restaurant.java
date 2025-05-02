@@ -1,17 +1,16 @@
 package com.abel.gastrohub.restaurant;
 
 import com.abel.gastrohub.user.User;
-import com.abel.gastrohub.util.AuditListener;
 import com.abel.gastrohub.util.IAuditable;
+import com.abel.gastrohub.util.AuditListener;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
 @EntityListeners(AuditListener.class)
-@jakarta.persistence.Table(name = "restaurants")
+@Table(name = "restaurants")
 public class Restaurant implements IAuditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,76 +46,84 @@ public class Restaurant implements IAuditable {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
     // Getters y setters
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public User getOwner() {
         return owner;
     }
+
     public void setOwner(User owner) {
         this.owner = owner;
     }
+
     public String getAddress() {
         return address;
     }
+
     public void setAddress(String address) {
         this.address = address;
     }
+
     public String getCuisineType() {
         return cuisineType;
     }
+
     public void setCuisineType(String cuisineType) {
         this.cuisineType = cuisineType;
     }
+
     public Integer getCreatedBy() {
         return createdBy;
     }
+
     public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
+
     public Integer getUpdatedBy() {
         return updatedBy;
     }
+
     public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
     }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
     public LocalDateTime getDeletedAt() {
         return deletedAt;
     }
+
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
-
 }

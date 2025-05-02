@@ -1,11 +1,8 @@
 package com.abel.gastrohub.restaurant;
 
-import com.abel.gastrohub.user.User;
-import com.abel.gastrohub.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,12 +11,10 @@ import java.util.NoSuchElementException;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-    private final UserRepository userRepository;
 
     @Autowired
-    public RestaurantService(RestaurantRepository restaurantRepository, UserRepository userRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository) {
         this.restaurantRepository = restaurantRepository;
-        this.userRepository = userRepository;
     }
 
     public List<Restaurant> getAllRestaurants() {
@@ -32,10 +27,9 @@ public class RestaurantService {
     }
 
     public Restaurant createRestaurant(Restaurant restaurant) {
-        // Validar que el propietario exista
-        User owner = userRepository.findByIdAndDeletedAtIsNull(restaurant.getOwner().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Propietario no encontrado con ID: " + restaurant.getOwner().getId()));
-        restaurant.setOwner(owner);
+        if (restaurant.getOwner() == null) {
+            throw new IllegalArgumentException("El propietario del restaurante es obligatorio");
+        }
         return restaurantRepository.save(restaurant);
     }
 
@@ -45,11 +39,10 @@ public class RestaurantService {
         restaurant.setName(restaurantDetails.getName());
         restaurant.setAddress(restaurantDetails.getAddress());
         restaurant.setCuisineType(restaurantDetails.getCuisineType());
-        // Actualizar propietario si se proporciona
         if (restaurantDetails.getOwner() != null) {
-            User owner = userRepository.findByIdAndDeletedAtIsNull(restaurantDetails.getOwner().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Propietario no encontrado con ID: " + restaurantDetails.getOwner().getId()));
-            restaurant.setOwner(owner);
+            restaurant.setOwner(restaurantDetails.getOwner());
+        } else {
+            throw new IllegalArgumentException("El propietario del restaurante es obligatorio");
         }
         return restaurantRepository.save(restaurant);
     }
