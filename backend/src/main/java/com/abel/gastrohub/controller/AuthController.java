@@ -40,11 +40,10 @@ public class AuthController {
         User user = new User();
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
-        user.setPasswordHash(userDTO.getPassword());
+        user.setPasswordHash(userDTO.getPassword()); // Must be plaintext here
         user.setPhone(userDTO.getPhone());
-        user.setStatus(userDTO.getStatus() != null ? userDTO.getStatus() : "active");
 
-        User savedUser = userService.createUser(user);
+        User savedUser = userService.createUser(user); // Ensure encoding happens in UserService
         UserResponseDTO responseDTO = new UserResponseDTO(savedUser);
         return ResponseEntity.status(201).body(responseDTO);
     }

@@ -12,7 +12,7 @@ import java.util.Map;
 @jakarta.persistence.Table(name = "restaurants")
 public class Restaurant {
     @Id
-    @ColumnDefault("nextval('restaurants_id_seq')")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -29,10 +29,6 @@ public class Restaurant {
     @Column(name = "cuisine_type", length = 100)
     private String cuisineType;
 
-    @Column(name = "opening_hours")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> openingHours;
-
     @Column(name = "created_by")
     private Integer createdBy;
 
@@ -45,10 +41,6 @@ public class Restaurant {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
-
-    @ColumnDefault("false")
-    @Column(name = "active")
-    private Boolean active;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
@@ -93,14 +85,6 @@ public class Restaurant {
         this.cuisineType = cuisineType;
     }
 
-    public Map<String, Object> getOpeningHours() {
-        return openingHours;
-    }
-
-    public void setOpeningHours(Map<String, Object> openingHours) {
-        this.openingHours = openingHours;
-    }
-
     public Integer getCreatedBy() {
         return createdBy;
     }
@@ -131,14 +115,6 @@ public class Restaurant {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
     }
 
     public Instant getDeletedAt() {

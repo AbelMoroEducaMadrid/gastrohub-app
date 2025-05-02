@@ -26,12 +26,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+        boolean enabled = user.getDeletedAt() == null; // Enable only if not logically deleted
         return new CustomUserDetails(
                 user.getId(),
                 user.getEmail(),
                 user.getPasswordHash(),
                 Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName())),
-                true
+                enabled
         );
     }
 }

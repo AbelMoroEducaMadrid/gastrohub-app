@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+
 import java.time.LocalDateTime;
 
 @Component
@@ -17,8 +18,10 @@ public class AuditListener {
         if (authentication != null && authentication.isAuthenticated()) {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             auditable.setCreatedBy(userDetails.getId());
-            auditable.setCreatedAt(LocalDateTime.now());
+        } else {
+            auditable.setCreatedBy(1); // Default system user ID
         }
+        auditable.setCreatedAt(LocalDateTime.now());
     }
 
     @PreUpdate
@@ -27,7 +30,9 @@ public class AuditListener {
         if (authentication != null && authentication.isAuthenticated()) {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             auditable.setUpdatedBy(userDetails.getId());
-            auditable.setUpdatedAt(LocalDateTime.now());
+        } else {
+            auditable.setUpdatedBy(1); // Default system user ID
         }
+        auditable.setUpdatedAt(LocalDateTime.now());
     }
 }
