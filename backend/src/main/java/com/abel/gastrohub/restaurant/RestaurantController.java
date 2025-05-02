@@ -2,6 +2,7 @@ package com.abel.gastrohub.restaurant;
 
 import com.abel.gastrohub.restaurant.dto.RestaurantRegistrationDTO;
 import com.abel.gastrohub.restaurant.dto.RestaurantResponseDTO;
+import com.abel.gastrohub.restaurant.dto.RestaurantUpdateDTO;
 import com.abel.gastrohub.user.User;
 import com.abel.gastrohub.user.UserRepository;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,8 +59,15 @@ public class RestaurantController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
-    public ResponseEntity<RestaurantResponseDTO> updateRestaurant(@PathVariable Integer id, @RequestBody Restaurant restaurantDetails) {
-        Restaurant updatedRestaurant = restaurantService.updateRestaurant(id, restaurantDetails);
+    public ResponseEntity<RestaurantResponseDTO> updateRestaurant(@PathVariable Integer id, @Valid @RequestBody RestaurantUpdateDTO restaurantDTO) {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName(restaurantDTO.getName());
+        restaurant.setAddress(restaurantDTO.getAddress());
+        restaurant.setCuisineType(restaurantDTO.getCuisineType());
+        User owner = userRepository.findByIdAndDeletedAtIsNull(restaurantDTO.getOwnerId())
+                .orElseThrow(() -> new IllegalArgumentException("Propietario no encontrado con ID: " + restaurantDTO.getOwnerId()));
+        restaurant.setOwner(owner);
+        Restaurant updatedRestaurant = restaurantService.updateRestaurant(id, restaurant);
         return ResponseEntity.ok(new RestaurantResponseDTO(updatedRestaurant));
     }
 
