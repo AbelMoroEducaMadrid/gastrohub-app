@@ -55,28 +55,20 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+	role_id INT NOT NULL,
     phone VARCHAR(50),
     restaurant_id INT,
+	last_login TIMESTAMP,
+	failed_login_attempts INTEGER DEFAULT 0 NOT NULL,
+	locked_until TIMESTAMP,
     created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
-    last_login TIMESTAMP,
     deleted_at TIMESTAMP,
+	FOREIGN KEY (role_id) REFERENCES mt_roles(id),    
     FOREIGN KEY (created_by) REFERENCES users(id),
     FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Relación entre usuarios y roles
-CREATE TABLE rel_user_roles (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    role_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (role_id) REFERENCES mt_roles(id)
 );
 
 -- Restaurantes

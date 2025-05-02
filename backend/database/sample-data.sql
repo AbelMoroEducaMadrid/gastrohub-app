@@ -51,28 +51,19 @@ INSERT INTO mt_attributes (type_id, name, description, created_at) VALUES
 
 -- 5. Usuarios (users)
 -- Nota: password_hash es un placeholder. En producción, usa un hash real (ej. bcrypt).
-INSERT INTO users (name, email, password_hash, phone, created_by, created_at) VALUES
-('Ana Gómez', 'ana@example.com', 'hashed_password_2', '987654321', 1, CURRENT_TIMESTAMP), -- Dueño Restaurante 1
-('Carlos López', 'carlos@example.com', 'hashed_password_3', '555555555', 1, CURRENT_TIMESTAMP), -- Camarero Restaurante 1
-('María Rodríguez', 'maria@example.com', 'hashed_password_4', '666666666', 1, CURRENT_TIMESTAMP), -- Cocinero Restaurante 1
-('Luis Fernández', 'luis@example.com', 'hashed_password_5', '777777777', 1, CURRENT_TIMESTAMP), -- Cajero Restaurante 1
-('Beatriz Morales', 'beatriz@example.com', 'hashed_password_14', '777777777', 1, CURRENT_TIMESTAMP), -- Encargado Restaurante 1
-('Tomás Herrera', 'tomas@example.com', 'hashed_password_15', '888888888', 1, CURRENT_TIMESTAMP); -- Repartidor Restaurante 1
+INSERT INTO users (name, email, password_hash, phone, created_by, created_at, role_id) VALUES
+('Ana Gómez', 'ana@example.com', 'hashed_password_2', '987654321', 1, CURRENT_TIMESTAMP, 4), -- Dueño Restaurante 1
+('Carlos López', 'carlos@example.com', 'hashed_password_3', '555555555', 1, CURRENT_TIMESTAMP, 6), -- Camarero Restaurante 1
+('María Rodríguez', 'maria@example.com', 'hashed_password_4', '666666666', 1, CURRENT_TIMESTAMP, 7), -- Cocinero Restaurante 1
+('Luis Fernández', 'luis@example.com', 'hashed_password_5', '777777777', 1, CURRENT_TIMESTAMP, 8), -- Cajero Restaurante 1
+('Beatriz Morales', 'beatriz@example.com', 'hashed_password_14', '777777777', 1, CURRENT_TIMESTAMP, 5), -- Encargado Restaurante 1
+('Tomás Herrera', 'tomas@example.com', 'hashed_password_15', '888888888', 1, CURRENT_TIMESTAMP, 9); -- Repartidor Restaurante 1
 
--- 6. Relación usuarios-roles (rel_user_roles)
-INSERT INTO rel_user_roles (user_id, role_id, created_at) VALUES
-(1, 4, CURRENT_TIMESTAMP), -- ROLE_OWNER para Ana
-(2, 6, CURRENT_TIMESTAMP), -- ROLE_WAITER para Carlos
-(3, 7, CURRENT_TIMESTAMP), -- ROLE_COOK para María
-(4, 8, CURRENT_TIMESTAMP), -- ROLE_CASHIER para Luis
-(5, 5, CURRENT_TIMESTAMP), -- ROLE_MANAGER para Beatriz
-(6, 9, CURRENT_TIMESTAMP); -- ROLE_DELIVERY para Tomás
-
--- 7. Restaurantes (restaurants)
+-- 6. Restaurantes (restaurants)
 INSERT INTO restaurants (name, owner_id, address, cuisine_type, created_by, created_at) VALUES
 ('Restaurante Italiano', 1, 'Calle Italia 123', 'Italiana', 1, CURRENT_TIMESTAMP);
 
--- UPDATE
+-- UPDATE usuarios con restaurant_id
 UPDATE users SET restaurant_id = 1;
 
 -- 8. Diseños (layouts)
@@ -150,7 +141,7 @@ INSERT INTO orders (restaurant_id, table_id, state, notes, urgent, created_by, c
 -- 15. Ítems de orden (order_items)
 INSERT INTO order_items (order_id, menu_item_id, quantity, notes, state, price_at_order, created_by, created_at) VALUES
 (1, 1, 2, 'Sin aderezo', 'pending', 8.50, 2, CURRENT_TIMESTAMP),
-(1, 3, 1, NULL, 'pending', 12.00, 2, CURRENT_TIMESTAMP),
+(1, 3, 1, NULL, 'pending', 9.00, 2, CURRENT_TIMESTAMP),
 (2, 2, 3, 'Con extra queso', 'completed', 6.00, 2, CURRENT_TIMESTAMP),
 (2, 5, 1, NULL, 'completed', 14.00, 2, CURRENT_TIMESTAMP),
 (3, 4, 2, 'Sin tomate', 'pending', 12.00, 2, CURRENT_TIMESTAMP),
@@ -171,7 +162,7 @@ INSERT INTO mt_payment_methods (name, description) VALUES
 
 -- 17. Pagos (payments)
 INSERT INTO payments (order_id, method_id, amount, state, payment_timestamp, created_by, created_at) VALUES
-(1, 1, 29.00, 'pending', NULL, 2, CURRENT_TIMESTAMP),
+(1, 1, 26.00, 'pending', NULL, 2, CURRENT_TIMESTAMP),
 (2, 2, 32.00, 'completed', CURRENT_TIMESTAMP, 2, CURRENT_TIMESTAMP),
 (3, 3, 24.00, 'pending', NULL, 2, CURRENT_TIMESTAMP),
 (4, 1, 13.50, 'pending', NULL, 2, CURRENT_TIMESTAMP),
