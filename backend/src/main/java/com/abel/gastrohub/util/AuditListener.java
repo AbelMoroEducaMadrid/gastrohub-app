@@ -15,8 +15,7 @@ public class AuditListener {
     @PrePersist
     public void onPrePersist(IAuditable auditable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
             auditable.setCreatedBy(userDetails.getId());
         } else {
             auditable.setCreatedBy(1); // Default system user ID
@@ -27,8 +26,7 @@ public class AuditListener {
     @PreUpdate
     public void onPreUpdate(IAuditable auditable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
             auditable.setUpdatedBy(userDetails.getId());
         } else {
             auditable.setUpdatedBy(1); // Default system user ID
