@@ -1,9 +1,16 @@
 package com.abel.gastrohub.restaurant.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 public class RestaurantUpdateDTO {
+    @NotNull(message = "El nombre no puede ser nulo")
     private String name;
+
+    @NotNull(message = "El ID del propietario no puede ser nulo")
     private Integer ownerId;
+
     private String address;
+
     private String cuisineType;
 
     // Getters y setters
