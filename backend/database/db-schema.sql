@@ -11,6 +11,13 @@ CREATE TABLE mt_units (
     symbol VARCHAR(10) UNIQUE NOT NULL
 );
 
+-- Métodos de pago
+CREATE TABLE mt_payment_methods (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT
+);
+
 -- Roles
 CREATE TABLE mt_roles (
     id SERIAL PRIMARY KEY,
@@ -24,7 +31,10 @@ CREATE TABLE mt_roles (
 -- Tipos de atributos
 CREATE TABLE mt_attribute_types (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL
+    name VARCHAR(50) UNIQUE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 -- Atributos
@@ -45,45 +55,50 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role_id INT NOT NULL,
     phone VARCHAR(50),
     restaurant_id INT,
-    status VARCHAR(50) DEFAULT 'active',
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     last_login TIMESTAMP,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (role_id) REFERENCES mt_roles(id)    
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
+);
+
+-- Relación entre usuarios y roles
+CREATE TABLE rel_user_roles (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (role_id) REFERENCES mt_roles(id)
 );
 
 -- Restaurantes
 CREATE TABLE restaurants (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,
-    owner_id INT NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,    
+	owner_id INT NOT NULL,
     address VARCHAR(255),
     cuisine_type VARCHAR(100),
-    opening_hours JSON,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
-    active BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMP    
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
--- FKs para relacionar Usuarios y Restaurantes
+-- Alter table para añadir las FK que faltan
 ALTER TABLE users
-ADD CONSTRAINT fk_user_restaurant
-FOREIGN KEY (restaurant_id)
-REFERENCES restaurants(id);
-
-ALTER TABLE restaurants
-ADD CONSTRAINT fk_restaurant_owner
-FOREIGN KEY (owner_id)
-REFERENCES users(id);
+ADD FOREIGN KEY (restaurant_id) REFERENCES restaurants(id);
 
 -- Diseños (Layouts)
 CREATE TABLE layouts (
@@ -91,12 +106,14 @@ CREATE TABLE layouts (
     restaurant_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Mesas
@@ -106,35 +123,33 @@ CREATE TABLE tables (
     number INT NOT NULL,
     state VARCHAR(50) DEFAULT 'available',
     capacity INT NOT NULL,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (layout_id) REFERENCES layouts(id)
+    FOREIGN KEY (layout_id) REFERENCES layouts(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
--- Órdenes (Orders)
+-- Órdenes
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     restaurant_id INT NOT NULL,
-    table_id INT NOT NULL,
-    waiter_id INT NOT NULL,
+    table_id INT, -- NULL para comandas de barra
     state VARCHAR(50) DEFAULT 'pending',
     notes TEXT,
     urgent BOOLEAN DEFAULT FALSE,
-    estimated_time INT,
-    total DECIMAL(10,2),
-    discount DECIMAL(10,2),
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
-    completed_at TIMESTAMP,
     deleted_at TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     FOREIGN KEY (table_id) REFERENCES tables(id),
-    FOREIGN KEY (waiter_id) REFERENCES users(id)
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Ocupaciones de mesas
@@ -145,6 +160,7 @@ CREATE TABLE table_occupations (
     occupied_at TIMESTAMP NOT NULL,
     released_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
     FOREIGN KEY (table_id) REFERENCES tables(id),
     FOREIGN KEY (order_id) REFERENCES orders(id)
 );
@@ -159,12 +175,14 @@ CREATE TABLE reservations (
     customer_name VARCHAR(255),
     customer_contact VARCHAR(255),
     state VARCHAR(50) DEFAULT 'pending',
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (table_id) REFERENCES tables(id)
+    FOREIGN KEY (table_id) REFERENCES tables(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Ingredientes
@@ -177,13 +195,15 @@ CREATE TABLE ingredients (
     capacity FLOAT NOT NULL,
     cost_per_unit DECIMAL(10,2) NOT NULL,
     min_level FLOAT,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (unit_id) REFERENCES mt_units(id)
+    FOREIGN KEY (unit_id) REFERENCES mt_units(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Relación ingredientes-atributos
@@ -209,13 +229,15 @@ CREATE TABLE prepared_products (
     cost DECIMAL(10,2),
     min_level FLOAT,
     preparation_time INT,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (unit_id) REFERENCES mt_units(id)
+    FOREIGN KEY (unit_id) REFERENCES mt_units(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Contextos de menú
@@ -238,14 +260,15 @@ CREATE TABLE menu_categories (
     restaurant_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    image_url VARCHAR(255),
     available BOOLEAN DEFAULT TRUE,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Ítems de menú
@@ -254,13 +277,16 @@ CREATE TABLE menu_items (
     category_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    image_url VARCHAR(255),
-    created_by INT,
+    available BOOLEAN DEFAULT TRUE,
+	is_kitchen BOOLEAN DEFAULT TRUE,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES menu_categories(id)
+    FOREIGN KEY (category_id) REFERENCES menu_categories(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Relación ítems de menú-atributos
@@ -347,31 +373,36 @@ CREATE TABLE order_items (
     state VARCHAR(50) DEFAULT 'pending',
     price_at_order DECIMAL(10,2) NOT NULL,
     prepared_at TIMESTAMP,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id),
-    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id)
+    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Pagos
 CREATE TABLE payments (
     id SERIAL PRIMARY KEY,
     order_id INT NOT NULL,
-    method VARCHAR(50) NOT NULL,
+    method_id INT NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     state VARCHAR(50) DEFAULT 'pending',
     transaction_id VARCHAR(255),
     payment_timestamp TIMESTAMP,
     refund_amount DECIMAL(10,2),
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES orders(id)
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (method_id) REFERENCES mt_payment_methods(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Turnos
@@ -381,13 +412,15 @@ CREATE TABLE shifts (
     restaurant_id INT NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
 -- Retroalimentación
@@ -396,10 +429,12 @@ CREATE TABLE feedback (
     order_id INT,
     rating INT,
     comment TEXT,
-    created_by INT,
+    created_by INT NOT NULL,
     updated_by INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES orders(id)
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );
