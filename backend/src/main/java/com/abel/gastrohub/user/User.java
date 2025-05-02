@@ -1,5 +1,8 @@
-package com.abel.gastrohub.entity;
+package com.abel.gastrohub.user;
 
+import com.abel.gastrohub.util.IAuditable;
+import com.abel.gastrohub.masterdata.MtRole;
+import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.util.AuditListener;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

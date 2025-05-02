@@ -1,6 +1,6 @@
-package com.abel.gastrohub.dto;
+package com.abel.gastrohub.user.dto;
 
-import com.abel.gastrohub.entity.User;
+import com.abel.gastrohub.user.User;
 import java.time.LocalDateTime;
 
 public class UserResponseDTO {

@@ -1,4 +1,4 @@
-package com.abel.gastrohub.entity;
+package com.abel.gastrohub.util;
 
 import java.time.LocalDateTime;
 

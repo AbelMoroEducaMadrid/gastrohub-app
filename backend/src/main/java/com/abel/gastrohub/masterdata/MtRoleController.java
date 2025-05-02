@@ -1,7 +1,5 @@
-package com.abel.gastrohub.controller;
+package com.abel.gastrohub.masterdata;
 
-import com.abel.gastrohub.entity.MtRole;
-import com.abel.gastrohub.service.MtRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

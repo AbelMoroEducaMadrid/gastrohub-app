@@ -1,10 +1,10 @@
-package com.abel.gastrohub.controller;
+package com.abel.gastrohub.security;
 
-import com.abel.gastrohub.dto.UserLoginDTO;
-import com.abel.gastrohub.dto.UserRegistrationDTO;
-import com.abel.gastrohub.dto.UserResponseDTO;
-import com.abel.gastrohub.entity.User;
-import com.abel.gastrohub.service.UserService;
+import com.abel.gastrohub.user.dto.UserLoginDTO;
+import com.abel.gastrohub.user.dto.UserRegistrationDTO;
+import com.abel.gastrohub.user.dto.UserResponseDTO;
+import com.abel.gastrohub.user.User;
+import com.abel.gastrohub.user.UserService;
 import com.abel.gastrohub.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

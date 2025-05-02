@@ -1,9 +1,7 @@
-package com.abel.gastrohub.controller;
+package com.abel.gastrohub.user;
 
-import com.abel.gastrohub.dto.UserChangePasswordDTO;
-import com.abel.gastrohub.dto.UserResponseDTO;
-import com.abel.gastrohub.entity.User;
-import com.abel.gastrohub.service.UserService;
+import com.abel.gastrohub.user.dto.UserChangePasswordDTO;
+import com.abel.gastrohub.user.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -1,4 +1,4 @@
-package com.abel.gastrohub.dto;
+package com.abel.gastrohub.user.dto;
 
 public class UserLoginDTO {
     private String email;

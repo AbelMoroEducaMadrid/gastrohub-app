@@ -1,6 +1,5 @@
-package com.abel.gastrohub.repository;
+package com.abel.gastrohub.user;
 
-import com.abel.gastrohub.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

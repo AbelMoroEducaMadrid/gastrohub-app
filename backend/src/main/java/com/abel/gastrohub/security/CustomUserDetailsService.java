@@ -1,8 +1,7 @@
-package com.abel.gastrohub.service;
+package com.abel.gastrohub.security;
 
-import com.abel.gastrohub.util.CustomUserDetails;
-import com.abel.gastrohub.entity.User;
-import com.abel.gastrohub.repository.UserRepository;
+import com.abel.gastrohub.user.User;
+import com.abel.gastrohub.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

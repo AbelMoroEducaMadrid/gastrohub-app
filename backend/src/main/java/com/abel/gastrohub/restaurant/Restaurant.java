@@ -1,12 +1,10 @@
-package com.abel.gastrohub.entity;
+package com.abel.gastrohub.restaurant;
 
+import com.abel.gastrohub.user.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
-import java.util.Map;
 
 @Entity
 @jakarta.persistence.Table(name = "restaurants")

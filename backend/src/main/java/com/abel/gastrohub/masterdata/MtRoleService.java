@@ -1,7 +1,5 @@
-package com.abel.gastrohub.service;
+package com.abel.gastrohub.masterdata;
 
-import com.abel.gastrohub.entity.MtRole;
-import com.abel.gastrohub.repository.MtRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package com.abel.gastrohub.util;
 
-import com.abel.gastrohub.entity.User;
+import com.abel.gastrohub.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;

@@ -1,4 +1,4 @@
-package com.abel.gastrohub.entity;
+package com.abel.gastrohub.masterdata;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
