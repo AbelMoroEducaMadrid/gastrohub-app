@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:13-alpine
@@ -19,7 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: gastrohub-app
+    container_name: gastrohub-api
     ports:
       - "8080:8080"
     depends_on:
