@@ -24,6 +24,12 @@ class LoginScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  height: 150,
+                  
+                ),
+                const SizedBox(height: 16),
                 const Text(
                   'GASTRO HUB',
                   style: TextStyle(
@@ -32,16 +38,7 @@ class LoginScreen extends ConsumerWidget {
                     color: AppTheme.primaryColor,
                   ),
                   textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Inicia Sesión',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+                ),            
                 const SizedBox(height: 32),
                 CustomTextField(
                   label: 'Correo Electrónico',
