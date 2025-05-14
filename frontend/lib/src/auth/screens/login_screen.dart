@@ -27,19 +27,21 @@ class LoginScreen extends ConsumerWidget {
                 Image.asset(
                   'assets/images/logo.png',
                   height: 150,
-
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'GASTRO & HUB',
-                  style: TextStyle(
-                    fontFamily: 'BebasNeue',
-                    fontSize: 80,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'GASTRO & HUB',
+                    style: TextStyle(
+                      fontFamily: 'BebasNeue',
+                      fontSize: 200, // Tamaño máximo inicial
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),            
+                ),
                 const SizedBox(height: 16),
                 CustomTextField(
                   label: 'Correo Electrónico',
