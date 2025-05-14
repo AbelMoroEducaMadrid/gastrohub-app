@@ -96,7 +96,7 @@ class LoginScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 SignInButton(
                   Buttons.Google,
-                  text: "Sign up with Google",
+                  text: "Iniciar sesión con Google",
                   onPressed: () {},
                 ),
                 const SizedBox(height: 24),
