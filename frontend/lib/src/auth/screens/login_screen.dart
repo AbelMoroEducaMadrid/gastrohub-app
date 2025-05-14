@@ -21,124 +21,134 @@ class LoginScreen extends ConsumerWidget {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Image.asset(
-                  'assets/images/logo.png',
-                  height: 150,
-                ),
-                const SizedBox(height: 16),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    'GASTRO & HUB',
-                    style: TextStyle(
-                      fontFamily: 'BebasNeue',
-                      fontSize: 200, // Tamaño máximo inicial
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryColor,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Correo Electrónico',
-                  controller: emailController,
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Contraseña',
-                  obscureText: true,
-                  controller: passwordController,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text('¿Has olvidado tu contraseña? '),
-                    GestureDetector(
-                      onTap: () {
-                        // TODO: Add password recovery logic
-                      },
-                      child: const Text(
-                        'Recuperar',
-                        style: TextStyle(
-                          color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.bold,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Limitar el ancho máximo a 400 píxeles en pantallas grandes
+                final maxWidth =
+                    constraints.maxWidth > 400 ? 400.0 : constraints.maxWidth;
+                return Container(
+                  width: maxWidth,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Image.asset(
+                        'assets/images/logo.png',
+                        height: 150,
+                      ),
+                      const SizedBox(height: 16),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'GASTRO & HUB',
+                          style: TextStyle(
+                            fontFamily: 'BebasNeue',
+                            fontSize: 200,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryColor,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                CustomButton(
-                  text: 'Iniciar Sesión',
-                  onPressed: () {
-                    ref.read(authProvider.notifier).login(
-                          emailController.text,
-                          passwordController.text,
-                        );
-                  },
-                ),
-                const SizedBox(height: 32),
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: Colors.grey[400])),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text('o si lo prefieres'),
-                    ),
-                    Expanded(child: Divider(color: Colors.grey[400])),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                SignInButton(
-                  Buttons.Google,
-                  text: "Iniciar sesión con Google",
-                  onPressed: () {},
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('¿No tienes cuenta? '),
-                    GestureDetector(
-                      onTap: () {
-                        // TODO: Navigate to registration screen
-                      },
-                      child: const Text(
-                        'Regístrate gratis',
-                        style: TextStyle(
-                          color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        label: 'Correo Electrónico',
+                        controller: emailController,
                       ),
-                    ),
-                  ],
-                ),
-                if (authState.isLoading)
-                  const Center(child: CircularProgressIndicator()),
-                if (authState.error != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      authState.error!,
-                      style: const TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        label: 'Contraseña',
+                        obscureText: true,
+                        controller: passwordController,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Text('¿Has olvidado tu contraseña? '),
+                          GestureDetector(
+                            onTap: () {
+                              // TODO: Add password recovery logic
+                            },
+                            child: const Text(
+                              'Recuperar',
+                              style: TextStyle(
+                                color: AppTheme.primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      CustomButton(
+                        text: 'Iniciar Sesión',
+                        onPressed: () {
+                          ref.read(authProvider.notifier).login(
+                                emailController.text,
+                                passwordController.text,
+                              );
+                        },
+                      ),
+                      const SizedBox(height: 32),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: Colors.grey[400])),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text('o si lo prefieres'),
+                          ),
+                          Expanded(child: Divider(color: Colors.grey[400])),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SignInButton(
+                        Buttons.Google,
+                        text: "Iniciar sesión con Google",
+                        onPressed: () {},
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('¿No tienes cuenta? '),
+                          GestureDetector(
+                            onTap: () {
+                              // TODO: Navigate to registration screen
+                            },
+                            child: const Text(
+                              'Regístrate gratis',
+                              style: TextStyle(
+                                color: AppTheme.primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (authState.isLoading)
+                        const Center(child: CircularProgressIndicator()),
+                      if (authState.error != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            authState.error!,
+                            style: const TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      if (authState.user != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            'Bienvenido, ${authState.user!.name}',
+                            style: const TextStyle(color: Colors.green),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                    ],
                   ),
-                if (authState.user != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      'Bienvenido, ${authState.user!.name}',
-                      style: const TextStyle(color: Colors.green),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-              ],
+                );
+              },
             ),
           ),
         ),
