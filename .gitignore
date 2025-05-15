@@ -15,3 +15,4 @@ frontend/*.aab
 .vscode/settings.json
 backend/src/main/java/com/abel/gastrohub/util/KeyGenerator.java
 backend/.env
+frontend/.env.local
