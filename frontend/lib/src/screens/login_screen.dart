@@ -60,8 +60,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: Text(
                             'GASTRO & HUB',
                             style: theme.textTheme.headlineLarge?.copyWith(
+                              fontSize: 200,
                               color: AppTheme.primaryColor,
-                            ),
+                            ),                            
                             textAlign: TextAlign.center,
                           ),
                         ),
