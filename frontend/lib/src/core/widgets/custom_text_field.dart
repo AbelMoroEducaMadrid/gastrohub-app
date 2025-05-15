@@ -4,12 +4,16 @@ class CustomTextField extends StatefulWidget {
   final String label;
   final bool obscureText;
   final TextEditingController controller;
+  final FormFieldValidator<String>? validator;
+  final ValueChanged<String>? onChanged;
 
   const CustomTextField({
     super.key,
     required this.label,
     this.obscureText = false,
     required this.controller,
+    this.validator,
+    this.onChanged,
   });
 
   @override
@@ -27,37 +31,41 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-    final textColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        controller: widget.controller,
-        obscureText: _obscureText,
-        cursorColor: primaryColor,
-        style: TextStyle(color: textColor),
-        decoration: InputDecoration(
-          labelText: widget.label,
-          labelStyle: TextStyle(color: textColor),
-          hintStyle: TextStyle(color: textColor?.withAlpha(150)),
-          border: const OutlineInputBorder(),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: primaryColor),
+      child: Semantics(
+        label: widget.label,
+        child: TextFormField(
+          controller: widget.controller,
+          obscureText: _obscureText,
+          cursorColor: theme.primaryColor,
+          style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+          validator: widget.validator,
+          onChanged: widget.onChanged,
+          decoration: InputDecoration(
+            labelText: widget.label,
+            labelStyle: TextStyle(
+              color: theme.inputDecorationTheme.labelStyle?.color,
+            ),
+            hintStyle: TextStyle(
+                color: theme.textTheme.bodyMedium?.color?.withAlpha(150)),
+            suffixIcon: widget.obscureText
+                ? IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                      color: theme.primaryColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  )
+                : null,
           ),
-          suffixIcon: widget.obscureText
-              ? IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility : Icons.visibility_off,
-                    color: primaryColor,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                )
-              : null,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
         ),
       ),
     );

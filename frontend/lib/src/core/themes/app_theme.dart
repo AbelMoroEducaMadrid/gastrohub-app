@@ -5,10 +5,8 @@ class AppTheme {
   static const Color secondaryColor = Color.fromARGB(255, 88, 129, 87);
   static const Color backgroundColor = Color.fromARGB(255, 218, 215, 205);
   static const Color textColor = Color.fromARGB(255, 52, 78, 65);
-  static const Color errorColor =
-      Color.fromARGB(255, 176, 0, 32); // Rojo oscuro, WCAG-compliant
-  static const Color successColor =
-      Color.fromARGB(255, 46, 125, 50); // Verde oscuro, WCAG-compliant
+  static const Color errorColor = Color.fromARGB(255, 176, 0, 32);
+  static const Color successColor = Color.fromARGB(255, 46, 125, 50);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -24,7 +22,7 @@ class AppTheme {
       ),
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
-          fontSize: 32, // Reducido para responsividad
+          fontSize: 32,
           fontWeight: FontWeight.bold,
           color: textColor,
           fontFamily: 'BebasNeue',
@@ -69,10 +67,17 @@ class AppTheme {
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: primaryColor, width: 2.0),
         ),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: errorColor, width: 2.0),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: errorColor, width: 2.0),
+        ),
         labelStyle: TextStyle(color: secondaryColor),
+        errorStyle: TextStyle(color: errorColor, fontSize: 12),
       ),
       dividerTheme: DividerThemeData(
-        color: secondaryColor.withOpacity(0.5), // Suave, contraste suficiente
+        color: secondaryColor.withAlpha(130),
         thickness: 1,
         space: 16,
       ),
