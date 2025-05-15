@@ -4,7 +4,6 @@ import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/theme/app_theme.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class LoginScreen extends ConsumerWidget {
   final TextEditingController emailController = TextEditingController();
@@ -81,7 +80,7 @@ class LoginScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 24),
                       CustomButton(
-                        text: 'Iniciar Sesión',
+                        text: 'Iniciar sesión',
                         onPressed: () {
                           ref.read(authProvider.notifier).login(
                                 emailController.text,
@@ -101,10 +100,15 @@ class LoginScreen extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      SignInButton(
-                        Buttons.Google,
-                        text: "Iniciar sesión con Google",
-                        onPressed: () {},
+                      CustomButton(
+                        text: 'Iniciar sesión con Google',
+                        iconAssetPath: 'assets/images/google_logo.svg',
+                        isSvg: true,
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color.fromARGB(255, 56, 56, 56),                        
+                        onPressed: () {
+                          // TODO: Add Google sign-in logic
+                        },
                       ),
                       const SizedBox(height: 24),
                       Row(
