@@ -101,6 +101,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                     obscureText: true,
                     controller: passwordController,
                     validator: FormValidators.passwordField,
+                    onChanged: (_) => _formKey.currentState?.validate(),
                   ),
                   const SizedBox(height: 16),
                   CustomTextField(
@@ -108,6 +109,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                     obscureText: true,
                     controller: confirmPasswordController,
                     validator: _confirmPasswordValidator,
+                    onChanged: (_) => _formKey.currentState?.validate(),
                   ),
                   const SizedBox(height: 24),
                   CustomButton(
@@ -131,10 +133,8 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                       ),
                     ],
                   ),
-                  // Indicador de carga
                   if (authState.isLoading)
                     const Center(child: CircularProgressIndicator()),
-                  // Mensaje de error
                   if (authState.error != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
