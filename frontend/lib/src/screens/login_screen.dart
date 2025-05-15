@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
-import 'package:gastrohub_app/src/core/theme/app_theme.dart';
+import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 
 class LoginScreen extends ConsumerWidget {
   final TextEditingController emailController = TextEditingController();
@@ -14,8 +14,10 @@ class LoginScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor, // Usar color de fondo del tema
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -33,16 +35,14 @@ class LoginScreen extends ConsumerWidget {
                       Image.asset(
                         'assets/images/logo.png',
                         height: 150,
+                        semanticLabel: 'Logo de Gastro & Hub',
                       ),
                       const SizedBox(height: 16),
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
                           'GASTRO & HUB',
-                          style: TextStyle(
-                            fontFamily: 'BebasNeue',
-                            fontSize: 200,
-                            fontWeight: FontWeight.bold,
+                          style: theme.textTheme.headlineLarge?.copyWith(
                             color: AppTheme.primaryColor,
                           ),
                           textAlign: TextAlign.center,
@@ -63,16 +63,18 @@ class LoginScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const Text('¿Has olvidado tu contraseña? '),
+                          Text(
+                            '¿Has olvidado tu contraseña? ',
+                            style: theme.textTheme.labelMedium,
+                          ),
                           GestureDetector(
                             onTap: () {
                               // TODO: Add password recovery logic
                             },
-                            child: const Text(
+                            child: Text(
                               'Recuperar',
-                              style: TextStyle(
+                              style: theme.textTheme.labelLarge?.copyWith(
                                 color: AppTheme.primaryColor,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -91,12 +93,16 @@ class LoginScreen extends ConsumerWidget {
                       const SizedBox(height: 32),
                       Row(
                         children: [
-                          Expanded(child: Divider(color: Colors.grey[400])),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text('o si lo prefieres'),
+                          const Expanded(child: Divider()),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              'o si lo prefieres',
+                              style: theme.textTheme.labelMedium,
+                            ),
                           ),
-                          Expanded(child: Divider(color: Colors.grey[400])),
+                          const Expanded(child: Divider()),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -105,7 +111,7 @@ class LoginScreen extends ConsumerWidget {
                         iconAssetPath: 'assets/images/google_logo.svg',
                         isSvg: true,
                         backgroundColor: Colors.white,
-                        foregroundColor: const Color.fromARGB(255, 56, 56, 56),                        
+                        foregroundColor: Colors.grey[600],
                         onPressed: () {
                           // TODO: Add Google sign-in logic
                         },
@@ -114,16 +120,18 @@ class LoginScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('¿No tienes cuenta? '),
+                          Text(
+                            '¿No tienes cuenta? ',
+                            style: theme.textTheme.labelMedium,
+                          ),
                           GestureDetector(
                             onTap: () {
                               // TODO: Navigate to registration screen
                             },
-                            child: const Text(
+                            child: Text(
                               'Regístrate gratis',
-                              style: TextStyle(
+                              style: theme.textTheme.labelLarge?.copyWith(
                                 color: AppTheme.primaryColor,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -136,7 +144,9 @@ class LoginScreen extends ConsumerWidget {
                           padding: const EdgeInsets.only(top: 16.0),
                           child: Text(
                             authState.error!,
-                            style: const TextStyle(color: Colors.red),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -145,7 +155,9 @@ class LoginScreen extends ConsumerWidget {
                           padding: const EdgeInsets.only(top: 16.0),
                           child: Text(
                             'Bienvenido, ${authState.user!.name}',
-                            style: const TextStyle(color: Colors.green),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: AppTheme.successColor,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ),

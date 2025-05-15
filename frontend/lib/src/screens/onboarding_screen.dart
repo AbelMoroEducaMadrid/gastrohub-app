@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gastrohub_app/src/core/themes/app_theme.dart';
+import 'package:gastrohub_app/src/core/themes/introduction_screen_theme.dart';
 
 // Pantalla de onboarding usando introduction_screen
 class OnboardingScreen extends StatelessWidget {
@@ -13,11 +15,29 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Combinar el tema principal con la extensión para IntroductionScreen
+    final theme = Theme.of(context).copyWith(
+      extensions: [
+        IntroductionScreenTheme.defaultTheme(),
+      ],
+    );
+    // Obtener el tema de IntroductionScreen, con fallback a defaultTheme
+    final introTheme = theme.extension<IntroductionScreenTheme>() ??
+        IntroductionScreenTheme.defaultTheme();
+
     // Lista de páginas del onboarding
     final List<PageViewModel> pages = [
       PageViewModel(
-        title: "Bienvenido a Gastro & Hub",
-        body: "Gestiona tu restaurante con rapidez, simplicidad y bajo coste.",
+        titleWidget: Text(
+          "Bienvenido a Gastro & Hub",
+          style: theme.textTheme.headlineLarge,
+          textAlign: TextAlign.center,
+        ),
+        bodyWidget: Text(
+          "Gestiona tu restaurante con rapidez, simplicidad y bajo coste.",
+          style: theme.textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
         image: Center(
           child: Image.asset(
             'assets/images/logo.png',
@@ -27,9 +47,16 @@ class OnboardingScreen extends StatelessWidget {
         ),
       ),
       PageViewModel(
-        title: "Pedidos en tiempo real",
-        body:
-            "Registra pedidos desde tu móvil y coordínate con la cocina al instante.",
+        titleWidget: Text(
+          "Pedidos en tiempo real",
+          style: theme.textTheme.headlineLarge,
+          textAlign: TextAlign.center,
+        ),
+        bodyWidget: Text(
+          "Registra pedidos desde tu móvil y coordínate con la cocina al instante.",
+          style: theme.textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
         image: Center(
           child: SvgPicture.asset(
             'assets/images/orders.svg',
@@ -39,8 +66,16 @@ class OnboardingScreen extends StatelessWidget {
         ),
       ),
       PageViewModel(
-        title: "Controla tu inventario",
-        body: "Monitorea existencias y recibe alertas para evitar faltantes.",
+        titleWidget: Text(
+          "Controla tu inventario",
+          style: theme.textTheme.headlineLarge,
+          textAlign: TextAlign.center,
+        ),
+        bodyWidget: Text(
+          "Monitorea existencias y recibe alertas para evitar faltantes.",
+          style: theme.textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
         image: Center(
           child: SvgPicture.asset(
             'assets/images/inventory.svg',
@@ -50,8 +85,16 @@ class OnboardingScreen extends StatelessWidget {
         ),
       ),
       PageViewModel(
-        title: "Pagos y cierres fáciles",
-        body: "Procesa pagos digitales y simplifica el cierre diario de caja.",
+        titleWidget: Text(
+          "Pagos y cierres fáciles",
+          style: theme.textTheme.headlineLarge,
+          textAlign: TextAlign.center,
+        ),
+        bodyWidget: Text(
+          "Procesa pagos digitales y simplifica el cierre diario de caja.",
+          style: theme.textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
         image: Center(
           child: SvgPicture.asset(
             'assets/images/payments.svg',
@@ -62,27 +105,26 @@ class OnboardingScreen extends StatelessWidget {
       ),
     ];
 
-    return IntroductionScreen(
-      pages: pages,
-      onDone: () => _goToLogin(context),
-      onSkip: () => _goToLogin(context),
-      showSkipButton: true,
-      skip: const Text("Omitir", style: TextStyle(fontSize: 16)),
-      next: const Text("Siguiente", style: TextStyle(fontSize: 16)),
-      done: const Text("Comenzar",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-      dotsDecorator: const DotsDecorator(
-        size: Size(10.0, 10.0),
-        color: Colors.grey,
-        activeColor: Colors.blue,
-        activeSize: Size(22.0, 10.0),
-        activeShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+    return Theme(
+      data: theme,
+      child: Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        body: IntroductionScreen(
+          pages: pages,
+          onDone: () => _goToLogin(context),
+          onSkip: () => _goToLogin(context),
+          showSkipButton: true,
+          skip: Text("Omitir", style: introTheme.skipStyle),
+          next: Text("Siguiente", style: introTheme.nextStyle),
+          done: Text("Comenzar", style: introTheme.doneStyle),
+          dotsDecorator: introTheme.dotsDecorator,
+          globalBackgroundColor: AppTheme.backgroundColor,
+          isProgress: true,
+          freeze: false,
+          bodyPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+          animationDuration: 300,
         ),
       ),
-      globalBackgroundColor: Colors.white,
-      isProgress: true,
-      freeze: false,
     );
   }
 }

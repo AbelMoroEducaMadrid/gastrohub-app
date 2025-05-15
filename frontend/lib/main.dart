@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/screens/login_screen.dart';
-import 'package:gastrohub_app/src/core/theme/app_theme.dart';
+import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/screens/onboarding_screen.dart';
 
 void main() {
@@ -16,10 +16,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gastro & Hub',
-      theme: AppTheme.lightTheme,   
-      home: const OnboardingScreen(),   
+      theme: AppTheme.lightTheme,
+      home: const OnboardingScreen(),
       initialRoute: '/',
-      routes: {    
+      routes: {
         '/login': (context) => LoginScreen(),
       },
     );
