@@ -18,9 +18,22 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       body: Center(
-        child: Text(
-          'Bienvenido, ${authState.user!.name}',
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Bienvenido, ${authState.user?.name}',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                ref.read(authProvider.notifier).logout();
+                Navigator.of(context).pushReplacementNamed('/login');
+              },
+              child: const Text('Cerrar sesión'),
+            ),
+          ],
         ),
       ),
     );

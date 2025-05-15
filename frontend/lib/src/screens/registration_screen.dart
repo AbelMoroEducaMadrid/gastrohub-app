@@ -23,7 +23,6 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Validador personalizado para confirmar contraseña
   String? _confirmPasswordValidator(String? value) {
     if (value != passwordController.text) {
       return 'Las contraseñas no coinciden';
@@ -32,12 +31,26 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   }
 
   void _register() {
+    ref
+        .read(authProvider.notifier)
+        .logout(); // Limpia el usuario actual si existe
     if (_formKey.currentState!.validate()) {
-      ref.read(authProvider.notifier).register(
+      ref
+          .read(authProvider.notifier)
+          .register(
             nameController.text,
             emailController.text,
             passwordController.text,
-          );
+          )
+          .then((_) {
+        final authState = ref.read(authProvider);
+        if (authState.registrationSuccess) {
+          // Redirigir a la pantalla de login
+          Navigator.of(context).pushReplacementNamed('/login');
+          // Resetear el estado de registro
+          ref.read(authProvider.notifier).resetRegistration();
+        }
+      });
     }
   }
 
@@ -45,12 +58,6 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
-
-    if (authState.user != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacementNamed('/login');
-      });
-    }
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,

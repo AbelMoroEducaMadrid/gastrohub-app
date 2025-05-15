@@ -5,8 +5,14 @@ class AuthState {
   final User? user;
   final bool isLoading;
   final String? error;
+  final bool registrationSuccess;
 
-  AuthState({this.user, this.isLoading = false, this.error});
+  AuthState({
+    this.user,
+    this.isLoading = false,
+    this.error,
+    this.registrationSuccess = false,
+  });
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -30,11 +36,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = AuthState(isLoading: true);
     try {
       // Simulación de registro exitoso
-      final user = User(id: 2, name: name, email: email);
-      state = AuthState(user: user);
+      // No establecemos un usuario, solo indicamos que el registro fue exitoso
+      state = AuthState(registrationSuccess: true);
     } catch (e) {
       state = AuthState(error: 'Error al registrar: $e');
     }
+  }
+
+  void logout() {
+    state = AuthState();
+  }
+
+  void resetRegistration() {
+    state = AuthState();
   }
 }
 
