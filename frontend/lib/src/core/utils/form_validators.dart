@@ -3,7 +3,7 @@ class FormValidators {
     if (value == null || value.trim().isEmpty) {
       return '$fieldName es obligatorio';
     }
-    return null; // Returns null for valid input
+    return null;
   }
 
   static String? emailField(String? value) {
@@ -14,7 +14,7 @@ class FormValidators {
     if (!emailRegex.hasMatch(value)) {
       return 'Ingresa un correo electrónico válido';
     }
-    return null; // Returns null for valid input
+    return null;
   }
 
   static String? passwordField(String? value) {
@@ -24,6 +24,17 @@ class FormValidators {
     if (value.length < 6) {
       return 'La contraseña debe tener al menos 6 caracteres';
     }
-    return null; // Returns null for valid input
+    return null;
+  }
+
+  static String? phoneField(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'El teléfono es obligatorio';
+    }
+    final phoneRegex = RegExp(r'^\+?\d{9,15}$');
+    if (!phoneRegex.hasMatch(value)) {
+      return 'Ingresa un teléfono válido';
+    }
+    return null;
   }
 }

@@ -141,9 +141,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               style: theme.textTheme.labelMedium,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                // TODO: Navigate to registration screen
-                              },
+                              onTap: () =>
+                                  Navigator.of(context).pushNamed('/register'),
                               child: Text(
                                 'Regístrate gratis',
                                 style: theme.textTheme.labelLarge?.copyWith(

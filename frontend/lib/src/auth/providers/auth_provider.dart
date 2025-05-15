@@ -15,19 +15,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> login(String email, String password) async {
     state = AuthState(isLoading: true);
     try {
-      // Simulación de login con datos fijos (mock)
       if (email == "test@example.com" && password == "password123") {
-        final user = User(
-          id: 1,
-          name: 'Test User',
-          email: email,
-        );
+        final user = User(id: 1, name: 'Test User', email: email);
         state = AuthState(user: user);
       } else {
         throw Exception('Credenciales incorrectas');
       }
     } catch (e) {
       state = AuthState(error: e.toString());
+    }
+  }
+
+  Future<void> register(String name, String email, String password) async {
+    state = AuthState(isLoading: true);
+    try {
+      // Simulación de registro exitoso
+      final user = User(id: 2, name: name, email: email);
+      state = AuthState(user: user);
+    } catch (e) {
+      state = AuthState(error: 'Error al registrar: $e');
     }
   }
 }
