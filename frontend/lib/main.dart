@@ -16,10 +16,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gastro & Hub',
-      theme: AppTheme.lightTheme,      
+      theme: AppTheme.lightTheme,   
+      home: const OnboardingScreen(),   
       initialRoute: '/',
-      routes: {
-        '/': (context) => const OnboardingScreen(),
+      routes: {    
         '/login': (context) => LoginScreen(),
       },
     );
