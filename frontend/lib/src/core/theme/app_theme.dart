@@ -18,10 +18,20 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero, // Square buttons
+            borderRadius: BorderRadius.zero,
           ),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: const OutlineInputBorder(),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: secondaryColor, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: primaryColor, width: 2.0),
+        ),
+        labelStyle: TextStyle(color: secondaryColor),
       ),
     );
   }
