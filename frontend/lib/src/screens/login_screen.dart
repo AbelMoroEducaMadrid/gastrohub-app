@@ -32,6 +32,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
 
+    if (authState.user != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacementNamed('/dashboard');
+      });
+    }
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
@@ -62,7 +68,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             style: theme.textTheme.headlineLarge?.copyWith(
                               fontSize: 200,
                               color: AppTheme.primaryColor,
-                            ),                            
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ),
