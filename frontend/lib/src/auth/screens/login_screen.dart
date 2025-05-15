@@ -26,7 +26,7 @@ class LoginScreen extends ConsumerWidget {
                 // Limitar el ancho máximo a 400 píxeles en pantallas grandes
                 final maxWidth =
                     constraints.maxWidth > 400 ? 400.0 : constraints.maxWidth;
-                return Container(
+                return SizedBox(
                   width: maxWidth,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
