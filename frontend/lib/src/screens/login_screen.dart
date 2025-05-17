@@ -19,12 +19,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void _validateAndSubmit() {
+  void _validateAndSubmit() async {
     if (_formKey.currentState!.validate()) {
-      ref.read(authProvider.notifier).login(
+      await ref.read(authProvider.notifier).login(
             emailController.text,
             passwordController.text,
           );
+
+      if (!mounted) return;
+
+      final authState = ref.read(authProvider);
+      if (authState.user != null) {
+        // Verifica si el usuario tiene un restaurante asignado
+        if (authState.user!.restaurantId != null) {
+          // Si tiene restaurante, va al dashboard
+          Navigator.of(context).pushReplacementNamed('/dashboard');
+        } else {
+          // Si no tiene restaurante, va a la pantalla de bienvenida
+          Navigator.of(context).pushReplacementNamed('/welcome');
+        }
+      }
     }
   }
 
@@ -48,12 +62,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
-
-    if (authState.user != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacementNamed('/dashboard');
-      });
-    }
 
     if (authState.error != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
