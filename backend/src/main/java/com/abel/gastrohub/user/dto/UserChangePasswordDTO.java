@@ -1,13 +1,12 @@
 package com.abel.gastrohub.user.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class UserChangePasswordDTO {
+    // Getters y setters
     private String newPassword;
 
-    // Getters y setters
-    public String getNewPassword() {
-        return newPassword;
-    }
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
 }
