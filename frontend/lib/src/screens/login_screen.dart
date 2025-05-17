@@ -5,6 +5,7 @@ import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/core/utils/form_validators.dart';
+import 'package:gastrohub_app/src/core/widgets/form_container.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -61,17 +62,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth =
-                    constraints.maxWidth > 400 ? 400.0 : constraints.maxWidth;
-                return SizedBox(
-                  width: maxWidth,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background_01.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.width * 0.06),
+                child: FormContainer(
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -186,11 +192,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                     ),
                   ),
-                );
-              },
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

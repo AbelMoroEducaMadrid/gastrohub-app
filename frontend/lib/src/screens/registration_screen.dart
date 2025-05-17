@@ -5,6 +5,7 @@ import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/core/utils/form_validators.dart';
+import 'package:gastrohub_app/src/core/widgets/form_container.dart';
 
 class RegistrationScreen extends ConsumerStatefulWidget {
   const RegistrationScreen({super.key});
@@ -79,93 +80,107 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Registrarse',
-                    style: theme.textTheme.headlineLarge
-                        ?.copyWith(color: AppTheme.primaryColor),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  CustomTextField(
-                    label: 'Nombre',
-                    controller: nameController,
-                    validator: (value) =>
-                        FormValidators.requiredField(value, 'Nombre'),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Apellidos',
-                    controller: lastNameController,
-                    validator: (value) =>
-                        FormValidators.requiredField(value, 'Apellidos'),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Correo Electrónico',
-                    controller: emailController,
-                    validator: FormValidators.emailField,
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Teléfono',
-                    controller: phoneController,
-                    validator: FormValidators.phoneField,
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Contraseña',
-                    obscureText: true,
-                    controller: passwordController,
-                    validator: FormValidators.passwordField,
-                    onChanged: (_) => _formKey.currentState?.validate(),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Confirmar contraseña',
-                    obscureText: true,
-                    controller: confirmPasswordController,
-                    validator: _confirmPasswordValidator,
-                    onChanged: (_) => _formKey.currentState?.validate(),
-                  ),
-                  const SizedBox(height: 24),
-                  CustomButton(
-                    text: 'Registrarse',
-                    onPressed: _register,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('¿Ya tienes cuenta? ',
-                          style: theme.textTheme.labelMedium),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context)
-                            .pushReplacementNamed('/login'),
-                        child: Text(
-                          'Inicia sesión',
-                          style: theme.textTheme.labelLarge
-                              ?.copyWith(color: AppTheme.primaryColor),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (authState.isLoading)
-                    const Center(child: CircularProgressIndicator()),
-                ],
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background_01.png'),
+                fit: BoxFit.cover,
               ),
             ),
           ),
-        ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.width * 0.06),
+                child: FormContainer(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Registrarse',
+                          style: theme.textTheme.headlineLarge
+                              ?.copyWith(color: AppTheme.primaryColor),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        CustomTextField(
+                          label: 'Nombre',
+                          controller: nameController,
+                          validator: (value) =>
+                              FormValidators.requiredField(value, 'Nombre'),
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          label: 'Apellidos',
+                          controller: lastNameController,
+                          validator: (value) =>
+                              FormValidators.requiredField(value, 'Apellidos'),
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          label: 'Correo Electrónico',
+                          controller: emailController,
+                          validator: FormValidators.emailField,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          label: 'Teléfono',
+                          controller: phoneController,
+                          validator: FormValidators.phoneField,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          label: 'Contraseña',
+                          obscureText: true,
+                          controller: passwordController,
+                          validator: FormValidators.passwordField,
+                          onChanged: (_) => _formKey.currentState?.validate(),
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          label: 'Confirmar contraseña',
+                          obscureText: true,
+                          controller: confirmPasswordController,
+                          validator: _confirmPasswordValidator,
+                          onChanged: (_) => _formKey.currentState?.validate(),
+                        ),
+                        const SizedBox(height: 24),
+                        CustomButton(
+                          text: 'Registrarse',
+                          onPressed: _register,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('¿Ya tienes cuenta? ',
+                                style: theme.textTheme.labelMedium),
+                            GestureDetector(
+                              onTap: () => Navigator.of(context)
+                                  .pushReplacementNamed('/login'),
+                              child: Text(
+                                'Inicia sesión',
+                                style: theme.textTheme.labelLarge
+                                    ?.copyWith(color: AppTheme.primaryColor),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (authState.isLoading)
+                          const Center(child: CircularProgressIndicator()),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
