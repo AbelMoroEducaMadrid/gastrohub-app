@@ -50,7 +50,9 @@ CREATE TABLE restaurants (
     name VARCHAR(255) NOT NULL, -- Nombre del restaurante
     address VARCHAR(255) NOT NULL, -- Dirección
     cuisine_type VARCHAR(100) NOT NULL, -- Tipo de cocina (ej. 'Italiana')
-    description TEXT NOT NULL, -- Descripción del restaurante
+    description TEXT NOT NULL, -- Descripción del restaurante    
+    invitation_code VARCHAR(20) UNIQUE, -- Código de invitación visible
+    invitation_expires_at TIMESTAMP, -- Fecha de expiración del código
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- Fecha de creación
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- Fecha de última actualización
     deleted_at TIMESTAMP -- Fecha de eliminación (para borrado lógico)
