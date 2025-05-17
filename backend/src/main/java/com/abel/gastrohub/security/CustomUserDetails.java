@@ -3,12 +3,12 @@ package com.abel.gastrohub.security;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
     @Getter
-    private Integer id; // Campo adicional
-    private String email;
+    private int id;
     private String passwordHash;
     private Collection<? extends GrantedAuthority> authorities;
     private boolean enabled;
@@ -17,7 +17,6 @@ public class CustomUserDetails implements UserDetails {
                              Collection<? extends GrantedAuthority> authorities,
                              boolean enabled) {
         this.id = id;
-        this.email = email;
         this.passwordHash = passwordHash;
         this.authorities = authorities;
         this.enabled = enabled;
@@ -35,7 +34,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return String.valueOf(id); // Devolver el ID como String
     }
 
     @Override

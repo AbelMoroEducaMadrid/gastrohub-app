@@ -22,16 +22,21 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
-        boolean enabled = user.getDeletedAt() == null; // Enable only if not logically deleted
-        return new CustomUserDetails(
-                user.getId(),
-                user.getEmail(),
-                user.getPasswordHash(),
-                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName())),
-                enabled
-        );
+    public UserDetails loadUserByUsername(String idStr) throws UsernameNotFoundException {
+        try {
+            int id = Integer.parseInt(idStr);
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + idStr));
+            boolean enabled = user.getDeletedAt() == null;
+            return new CustomUserDetails(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getPasswordHash(),
+                    Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName())),
+                    enabled
+            );
+        } catch (NumberFormatException e) {
+            throw new UsernameNotFoundException("ID inválido: " + idStr);
+        }
     }
 }
