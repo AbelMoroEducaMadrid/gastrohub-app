@@ -16,15 +16,24 @@ class DashboardScreen extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
+    final user = authState.user!;
+
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Bienvenido, ${authState.user?.name}',
+              'Bienvenido, ${user.name}',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
+            const SizedBox(height: 10),
+            Text('Email: ${user.email}'),
+            Text('Teléfono: ${user.phone}'),
+            Text('Rol: ${user.role}'),
+            Text(
+                'Restaurante: ${user.restaurantName} (ID: ${user.restaurantId})'),
+            Text('Último login: ${user.lastLogin}'),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {

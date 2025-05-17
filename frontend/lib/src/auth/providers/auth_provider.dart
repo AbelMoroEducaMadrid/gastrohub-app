@@ -31,11 +31,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final token = await _authService.login(email, password);
       if (token != null) {
-        // Almacenamos el token de forma segura
         await _secureStorage.write(key: 'jwt_token', value: token);
         print('Token almacenado: $token');
-        // Usuario temporal
-        final user = User(id: 1, name: 'Test User', email: email);
+        // Obtener datos reales del usuario
+        final user = await _authService.getUserData(token);
         state = AuthState(user: user, token: token);
       } else {
         throw Exception('No se recibió token');
