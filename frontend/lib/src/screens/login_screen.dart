@@ -27,6 +27,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  void _showErrorDialog(String error) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error de inicio de sesión'),
+        content: Text(error),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -35,6 +51,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (authState.user != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pushReplacementNamed('/dashboard');
+      });
+    }
+
+    if (authState.error != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showErrorDialog(authState.error!);
       });
     }
 
@@ -161,28 +183,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         if (authState.isLoading)
                           const Center(child: CircularProgressIndicator()),
-                        if (authState.error != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
-                            child: Text(
-                              authState.error!,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.error,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        if (authState.user != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
-                            child: Text(
-                              'Bienvenido, ${authState.user!.name}',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: AppTheme.successColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
                       ],
                     ),
                   ),
