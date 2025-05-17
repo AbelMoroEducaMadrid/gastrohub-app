@@ -2,6 +2,7 @@ package com.abel.gastrohub.user;
 
 import com.abel.gastrohub.masterdata.MtRole;
 import com.abel.gastrohub.masterdata.MtRoleRepository;
+import com.abel.gastrohub.user.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,11 @@ public class UserService {
 
     public User getUserById(Integer id) {
         return userRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
+    }
+
+    public UserResponseDTO getUserResponseDTOById(Integer id) {
+        return userRepository.findUserResponseDTOById(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
     }
 

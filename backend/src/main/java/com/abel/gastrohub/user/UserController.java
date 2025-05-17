@@ -1,5 +1,6 @@
 package com.abel.gastrohub.user;
 
+import com.abel.gastrohub.security.CustomUserDetails;
 import com.abel.gastrohub.user.dto.UserChangePasswordDTO;
 import com.abel.gastrohub.user.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,16 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Integer id) {
         User user = userService.getUserById(id);
         return ResponseEntity.ok(new UserResponseDTO(user));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponseDTO> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getId();
+        UserResponseDTO userDTO = userService.getUserResponseDTOById(userId);
+        return ResponseEntity.ok(userDTO);
     }
 
     @PostMapping
