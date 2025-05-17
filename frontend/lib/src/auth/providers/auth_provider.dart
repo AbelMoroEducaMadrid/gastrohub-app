@@ -32,8 +32,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final token = await _authService.login(email, password);
       if (token != null) {
         await _secureStorage.write(key: 'jwt_token', value: token);
-        print('Token almacenado: $token');
-        // Obtener datos reales del usuario
         final user = await _authService.getUserData(token);
         state = AuthState(user: user, token: token);
       } else {
