@@ -15,6 +15,8 @@ public class RestaurantResponseDTO {
     private String address;
     private String cuisineType;
     private String description;
+    private String invitation_code;
+    private LocalDateTime invitation_expires_at;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
@@ -25,6 +27,8 @@ public class RestaurantResponseDTO {
         this.address = restaurant.getAddress();
         this.cuisineType = restaurant.getCuisineType();
         this.description = restaurant.getDescription();
+        this.invitation_code = restaurant.getInvitationCode();
+        this.invitation_expires_at = restaurant.getInvitationExpiresAt();
         this.createdAt = restaurant.getCreatedAt();
         this.updatedAt = restaurant.getUpdatedAt();
         this.deletedAt = restaurant.getDeletedAt();

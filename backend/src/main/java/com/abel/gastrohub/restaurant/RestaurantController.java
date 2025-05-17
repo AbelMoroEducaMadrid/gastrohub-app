@@ -70,4 +70,11 @@ public class RestaurantController {
         Restaurant deletedRestaurant = restaurantService.deleteRestaurant(id);
         return ResponseEntity.ok(new RestaurantResponseDTO(deletedRestaurant));
     }
+
+    @PostMapping("/{id}/regenerate-invitation")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM', 'OWNER')")
+    public ResponseEntity<String> regenerateInvitationCode(@PathVariable Integer id) {
+        Restaurant updatedRestaurant = restaurantService.regenerateInvitationCode(id);
+        return ResponseEntity.ok(updatedRestaurant.getInvitationCode());
+    }
 }

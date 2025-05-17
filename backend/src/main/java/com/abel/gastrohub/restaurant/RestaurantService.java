@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 public class RestaurantService {
@@ -44,5 +45,16 @@ public class RestaurantService {
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + id));
         restaurant.setDeletedAt(LocalDateTime.now());
         return restaurantRepository.save(restaurant);
+    }
+
+    public Restaurant regenerateInvitationCode(Integer id) {
+        Restaurant restaurant = getRestaurantById(id);
+        restaurant.setInvitationCode(generateInvitationCode());
+        restaurant.setInvitationExpiresAt(LocalDateTime.now().plusHours(12));
+        return restaurantRepository.save(restaurant);
+    }
+
+    private String generateInvitationCode() {
+        return UUID.randomUUID().toString().substring(0, 8);
     }
 }

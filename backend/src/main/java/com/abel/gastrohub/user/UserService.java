@@ -2,6 +2,8 @@ package com.abel.gastrohub.user;
 
 import com.abel.gastrohub.masterdata.MtRole;
 import com.abel.gastrohub.masterdata.MtRoleRepository;
+import com.abel.gastrohub.restaurant.Restaurant;
+import com.abel.gastrohub.restaurant.RestaurantRepository;
 import com.abel.gastrohub.user.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,12 +19,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final MtRoleRepository roleRepository;
+    private final RestaurantRepository restaurantRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, MtRoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, MtRoleRepository roleRepository, RestaurantRepository restaurantRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.restaurantRepository = restaurantRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -87,6 +91,18 @@ public class UserService {
         User user = userRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
         user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    public void joinRestaurant(Integer userId, String invitationCode) {
+        User user = getUserById(userId);
+        System.out.println("CODIGO:" + invitationCode);
+        Restaurant restaurant = restaurantRepository.findByInvitationCodeAndDeletedAtIsNull(invitationCode)
+                .orElseThrow(() -> new NoSuchElementException("Código de invitación no válido"));
+        if (restaurant.getInvitationExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("El código de invitación ha expirado");
+        }
+        user.setRestaurant(restaurant);
         userRepository.save(user);
     }
 }

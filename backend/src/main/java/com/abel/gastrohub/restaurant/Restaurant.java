@@ -58,6 +58,13 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant")
     private Set<User> users = new LinkedHashSet<>();
 
+    @Size(max = 20)
+    @Column(name = "invitation_code", length = 20)
+    private String invitationCode;
+
+    @Column(name = "invitation_expires_at")
+    private LocalDateTime invitationExpiresAt;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
