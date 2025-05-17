@@ -30,27 +30,23 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
     return null;
   }
 
-  void _register() {
-    ref
-        .read(authProvider.notifier)
-        .logout(); // Limpia el usuario actual si existe
+  void _register() async {
+    ref.read(authProvider.notifier).logout();
+
     if (_formKey.currentState!.validate()) {
-      ref
-          .read(authProvider.notifier)
-          .register(
+      await ref.read(authProvider.notifier).register(
             nameController.text,
             emailController.text,
             passwordController.text,
-          )
-          .then((_) {
-        final authState = ref.read(authProvider);
-        if (authState.registrationSuccess) {
-          // Redirigir a la pantalla de login
-          Navigator.of(context).pushReplacementNamed('/login');
-          // Resetear el estado de registro
-          ref.read(authProvider.notifier).resetRegistration();
-        }
-      });
+          );
+
+      if (!mounted) return;
+
+      final authState = ref.read(authProvider);
+      if (authState.registrationSuccess) {
+        Navigator.of(context).pushReplacementNamed('/login');
+        ref.read(authProvider.notifier).resetRegistration();
+      }
     }
   }
 
