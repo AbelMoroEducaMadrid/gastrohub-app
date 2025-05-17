@@ -4,8 +4,8 @@ class User {
   final String email;
   final String phone;
   final String role;
-  final int restaurantId;
-  final String restaurantName;
+  final int? restaurantId;
+  final String? restaurantName;
   final String lastLogin;
 
   User({
