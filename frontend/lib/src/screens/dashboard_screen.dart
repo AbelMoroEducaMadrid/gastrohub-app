@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/core/utils/date_utils.dart' as my_date_utils;
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -31,9 +32,9 @@ class DashboardScreen extends ConsumerWidget {
             Text('Email: ${user.email}'),
             Text('Teléfono: ${user.phone}'),
             Text('Rol: ${user.role}'),
+            Text('Restaurante: ${user.restaurantName}'),
             Text(
-                'Restaurante: ${user.restaurantName} (ID: ${user.restaurantId})'),
-            Text('Último login: ${user.lastLogin}'),
+                'Último login: ${my_date_utils.DateUtils.formatIsoDateShort(user.lastLogin)}'),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
