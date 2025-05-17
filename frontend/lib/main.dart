@@ -6,6 +6,7 @@ import 'package:gastrohub_app/src/screens/login_screen.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/screens/onboarding_screen.dart';
 import 'package:gastrohub_app/src/screens/registration_screen.dart';
+import 'package:gastrohub_app/src/screens/verification_pending_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,13 +29,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gastro & Hub',
-      theme: AppTheme.lightTheme,
-      home: const OnboardingScreen(),
-      initialRoute: '/',
+      theme: AppTheme.lightTheme,      
+      //initialRoute: '/onboarding',
+      initialRoute: '/verification_pending',
       routes: {
+        '/onboarding': (context) => const OnboardingScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegistrationScreen(),
-        '/dashboard': (context) => const DashboardScreen(),
+        '/dashboard': (context) => const DashboardScreen(),        
+        '/verification_pending': (context) => const VerificationPendingScreen(),
       },
     );
   }

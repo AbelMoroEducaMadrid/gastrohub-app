@@ -45,7 +45,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
 
       final authState = ref.read(authProvider);
       if (authState.registrationSuccess) {
-        Navigator.of(context).pushReplacementNamed('/login');
+        Navigator.of(context).pushReplacementNamed('/verification-pending');
         ref.read(authProvider.notifier).resetRegistration();
       } else if (authState.error != null) {
         _showErrorDialog(authState.error!);
