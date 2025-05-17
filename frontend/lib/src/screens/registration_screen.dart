@@ -38,6 +38,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
             nameController.text,
             emailController.text,
             passwordController.text,
+            phoneController.text,
           );
 
       if (!mounted) return;
@@ -46,8 +47,26 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       if (authState.registrationSuccess) {
         Navigator.of(context).pushReplacementNamed('/login');
         ref.read(authProvider.notifier).resetRegistration();
+      } else if (authState.error != null) {
+        _showErrorDialog(authState.error!);
       }
     }
+  }
+
+  void _showErrorDialog(String error) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error de registro'),
+        content: Text(error),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -138,16 +157,6 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                   ),
                   if (authState.isLoading)
                     const Center(child: CircularProgressIndicator()),
-                  if (authState.error != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Text(
-                        authState.error!,
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: theme.colorScheme.error),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
                 ],
               ),
             ),

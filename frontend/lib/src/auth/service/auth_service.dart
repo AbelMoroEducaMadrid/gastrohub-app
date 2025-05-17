@@ -42,4 +42,26 @@ class AuthService {
           'Error al obtener datos del usuario: ${response.statusCode}');
     }
   }
+
+  Future<void> register(
+      String name, String email, String password, String phone) async {
+    final url = Uri.parse('$baseUrl/api/auth/register');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'password': password,
+        'phone': phone,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      // Registro exitoso
+    } else {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['message'] ?? 'Error al registrar');
+    }
+  }
 }

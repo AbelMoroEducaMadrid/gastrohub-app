@@ -42,12 +42,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(
+      String name, String email, String password, String phone) async {
     state = AuthState(isLoading: true);
     try {
+      await _authService.register(name, email, password, phone);
       state = AuthState(registrationSuccess: true);
     } catch (e) {
-      state = AuthState(error: 'Error al registrar: $e');
+      state = AuthState(error: e.toString());
     }
   }
 
