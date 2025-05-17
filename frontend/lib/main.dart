@@ -21,6 +21,7 @@ Future<void> main() async {
 
   runApp(const ProviderScope(child: MyApp()));
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -29,15 +30,25 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gastro & Hub',
-      theme: AppTheme.lightTheme,      
-      //initialRoute: '/onboarding',
-      initialRoute: '/verification_pending',
+      theme: AppTheme.lightTheme,
+      initialRoute: '/onboarding',
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegistrationScreen(),
-        '/dashboard': (context) => const DashboardScreen(),        
-        '/verification_pending': (context) => const VerificationPendingScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/verification-pending') {
+          final args = settings.arguments as Map<String, String>?;
+          final email = args?['email'] ?? 'email@ejemplo.com';
+          final name = args?['name'] ?? 'Nombre';
+          return MaterialPageRoute(
+            builder: (context) =>
+                VerificationPendingScreen(email: email, name: name),
+          );
+        }
+        return null;
       },
     );
   }

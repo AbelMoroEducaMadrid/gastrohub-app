@@ -33,6 +33,7 @@ flutter:
     - assets/images/inventory.svg
     - assets/images/payments.svg
     - assets/images/google_logo.svg
+    - assets/images/background_01.png
     - .env
     - .env.local
   fonts:
