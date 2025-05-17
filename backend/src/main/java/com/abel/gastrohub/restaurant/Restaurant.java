@@ -1,114 +1,84 @@
 package com.abel.gastrohub.restaurant;
 
 import com.abel.gastrohub.user.User;
-import com.abel.gastrohub.util.IAuditable;
-import com.abel.gastrohub.util.AuditListener;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-@EntityListeners(AuditListener.class)
 @Table(name = "restaurants")
-public class Restaurant implements IAuditable {
+public class Restaurant {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @Size(max = 255)
+    @NotNull
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
-
-    @Column(name = "address")
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "cuisine_type", length = 100)
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "cuisine_type", nullable = false, length = 100)
     private String cuisineType;
 
-    @Column(name = "created_by")
-    private Integer createdBy;
+    @NotNull
+    @Column(name = "description", nullable = false, length = Integer.MAX_VALUE)
+    private String description;
 
-    @Column(name = "updated_by")
-    private Integer updatedBy;
-
+    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @NotNull
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    // Getters y setters
-    public Integer getId() {
-        return id;
+    @OneToMany(mappedBy = "restaurant")
+    private Set<User> users = new LinkedHashSet<>();
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public String getName() {
-        return name;
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
-    public User getOwner() {
-        return owner;
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCuisineType() {
-        return cuisineType;
-    }
-
-    public void setCuisineType(String cuisineType) {
-        this.cuisineType = cuisineType;
-    }
-
-    public Integer getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Integer createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Integer getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(Integer updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
     public LocalDateTime getUpdatedAt() {
@@ -119,11 +89,51 @@ public class Restaurant implements IAuditable {
         this.updatedAt = updatedAt;
     }
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCuisineType() {
+        return cuisineType;
+    }
+
+    public void setCuisineType(String cuisineType) {
+        this.cuisineType = cuisineType;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

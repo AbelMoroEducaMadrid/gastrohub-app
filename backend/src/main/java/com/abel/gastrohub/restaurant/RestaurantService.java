@@ -27,9 +27,6 @@ public class RestaurantService {
     }
 
     public Restaurant createRestaurant(Restaurant restaurant) {
-        if (restaurant.getOwner() == null) {
-            throw new IllegalArgumentException("El propietario del restaurante es obligatorio");
-        }
         return restaurantRepository.save(restaurant);
     }
 
@@ -39,11 +36,6 @@ public class RestaurantService {
         restaurant.setName(restaurantDetails.getName());
         restaurant.setAddress(restaurantDetails.getAddress());
         restaurant.setCuisineType(restaurantDetails.getCuisineType());
-        if (restaurantDetails.getOwner() != null) {
-            restaurant.setOwner(restaurantDetails.getOwner());
-        } else {
-            throw new IllegalArgumentException("El propietario del restaurante es obligatorio");
-        }
         return restaurantRepository.save(restaurant);
     }
 

@@ -7,12 +7,11 @@ public class RestaurantRegistrationDTO {
     @NotNull(message = "El nombre no puede ser nulo")
     private String name;
 
-    @NotNull(message = "El ID del propietario no puede ser nulo")
-    private Integer ownerId;
-
     private String address;
 
     private String cuisineType;
+
+    private String description;
 
     // Getters y setters
     public String getName() {
@@ -21,14 +20,6 @@ public class RestaurantRegistrationDTO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(Integer ownerId) {
-        this.ownerId = ownerId;
     }
 
     public String getAddress() {
@@ -45,5 +36,13 @@ public class RestaurantRegistrationDTO {
 
     public void setCuisineType(String cuisineType) {
         this.cuisineType = cuisineType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

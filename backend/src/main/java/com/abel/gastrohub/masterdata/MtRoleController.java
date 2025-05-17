@@ -22,39 +22,20 @@ public class MtRoleController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<List<MtRole>> getAllRoles() {
-        List<MtRole> roles = roleService.getAllRoles();
-        return ResponseEntity.ok(roles);
+        return ResponseEntity.ok(roleService.getAllRoles());
     }
 
     // Obtener un rol por ID
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<MtRole> getRoleById(@PathVariable Integer id) {
-        MtRole role = roleService.getRoleById(id);
-        return ResponseEntity.ok(role);
+        return ResponseEntity.ok(roleService.getRoleById(id));
     }
 
-    // Crear un nuevo rol
-    @PostMapping
+    // Obtener un rol por nombre
+    @GetMapping("/name/{name}")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
-    public ResponseEntity<MtRole> createRole(@RequestBody MtRole role) {
-        MtRole savedRole = roleService.createRole(role);
-        return ResponseEntity.status(201).body(savedRole);
-    }
-
-    // Actualizar un rol
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
-    public ResponseEntity<MtRole> updateRole(@PathVariable Integer id, @RequestBody MtRole roleDetails) {
-        MtRole updatedRole = roleService.updateRole(id, roleDetails);
-        return ResponseEntity.ok(updatedRole);
-    }
-
-    // Eliminar un rol (borrado lógico)
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
-    public ResponseEntity<Void> deleteRole(@PathVariable Integer id) {
-        roleService.deleteRole(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<MtRole> getRoleByName(@PathVariable String name) {
+        return ResponseEntity.ok(roleService.getRoleByName(name));
     }
 }

@@ -3,7 +3,6 @@ package com.abel.gastrohub.restaurant;
 import com.abel.gastrohub.restaurant.dto.RestaurantRegistrationDTO;
 import com.abel.gastrohub.restaurant.dto.RestaurantResponseDTO;
 import com.abel.gastrohub.restaurant.dto.RestaurantUpdateDTO;
-import com.abel.gastrohub.user.User;
 import com.abel.gastrohub.user.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,10 @@ import java.util.stream.Collectors;
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
-    private final UserRepository userRepository;
 
     @Autowired
     public RestaurantController(RestaurantService restaurantService, UserRepository userRepository) {
         this.restaurantService = restaurantService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -50,9 +47,7 @@ public class RestaurantController {
         restaurant.setName(restaurantDTO.getName());
         restaurant.setAddress(restaurantDTO.getAddress());
         restaurant.setCuisineType(restaurantDTO.getCuisineType());
-        User owner = userRepository.findByIdAndDeletedAtIsNull(restaurantDTO.getOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("Propietario no encontrado con ID: " + restaurantDTO.getOwnerId()));
-        restaurant.setOwner(owner);
+        restaurant.setDescription(restaurantDTO.getDescription());
         Restaurant savedRestaurant = restaurantService.createRestaurant(restaurant);
         return ResponseEntity.status(201).body(new RestaurantResponseDTO(savedRestaurant));
     }
@@ -64,9 +59,7 @@ public class RestaurantController {
         restaurant.setName(restaurantDTO.getName());
         restaurant.setAddress(restaurantDTO.getAddress());
         restaurant.setCuisineType(restaurantDTO.getCuisineType());
-        User owner = userRepository.findByIdAndDeletedAtIsNull(restaurantDTO.getOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("Propietario no encontrado con ID: " + restaurantDTO.getOwnerId()));
-        restaurant.setOwner(owner);
+        restaurant.setDescription(restaurantDTO.getDescription());
         Restaurant updatedRestaurant = restaurantService.updateRestaurant(id, restaurant);
         return ResponseEntity.ok(new RestaurantResponseDTO(updatedRestaurant));
     }
