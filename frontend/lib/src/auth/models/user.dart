@@ -31,4 +31,26 @@ class User {
       lastLogin: json['lastLogin'],
     );
   }
+
+  User copyWith({
+    int? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? role,
+    int? restaurantId,
+    String? restaurantName,
+    String? lastLogin,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      role: role ?? this.role,
+      restaurantId: restaurantId ?? this.restaurantId,
+      restaurantName: restaurantName ?? this.restaurantName,
+      lastLogin: lastLogin ?? this.lastLogin,
+    );
+  }
 }

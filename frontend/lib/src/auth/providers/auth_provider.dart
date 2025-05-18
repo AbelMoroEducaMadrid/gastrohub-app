@@ -53,6 +53,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> joinRestaurant(String invitationCode) async {
+    state = AuthState(isLoading: true, user: state.user, token: state.token);
+    try {
+      final token = state.token;
+      if (token == null) {
+        throw Exception('No hay token de autenticación');
+      }
+      final restaurantId =
+          await _authService.joinRestaurant(token, invitationCode);
+      final updatedUser = state.user!.copyWith(restaurantId: restaurantId);
+      state = AuthState(user: updatedUser, token: token);
+    } catch (e) {
+      state =
+          AuthState(error: e.toString(), user: state.user, token: state.token);
+    }
+  }
+
   void logout() {
     state = AuthState();
   }

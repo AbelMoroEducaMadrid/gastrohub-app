@@ -16,22 +16,51 @@ class WelcomeScreen extends ConsumerStatefulWidget {
 class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   final TextEditingController codeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool isJoining = false;
 
   void _createRestaurant() {
     // TODO: Navega a la pantalla de creación de restaurante (a implementar)
     // Navigator.of(context).pushNamed('/create-restaurant');
   }
 
-  void _joinRestaurant() {
+  void _joinRestaurant() async {
     if (_formKey.currentState!.validate()) {
+      setState(() => isJoining = true);
       final code = codeController.text;
-      // TODO: Implementar lógica para unirse a un restaurante con el código
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Uniéndose al restaurante con código: $code')),
-      );
-      // Después de unirse, podrías navegar al dashboard
-      // Navigator.of(context).pushReplacementNamed('/dashboard');
+      try {
+        // Espera a que se complete la llamada asincrónica
+        await ref.read(authProvider.notifier).joinRestaurant(code);
+
+        if (!mounted) return;
+
+        final authState = ref.read(authProvider);
+        if (authState.error != null) {
+          _showErrorDialog(authState.error!);
+        } else {
+          Navigator.of(context).pushReplacementNamed('/dashboard');
+        }
+      } catch (e) {
+        _showErrorDialog(e.toString());
+      } finally {
+        setState(() => isJoining = false);
+      }
     }
+  }
+
+  void _showErrorDialog(String error) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error al unirse al restaurante'),
+        content: Text(error),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -149,10 +178,12 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          CustomButton(
-            text: 'Unirse',
-            onPressed: _joinRestaurant,
-          ),
+          isJoining
+              ? const Center(child: CircularProgressIndicator())
+              : CustomButton(
+                  text: 'Unirse',
+                  onPressed: _joinRestaurant,
+                ),
         ],
       ),
     );
