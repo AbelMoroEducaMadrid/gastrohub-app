@@ -17,19 +17,6 @@ public class UserResponseDTO {
     private String restaurantName;
     private LocalDateTime lastLogin;
 
-    // Constructor para JPQL
-    public UserResponseDTO(Integer id, String name, String email, String phone, String role,
-                           Integer restaurantId, String restaurantName, LocalDateTime lastLogin) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.role = role;
-        this.restaurantId = restaurantId;
-        this.restaurantName = restaurantName;
-        this.lastLogin = lastLogin;
-    }
-
     public UserResponseDTO(User user) {
         this.id = user.getId();
         this.name = user.getName();
@@ -37,6 +24,7 @@ public class UserResponseDTO {
         this.phone = user.getPhone();
         this.role = user.getRole().getName();
         this.restaurantId = user.getRestaurant() != null ? user.getRestaurant().getId() : null;
+        this.restaurantName = user.getRestaurant() != null ? user.getRestaurant().getName() : null;
         this.lastLogin = user.getLastLogin();
     }
 }

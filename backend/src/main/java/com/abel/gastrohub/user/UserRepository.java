@@ -17,8 +17,4 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByIdAndDeletedAtIsNull(Integer id);
 
     Optional<User> findByEmail(String email);
-
-    @Query("SELECT new com.abel.gastrohub.user.dto.UserResponseDTO(u.id, u.name, u.email, u.phone, u.role.name, r.id, r.name, u.lastLogin) " +
-            "FROM User u LEFT JOIN u.restaurant r WHERE u.id = :id AND u.deletedAt IS NULL")
-    Optional<UserResponseDTO> findUserResponseDTOById(@Param("id") Integer id);
 }

@@ -39,11 +39,6 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
     }
 
-    public UserResponseDTO getUserResponseDTOById(Integer id) {
-        return userRepository.findUserResponseDTOById(id)
-                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
-    }
-
     public User createUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("El email " + user.getEmail() + " ya está registrado");

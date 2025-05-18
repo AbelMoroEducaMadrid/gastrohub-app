@@ -49,8 +49,8 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Integer userId = userDetails.getId();
-        UserResponseDTO userDTO = userService.getUserResponseDTOById(userId);
-        return ResponseEntity.ok(userDTO);
+        User user = userService.getUserById(userId);
+        return ResponseEntity.ok(new UserResponseDTO(user));
     }
 
     @PostMapping
