@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
@@ -16,7 +17,6 @@ class RegistrationScreen extends ConsumerStatefulWidget {
 
 class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -78,44 +78,69 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
+    final fillColor = Colors.grey.shade500.withAlpha((255 * 0.5).toInt());
 
     return FormContainer(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: AppTheme.secondaryColor,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       backgroundImage: 'assets/images/background_01.png',
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Registrarse',
-              style: theme.textTheme.headlineLarge
-                  ?.copyWith(color: AppTheme.primaryColor),
-              textAlign: TextAlign.center,
+            SvgPicture.asset(
+              'assets/images/logo.svg',
+              height: 150,
+              semanticsLabel: 'Logo de Gastro & Hub',
+              colorFilter: ColorFilter.mode(
+                AppTheme.secondaryColor,
+                BlendMode.srcIn,
+              ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'GASTRO & HUB',
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  fontSize: 200,
+                  color: AppTheme.secondaryColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 16),
             CustomTextField(
               label: 'Nombre',
               controller: nameController,
+              icon: Icons.person_outline,
+              fillColor: fillColor,
               validator: (value) =>
                   FormValidators.requiredField(value, 'Nombre'),
             ),
             const SizedBox(height: 16),
             CustomTextField(
-              label: 'Apellidos',
-              controller: lastNameController,
-              validator: (value) =>
-                  FormValidators.requiredField(value, 'Apellidos'),
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
               label: 'Correo Electrónico',
               controller: emailController,
+              icon: Icons.email_outlined,
+              fillColor: fillColor,
+              keyboardType: TextInputType.emailAddress,
               validator: FormValidators.emailField,
             ),
             const SizedBox(height: 16),
             CustomTextField(
               label: 'Teléfono',
               controller: phoneController,
+              icon: Icons.phone_outlined,
+              fillColor: fillColor,
+              keyboardType: TextInputType.phone,
               validator: FormValidators.phoneField,
             ),
             const SizedBox(height: 16),
@@ -123,21 +148,27 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
               label: 'Contraseña',
               obscureText: true,
               controller: passwordController,
+              icon: Icons.key,
+              fillColor: fillColor,
+              keyboardType: TextInputType.visiblePassword,
               validator: FormValidators.passwordField,
-              onChanged: (_) => _formKey.currentState?.validate(),
             ),
             const SizedBox(height: 16),
             CustomTextField(
               label: 'Confirmar contraseña',
               obscureText: true,
               controller: confirmPasswordController,
+              icon: Icons.key,
+              fillColor: fillColor,
+              keyboardType: TextInputType.visiblePassword,
               validator: _confirmPasswordValidator,
-              onChanged: (_) => _formKey.currentState?.validate(),
             ),
             const SizedBox(height: 24),
             CustomButton(
               text: 'Registrarse',
               onPressed: _register,
+              iconData: Icons.app_registration,
+              iconPosition: IconPosition.right,
             ),
             const SizedBox(height: 16),
             Row(
@@ -149,8 +180,9 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                       Navigator.of(context).pushReplacementNamed('/login'),
                   child: Text(
                     'Inicia sesión',
-                    style: theme.textTheme.labelLarge
-                        ?.copyWith(color: AppTheme.primaryColor),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: AppTheme.hyperlinkColor,
+                    ),
                   ),
                 ),
               ],

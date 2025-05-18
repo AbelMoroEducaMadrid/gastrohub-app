@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/core/utils/dialog_utils.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
@@ -42,30 +44,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _showErrorDialog(String error) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error de inicio de sesión'),
-        content: Text(error),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
+    final fillColor = Colors.grey.shade500.withAlpha((255 * 0.5).toInt());
 
     if (authState.error != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showErrorDialog(authState.error!);
+        DialogUtils.showErrorDialog(
+          context: context,
+          message: authState.error!,
+          title: 'Error de inicio de sesión',
+        );
       });
     }
 
@@ -76,10 +67,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Image.asset(
-              'assets/images/logo.png',
+            SvgPicture.asset(
+              'assets/images/logo.svg',
               height: 150,
-              semanticLabel: 'Logo de Gastro & Hub',
+              semanticsLabel: 'Logo de Gastro & Hub',
+              colorFilter: ColorFilter.mode(
+                AppTheme.secondaryColor,
+                BlendMode.srcIn,
+              ),
             ),
             const SizedBox(height: 16),
             FittedBox(
@@ -88,25 +83,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 'GASTRO & HUB',
                 style: theme.textTheme.headlineLarge?.copyWith(
                   fontSize: 200,
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.secondaryColor,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 16),
             CustomTextField(
-              label: 'Correo Electrónico',
+              label: 'Correo',
               controller: emailController,
+              icon: Icons.email_outlined,
+              fillColor: fillColor,
               validator: FormValidators.emailField,
-              onChanged: (_) => _formKey.currentState?.validate(),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
             CustomTextField(
               label: 'Contraseña',
               obscureText: true,
               controller: passwordController,
+              icon: Icons.key,
+              fillColor: fillColor,
               validator: FormValidators.passwordField,
-              onChanged: (_) => _formKey.currentState?.validate(),
+              keyboardType: TextInputType.visiblePassword,
             ),
             const SizedBox(height: 8),
             Row(
@@ -122,8 +121,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                   child: Text(
                     'Recuperar',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: AppTheme.primaryColor,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: AppTheme.hyperlinkColor,
                     ),
                   ),
                 ),
@@ -133,6 +132,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             CustomButton(
               text: 'Iniciar sesión',
               onPressed: _validateAndSubmit,
+              iconData: Icons.login,
+              iconPosition: IconPosition.right,
             ),
             const SizedBox(height: 32),
             Row(
@@ -141,20 +142,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    'o si lo prefieres',
+                    'O SI LO PREFIERES',
                     style: theme.textTheme.labelMedium,
                   ),
                 ),
                 const Expanded(child: Divider()),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 32),
             CustomButton(
               text: 'Iniciar sesión con Google',
               iconAssetPath: 'assets/images/google_logo.svg',
               isSvg: true,
               backgroundColor: theme.colorScheme.surface,
-              foregroundColor: AppTheme.textColor,
+              foregroundColor: Colors.blueGrey,
               onPressed: () {
                 // TODO: Add Google sign-in logic
               },
@@ -171,8 +172,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onTap: () => Navigator.of(context).pushNamed('/register'),
                   child: Text(
                     'Regístrate gratis',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: AppTheme.primaryColor,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: AppTheme.hyperlinkColor,
                     ),
                   ),
                 ),

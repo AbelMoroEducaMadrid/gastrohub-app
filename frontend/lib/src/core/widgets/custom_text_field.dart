@@ -8,7 +8,10 @@ class CustomTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final int? minLines;
   final int? maxLines;
-  final bool isTextArea; // Nuevo: indica si es un área de texto
+  final bool isTextArea;
+  final IconData? icon;
+  final TextInputType? keyboardType;
+  final Color? fillColor;
 
   const CustomTextField({
     super.key,
@@ -19,7 +22,10 @@ class CustomTextField extends StatefulWidget {
     this.onChanged,
     this.minLines,
     this.maxLines,
-    this.isTextArea = false, // Por defecto, no es área de texto
+    this.isTextArea = false,
+    this.icon,
+    this.keyboardType,
+    this.fillColor,
   });
 
   @override
@@ -39,30 +45,55 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Decoración condicional: borde solo si es área de texto
-    final inputDecoration = widget.isTextArea
-        ? InputDecoration(
-            labelText: widget.label,
-            border: OutlineInputBorder(), // Borde para área de texto
-            contentPadding: const EdgeInsets.all(12),
+    final prefixIcon = widget.icon != null
+        ? Icon(
+            widget.icon,
+            color: theme.textTheme.bodyMedium?.color,
           )
-        : InputDecoration(
-            labelText: widget.label, // Estilo por defecto para una línea
-          );
+        : null;
+
+    final inputDecoration = InputDecoration(
+      labelText: widget.label,
+      prefixIcon: prefixIcon,
+      suffixIcon: widget.obscureText
+          ? IconButton(
+              icon: Icon(
+                _obscureText ? Icons.visibility_off : Icons.visibility,
+                color: theme.textTheme.bodyMedium?.color,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            )
+          : null,
+      border: widget.isTextArea
+          ? const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            )
+          : const OutlineInputBorder(),
+      contentPadding: widget.isTextArea
+          ? const EdgeInsets.all(12)
+          : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      filled: widget.fillColor != null,
+      fillColor: widget.fillColor ?? theme.inputDecorationTheme.fillColor,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: widget.controller,
         obscureText: _obscureText,
-        cursorColor: theme.primaryColor,
+        cursorColor: theme.textTheme.bodyMedium?.color,
         style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         validator: widget.validator,
         onChanged: widget.onChanged,
-        minLines: widget.minLines ?? 1,
-        maxLines: widget.maxLines ?? 1,
+        minLines: widget.isTextArea ? (widget.minLines ?? 3) : 1,
+        maxLines: widget.isTextArea ? (widget.maxLines ?? 5) : 1,
         decoration: inputDecoration,
         autovalidateMode: AutovalidateMode.onUserInteraction,
+        keyboardType: widget.keyboardType,
       ),
     );
   }

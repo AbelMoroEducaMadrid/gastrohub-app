@@ -110,7 +110,7 @@ class _RestaurantRegistrationScreenState
             CustomButton(
               text: 'Registrar Restaurante',
               onPressed: _registerRestaurant,
-            ),    
+            ),
           ],
         ),
       ),
