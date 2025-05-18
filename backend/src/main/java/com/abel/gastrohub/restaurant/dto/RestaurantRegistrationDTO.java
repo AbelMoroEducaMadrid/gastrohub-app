@@ -17,5 +17,4 @@ public class RestaurantRegistrationDTO {
     private String cuisineType;
 
     private String description;
-
 }

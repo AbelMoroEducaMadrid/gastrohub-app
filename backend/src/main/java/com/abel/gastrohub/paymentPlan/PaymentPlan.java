@@ -1,7 +1,6 @@
-package com.abel.gastrohub.restaurant;
+package com.abel.gastrohub.paymentPlan;
 
-import com.abel.gastrohub.paymentPlan.PaymentPlan;
-import com.abel.gastrohub.user.User;
+import com.abel.gastrohub.restaurant.Restaurant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,14 +12,14 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Setter
 @Getter
+@Setter
 @Entity
-@Table(name = "restaurants")
-public class Restaurant {
-
+@Table(name = "payment_plans")
+public class PaymentPlan {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payment_plans_id_gen")
+    @SequenceGenerator(name = "payment_plans_id_gen", sequenceName = "payment_plans_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -29,19 +28,24 @@ public class Restaurant {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "address", nullable = false)
-    private String address;
-
-    @Size(max = 100)
-    @NotNull
-    @Column(name = "cuisine_type", nullable = false, length = 100)
-    private String cuisineType;
-
     @NotNull
     @Column(name = "description", nullable = false, length = Integer.MAX_VALUE)
     private String description;
+
+    @NotNull
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    private Float price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "billing_cycle", columnDefinition = "billing_cycle")
+    private BillingCycle billingCycle;
+
+    @Column(name = "max_users")
+    private Integer maxUsers;
+
+    @ColumnDefault("true")
+    @Column(name = "is_visible")
+    private Boolean isVisible;
 
     @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
@@ -56,23 +60,8 @@ public class Restaurant {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @OneToMany(mappedBy = "restaurant")
-    private Set<User> users = new LinkedHashSet<>();
-
-    @Size(max = 20)
-    @Column(name = "invitation_code", length = 20)
-    private String invitationCode;
-
-    @Column(name = "invitation_expires_at")
-    private LocalDateTime invitationExpiresAt;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "payment_plan_id")
-    private PaymentPlan paymentPlan;
-
-    @ColumnDefault("false")
-    @Column(name = "paid")
-    private Boolean paid;
+    @OneToMany(mappedBy = "paymentPlan")
+    private Set<Restaurant> restaurants = new LinkedHashSet<>();
 
     @PrePersist
     public void prePersist() {

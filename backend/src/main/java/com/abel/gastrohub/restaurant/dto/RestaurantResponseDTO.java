@@ -17,6 +17,7 @@ public class RestaurantResponseDTO {
     private String description;
     private String invitation_code;
     private LocalDateTime invitation_expires_at;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
