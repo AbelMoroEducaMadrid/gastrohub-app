@@ -24,6 +24,9 @@ CREATE TYPE payment_method AS ENUM ('cash', 'card', 'mobile', 'voucher');
 CREATE TYPE reservation_state AS ENUM ('pending', 'confirmed', 'cancelled', 'no_show', 'completed');
 -- Estados de una reserva: pendiente, confirmada, cancelada, no presentada, completada
 
+CREATE TYPE billing_cycle AS ENUM ('monthly', 'yearly');
+-- Periodicidad de facturación: mensual, anual
+
 -- ### Tablas Maestras (mt_*)
 -- Contienen datos de referencia que no cambian frecuentemente.
 CREATE TABLE mt_units (
@@ -43,6 +46,20 @@ CREATE TABLE mt_attributes (
     description TEXT NOT NULL -- Descripción del atributo
 );
 
+-- ### Planes de pago
+CREATE TABLE payment_plans (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, -- Nombre del plan (Ej: Básico, Pro, Premium)
+    description TEXT NOT NULL,  -- Descripción del plan
+    price DECIMAL(10, 2) NOT NULL, -- Precio en euros
+    billing_cycle billing_cycle, -- Periodicidad
+    max_users INT, -- Máximo de usuarios permitidos
+    is_visible BOOLEAN DEFAULT TRUE, -- Si el plan se muestra en la interfaz
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP -- Fecha de eliminación (para borrado lógico)
+);
+
 -- ### Restaurantes
 -- Información básica de cada restaurante.
 CREATE TABLE restaurants (
@@ -53,9 +70,12 @@ CREATE TABLE restaurants (
     description TEXT NOT NULL, -- Descripción del restaurante    
     invitation_code VARCHAR(20) UNIQUE, -- Código de invitación visible
     invitation_expires_at TIMESTAMP, -- Fecha de expiración del código
+	payment_plan_id INT,
+	paid BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- Fecha de creación
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- Fecha de última actualización
-    deleted_at TIMESTAMP -- Fecha de eliminación (para borrado lógico)
+    deleted_at TIMESTAMP, -- Fecha de eliminación (para borrado lógico)
+	FOREIGN KEY (payment_plan_id) REFERENCES payment_plans(id)
 );
 
 -- ### Usuarios
