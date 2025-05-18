@@ -60,9 +60,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (token == null) {
         throw Exception('No hay token de autenticación');
       }
-      final restaurantId =
-          await _authService.joinRestaurant(token, invitationCode);
-      final updatedUser = state.user!.copyWith(restaurantId: restaurantId);
+
+      // Esperamos una respuesta tipo: {"restaurantId": 1, "restaurantName": "La Trattoria"}
+      final response = await _authService.joinRestaurant(token, invitationCode);
+      final restaurantId = response['restaurantId'];
+      final restaurantName = response['restaurantName'];
+
+      final updatedUser = state.user!.copyWith(
+        restaurantId: restaurantId,
+        restaurantName: restaurantName,
+      );
+
       state = AuthState(user: updatedUser, token: token);
     } catch (e) {
       state =

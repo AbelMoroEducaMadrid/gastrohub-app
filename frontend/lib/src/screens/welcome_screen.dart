@@ -27,8 +27,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => isJoining = true);
       final code = codeController.text;
-      try {
-        // Espera a que se complete la llamada asincrónica
+      try {        
         await ref.read(authProvider.notifier).joinRestaurant(code);
 
         if (!mounted) return;

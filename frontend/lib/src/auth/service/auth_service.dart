@@ -65,7 +65,8 @@ class AuthService {
     }
   }
 
-  Future<int> joinRestaurant(String token, String invitationCode) async {
+  Future<Map<String, dynamic>> joinRestaurant(
+      String token, String invitationCode) async {
     final url = Uri.parse('$baseUrl/api/users/join-restaurant');
     final response = await http.post(
       url,
@@ -78,7 +79,7 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['restaurantId'] as int;
+      return data;
     } else {
       final errorData = jsonDecode(response.body);
       throw Exception(errorData['message'] ?? 'Error al unirse al restaurante');
