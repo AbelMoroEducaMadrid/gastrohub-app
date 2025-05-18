@@ -12,6 +12,4 @@ public interface PaymentPlanRepository extends JpaRepository<PaymentPlan, Intege
     List<PaymentPlan> findByDeletedAtIsNull();
 
     Optional<PaymentPlan> findByIdAndDeletedAtIsNull(Integer id);
-
-    List<PaymentPlan> findByIsVisibleTrueAndDeletedAtIsNull();
 }

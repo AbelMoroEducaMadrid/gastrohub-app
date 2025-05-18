@@ -1,9 +1,10 @@
 package com.abel.gastrohub.paymentPlan.dto;
 
-import com.abel.gastrohub.paymentPlan.BillingCycle;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Setter
 @Getter
@@ -13,11 +14,9 @@ public class PaymentPlanUpdateDTO {
 
     private String description;
 
-    private Float price;
+    private BigDecimal monthlyPrice;
 
-    private BillingCycle billingCycle;
+    private Integer yearlyDiscount;
 
     private Integer maxUsers;
-
-    private Boolean isVisible;
 }

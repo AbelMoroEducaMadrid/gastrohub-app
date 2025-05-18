@@ -1,9 +1,10 @@
 package com.abel.gastrohub.paymentPlan.dto;
 
-import com.abel.gastrohub.paymentPlan.BillingCycle;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Setter
 @Getter
@@ -14,13 +15,11 @@ public class PaymentPlanRegistrationDTO {
     @NotNull(message = "La descripción no puede ser nula")
     private String description;
 
-    @NotNull(message = "El precio no puede ser nulo")
-    private Float price;
+    @NotNull(message = "El precio mensual no puede ser nulo")
+    private BigDecimal monthlyPrice;
 
-    @NotNull(message = "El ciclo de facturación no puede ser nulo")
-    private BillingCycle billingCycle;
+    @NotNull(message = "El descuento anual no puede ser nulo")
+    private Integer yearlyDiscount;
 
     private Integer maxUsers;
-
-    private Boolean isVisible;
 }

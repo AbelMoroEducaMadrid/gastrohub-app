@@ -34,10 +34,9 @@ public class PaymentPlanService {
         PaymentPlan paymentPlan = getPaymentPlanById(id);
         paymentPlan.setName(paymentPlanDetails.getName());
         paymentPlan.setDescription(paymentPlanDetails.getDescription());
-        paymentPlan.setPrice(paymentPlanDetails.getPrice());
-        paymentPlan.setBillingCycle(paymentPlanDetails.getBillingCycle());
+        paymentPlan.setMonthlyPrice(paymentPlanDetails.getMonthlyPrice());
+        paymentPlan.setYearlyDiscount(paymentPlanDetails.getYearlyDiscount());
         paymentPlan.setMaxUsers(paymentPlanDetails.getMaxUsers());
-        paymentPlan.setIsVisible(paymentPlanDetails.getIsVisible());
         return paymentPlanRepository.save(paymentPlan);
     }
 
@@ -45,9 +44,5 @@ public class PaymentPlanService {
         PaymentPlan paymentPlan = getPaymentPlanById(id);
         paymentPlan.setDeletedAt(LocalDateTime.now());
         return paymentPlanRepository.save(paymentPlan);
-    }
-
-    public List<PaymentPlan> getVisiblePaymentPlans() {
-        return paymentPlanRepository.findByIsVisibleTrueAndDeletedAtIsNull();
     }
 }

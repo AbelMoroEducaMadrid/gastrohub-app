@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,9 +18,9 @@ import java.util.Set;
 @Entity
 @Table(name = "payment_plans")
 public class PaymentPlan {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payment_plans_id_gen")
-    @SequenceGenerator(name = "payment_plans_id_gen", sequenceName = "payment_plans_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -33,19 +34,16 @@ public class PaymentPlan {
     private String description;
 
     @NotNull
-    @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    private Float price;
+    @Column(name = "monthly_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal monthlyPrice;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "billing_cycle", columnDefinition = "billing_cycle")
-    private BillingCycle billingCycle;
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "yearly_discount", nullable = false)
+    private Integer yearlyDiscount;
 
     @Column(name = "max_users")
     private Integer maxUsers;
-
-    @ColumnDefault("true")
-    @Column(name = "is_visible")
-    private Boolean isVisible;
 
     @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
@@ -73,5 +71,4 @@ public class PaymentPlan {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
 }

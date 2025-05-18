@@ -24,7 +24,7 @@ public class PaymentPlanController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
+    @PreAuthorize("isAuthenticated()")
     public List<PaymentPlanResponseDTO> getAllPaymentPlans() {
         return paymentPlanService.getAllPaymentPlans().stream()
                 .map(PaymentPlanResponseDTO::new)
@@ -32,7 +32,7 @@ public class PaymentPlanController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PaymentPlanResponseDTO> getPaymentPlanById(@PathVariable Integer id) {
         PaymentPlan paymentPlan = paymentPlanService.getPaymentPlanById(id);
         return ResponseEntity.ok(new PaymentPlanResponseDTO(paymentPlan));
@@ -44,10 +44,9 @@ public class PaymentPlanController {
         PaymentPlan paymentPlan = new PaymentPlan();
         paymentPlan.setName(paymentPlanDTO.getName());
         paymentPlan.setDescription(paymentPlanDTO.getDescription());
-        paymentPlan.setPrice(paymentPlanDTO.getPrice());
-        paymentPlan.setBillingCycle(paymentPlanDTO.getBillingCycle());
+        paymentPlan.setMonthlyPrice(paymentPlanDTO.getMonthlyPrice());
+        paymentPlan.setYearlyDiscount(paymentPlanDTO.getYearlyDiscount());
         paymentPlan.setMaxUsers(paymentPlanDTO.getMaxUsers());
-        paymentPlan.setIsVisible(paymentPlanDTO.getIsVisible());
         PaymentPlan savedPaymentPlan = paymentPlanService.createPaymentPlan(paymentPlan);
         return ResponseEntity.status(201).body(new PaymentPlanResponseDTO(savedPaymentPlan));
     }
@@ -55,13 +54,12 @@ public class PaymentPlanController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<PaymentPlanResponseDTO> updatePaymentPlan(@PathVariable Integer id, @Valid @RequestBody PaymentPlanUpdateDTO paymentPlanDTO) {
-        PaymentPlan paymentPlan = new PaymentPlan();
+        PaymentPlan paymentPlan = paymentPlanService.getPaymentPlanById(id);
         paymentPlan.setName(paymentPlanDTO.getName());
         paymentPlan.setDescription(paymentPlanDTO.getDescription());
-        paymentPlan.setPrice(paymentPlanDTO.getPrice());
-        paymentPlan.setBillingCycle(paymentPlanDTO.getBillingCycle());
+        paymentPlan.setMonthlyPrice(paymentPlanDTO.getMonthlyPrice());
+        paymentPlan.setYearlyDiscount(paymentPlanDTO.getYearlyDiscount());
         paymentPlan.setMaxUsers(paymentPlanDTO.getMaxUsers());
-        paymentPlan.setIsVisible(paymentPlanDTO.getIsVisible());
         PaymentPlan updatedPaymentPlan = paymentPlanService.updatePaymentPlan(id, paymentPlan);
         return ResponseEntity.ok(new PaymentPlanResponseDTO(updatedPaymentPlan));
     }
@@ -71,13 +69,5 @@ public class PaymentPlanController {
     public ResponseEntity<PaymentPlanResponseDTO> deletePaymentPlan(@PathVariable Integer id) {
         PaymentPlan deletedPaymentPlan = paymentPlanService.deletePaymentPlan(id);
         return ResponseEntity.ok(new PaymentPlanResponseDTO(deletedPaymentPlan));
-    }
-
-    @GetMapping("/visible")
-    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM', 'OWNER')")
-    public List<PaymentPlanResponseDTO> getVisiblePaymentPlans() {
-        return paymentPlanService.getVisiblePaymentPlans().stream()
-                .map(PaymentPlanResponseDTO::new)
-                .collect(Collectors.toList());
     }
 }
