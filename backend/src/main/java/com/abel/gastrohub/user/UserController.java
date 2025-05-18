@@ -1,8 +1,8 @@
 package com.abel.gastrohub.user;
 
 import com.abel.gastrohub.security.CustomUserDetails;
-import com.abel.gastrohub.user.dto.UserJoinRestaurantDTO;
 import com.abel.gastrohub.user.dto.UserChangePasswordDTO;
+import com.abel.gastrohub.user.dto.UserJoinRestaurantDTO;
 import com.abel.gastrohub.user.dto.UserJoinRestaurantResponseDTO;
 import com.abel.gastrohub.user.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;

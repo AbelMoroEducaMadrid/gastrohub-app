@@ -4,7 +4,6 @@ import com.abel.gastrohub.masterdata.MtRole;
 import com.abel.gastrohub.masterdata.MtRoleRepository;
 import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.restaurant.RestaurantRepository;
-import com.abel.gastrohub.user.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
