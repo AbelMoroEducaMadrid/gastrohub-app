@@ -31,12 +31,18 @@ INSERT INTO mt_attributes (name, description) VALUES
     ('Contiene lactosa', 'Contiene productos lácteos'),
     ('Contiene frutos secos', 'Contiene almendras, nueces, etc.');
 
+INSERT INTO payment_plans (name, description, price, billing_cycle, max_users, is_visible) VALUES
+	('Básico', 'Ideal para pequeños negocios que necesitan gestionar mesas y pedidos de manera eficiente.', 9.99, 'monthly', 5, true),
+	('Avanzado', 'Perfecto para negocios en expansión que requieren gestión de inventario y control adicional.', 24.99, 'monthly', 15, true),
+	('Pro', 'Diseñado para negocios en crecimiento que buscan análisis predictivo y optimización operativa.', 39.99, 'monthly', 25, true),
+	('Premium', 'Para grandes negocios o cadenas que necesitan todas las funciones y soporte prioritario.', 69.99, 'monthly', 35, true),
+	('Personalizado', 'Plan a medida para necesidades específicas. Contáctanos para más detalles.', 0.00, 'monthly', NULL, false);
+
 -- Restaurantes
-INSERT INTO restaurants (name, address, cuisine_type, description) VALUES
-    ('La Trattoria', 'Calle Falsa 123, Ciudad', 'Italiana', 'Restaurante italiano con ambiente familiar y auténtica cocina italiana');
+INSERT INTO restaurants (name, address, cuisine_type, description, payment_plan_id, paid) VALUES
+    ('La Trattoria', 'Calle Falsa 123, Ciudad', 'Italiana', 'Restaurante italiano con ambiente familiar y auténtica cocina italiana', 4, true);
 
 -- Usuarios
--- Nota: password_hash es un placeholder. En producción, usa un hash real (ej. bcrypt).
 INSERT INTO users (name, email, password_hash, role_id, phone, restaurant_id, verified) VALUES
     ('Admin', 'admin@trattoria.com', 'hash_admin', 1, '123456789', NULL, true), -- ROLE_ADMIN
     ('Propietario', 'owner@trattoria.com', 'hash_owner', 4, '987654321', 1, true), -- ROLE_OWNER
