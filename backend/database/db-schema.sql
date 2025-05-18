@@ -51,10 +51,9 @@ CREATE TABLE payment_plans (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL, -- Nombre del plan (Ej: Básico, Pro, Premium)
     description TEXT NOT NULL,  -- Descripción del plan
-    price DECIMAL(10, 2) NOT NULL, -- Precio en euros
-    billing_cycle billing_cycle, -- Periodicidad
+    monthly_price DECIMAL(10, 2) NOT NULL, -- Precio en euros
+	yearly_discount INT NOT NULL DEFAULT 0, -- Descuento si se paga anualmente    
     max_users INT, -- Máximo de usuarios permitidos
-    is_visible BOOLEAN DEFAULT TRUE, -- Si el plan se muestra en la interfaz
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP -- Fecha de eliminación (para borrado lógico)

@@ -31,12 +31,12 @@ INSERT INTO mt_attributes (name, description) VALUES
     ('Contiene lactosa', 'Contiene productos lácteos'),
     ('Contiene frutos secos', 'Contiene almendras, nueces, etc.');
 
-INSERT INTO payment_plans (name, description, price, billing_cycle, max_users, is_visible) VALUES
-	('Básico', 'Ideal para pequeños negocios que necesitan gestionar mesas y pedidos de manera eficiente.', 9.99, 'monthly', 5, true),
-	('Avanzado', 'Perfecto para negocios en expansión que requieren gestión de inventario y control adicional.', 24.99, 'monthly', 15, true),
-	('Pro', 'Diseñado para negocios en crecimiento que buscan análisis predictivo y optimización operativa.', 39.99, 'monthly', 25, true),
-	('Premium', 'Para grandes negocios o cadenas que necesitan todas las funciones y soporte prioritario.', 69.99, 'monthly', 35, true),
-	('Personalizado', 'Plan a medida para necesidades específicas. Contáctanos para más detalles.', 0.00, 'monthly', NULL, false);
+INSERT INTO payment_plans (name, description, monthly_price, max_users) VALUES
+	('Básico', 'Ideal para pequeños negocios que necesitan gestionar mesas y pedidos de manera eficiente.', 9.99, 5),
+	('Avanzado', 'Perfecto para negocios en expansión que requieren gestión de inventario y control adicional.', 24.99, 15),
+	('Pro', 'Diseñado para negocios en crecimiento que buscan análisis predictivo y optimización operativa.', 39.99, 25),
+	('Premium', 'Para grandes negocios o cadenas que necesitan todas las funciones y soporte prioritario.', 69.99, 35),
+	('Personalizado', 'Plan a medida para necesidades específicas. Contáctanos para más detalles.', 0.00, NULL);
 
 -- Restaurantes
 INSERT INTO restaurants (name, address, cuisine_type, description, payment_plan_id, paid) VALUES
