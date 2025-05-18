@@ -19,15 +19,14 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   bool isJoining = false;
 
   void _createRestaurant() {
-    // TODO: Navega a la pantalla de creación de restaurante (a implementar)
-    // Navigator.of(context).pushNamed('/create-restaurant');
+    Navigator.of(context).pushNamed('/select-plan');
   }
 
   void _joinRestaurant() async {
     if (_formKey.currentState!.validate()) {
       setState(() => isJoining = true);
       final code = codeController.text;
-      try {        
+      try {
         await ref.read(authProvider.notifier).joinRestaurant(code);
 
         if (!mounted) return;
