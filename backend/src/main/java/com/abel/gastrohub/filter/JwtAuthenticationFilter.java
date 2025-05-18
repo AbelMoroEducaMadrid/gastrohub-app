@@ -73,6 +73,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             } catch (Exception e) {
                 System.out.println("Error al procesar el token: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token inválido o expirado");
+                return; // Stop filter chain
             }
         } else {
             System.out.println("No se encontró token en la solicitud");

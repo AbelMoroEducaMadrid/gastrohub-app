@@ -4,437 +4,381 @@ DROP SCHEMA IF EXISTS public CASCADE;
 -- Recrear el esquema 'public'
 CREATE SCHEMA public;
 
--- Unidades de medida
+-- ### Tipos Enumerados (ENUM)
+-- Estos tipos restringen los valores permitidos para mejorar la integridad de los datos.
+CREATE TYPE order_state AS ENUM ('pending', 'in_progress', 'served', 'cancelled');
+-- Estados posibles de una comanda: pendiente, en progreso, servida, cancelada
+
+CREATE TYPE order_item_state AS ENUM ('waiting', 'preparing', 'ready', 'delivered', 'cancelled');
+-- Estados de un ítem en una comanda: esperando, preparándose, listo, entregado, cancelado
+
+CREATE TYPE table_state AS ENUM ('available', 'occupied', 'reserved', 'cleaning', 'disabled');
+-- Estados de una mesa: disponible, ocupada, reservada, en limpieza, deshabilitada
+
+CREATE TYPE payment_state AS ENUM ('pending', 'completed', 'failed', 'cancelled');
+-- Estados de pago: pendiente, completado, fallido, cancelado
+
+CREATE TYPE payment_method AS ENUM ('cash', 'card', 'mobile', 'voucher');
+-- Métodos de pago: efectivo, tarjeta, móvil, vale
+
+CREATE TYPE reservation_state AS ENUM ('pending', 'confirmed', 'cancelled', 'no_show', 'completed');
+-- Estados de una reserva: pendiente, confirmada, cancelada, no presentada, completada
+
+CREATE TYPE billing_cycle AS ENUM ('monthly', 'yearly');
+-- Periodicidad de facturación: mensual, anual
+
+-- ### Tablas Maestras (mt_*)
+-- Contienen datos de referencia que no cambian frecuentemente.
 CREATE TABLE mt_units (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,
-    symbol VARCHAR(10) UNIQUE NOT NULL
+    name VARCHAR(50) UNIQUE NOT NULL, -- Nombre de la unidad (ej. 'Kilogramo')
+    symbol VARCHAR(10) UNIQUE NOT NULL -- Símbolo de la unidad (ej. 'kg')
 );
 
--- Métodos de pago
-CREATE TABLE mt_payment_methods (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,
-    description TEXT
-);
-
--- Roles
 CREATE TABLE mt_roles (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP
+    name VARCHAR(50) UNIQUE NOT NULL -- Nombre del rol (ej. 'ROLE_ADMIN')
 );
 
--- Tipos de atributos
-CREATE TABLE mt_attribute_types (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP
-);
-
--- Atributos
 CREATE TABLE mt_attributes (
     id SERIAL PRIMARY KEY,
-    type_id INT NOT NULL,
-    name VARCHAR(100) UNIQUE NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (type_id) REFERENCES mt_attribute_types(id)
+    name VARCHAR(100) UNIQUE NOT NULL, -- Nombre del atributo (ej. 'Sin gluten')
+    description TEXT NOT NULL -- Descripción del atributo
 );
 
--- Usuarios
-CREATE TABLE users (
+-- ### Planes de pago
+CREATE TABLE payment_plans (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    phone VARCHAR(50),
-    restaurant_id INT,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    last_login TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
+    name VARCHAR(255) NOT NULL, -- Nombre del plan (Ej: Básico, Pro, Premium)
+    description TEXT NOT NULL,  -- Descripción del plan
+    monthly_price DECIMAL(10, 2) NOT NULL, -- Precio en euros
+	yearly_discount INT NOT NULL DEFAULT 0, -- Descuento si se paga anualmente    
+    max_users INT, -- Máximo de usuarios permitidos
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP -- Fecha de eliminación (para borrado lógico)
 );
 
--- Relación entre usuarios y roles
-CREATE TABLE rel_user_roles (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    role_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (role_id) REFERENCES mt_roles(id)
-);
-
--- Restaurantes
+-- ### Restaurantes
+-- Información básica de cada restaurante.
 CREATE TABLE restaurants (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,    
-	owner_id INT NOT NULL,
-    address VARCHAR(255),
-    cuisine_type VARCHAR(100),
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (owner_id) REFERENCES users(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
+    name VARCHAR(255) NOT NULL, -- Nombre del restaurante
+    address VARCHAR(255) NOT NULL, -- Dirección
+    cuisine_type VARCHAR(100) NOT NULL, -- Tipo de cocina (ej. 'Italiana')
+    description TEXT NOT NULL, -- Descripción del restaurante    
+    invitation_code VARCHAR(20) UNIQUE, -- Código de invitación visible
+    invitation_expires_at TIMESTAMP, -- Fecha de expiración del código
+	payment_plan_id INT,
+	paid BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- Fecha de creación
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- Fecha de última actualización
+    deleted_at TIMESTAMP, -- Fecha de eliminación (para borrado lógico)
+	FOREIGN KEY (payment_plan_id) REFERENCES payment_plans(id)
 );
 
--- Alter table para añadir las FK que faltan
-ALTER TABLE users
-ADD FOREIGN KEY (restaurant_id) REFERENCES restaurants(id);
+-- ### Usuarios
+-- Empleados y administradores del sistema.
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, -- Nombre del usuario
+    email VARCHAR(255) UNIQUE NOT NULL, -- Email único
+    password_hash VARCHAR(255) NOT NULL, -- Hash de la contraseña
+	verified BOOLEAN DEFAULT FALSE NOT NULL, -- Para la verificación con email
+    role_id INT NOT NULL, -- ID del rol (referencia a mt_roles)
+    phone VARCHAR(50) UNIQUE, -- Teléfono (único, aunque podría ser NULL)
+    restaurant_id INT, -- ID del restaurante al que pertenece (NULL para administradores generales)
+    last_login TIMESTAMP, -- Fecha del último login
+    failed_login_attempts INTEGER DEFAULT 0 NOT NULL, -- Intentos fallidos de login
+    locked_until TIMESTAMP, -- Fecha hasta la cual la cuenta está bloqueada
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES mt_roles(id),
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+);
 
--- Diseños (Layouts)
+-- ### Diseños (Layouts)
+-- Planos de las áreas del restaurante (ej. 'Planta Baja', 'Terraza').
 CREATE TABLE layouts (
     id SERIAL PRIMARY KEY,
-    restaurant_id INT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Mesas
-CREATE TABLE tables (
-    id SERIAL PRIMARY KEY,
-    layout_id INT NOT NULL,
-    number INT NOT NULL,
-    state VARCHAR(50) DEFAULT 'available',
-    capacity INT NOT NULL,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (layout_id) REFERENCES layouts(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Órdenes
-CREATE TABLE orders (
-    id SERIAL PRIMARY KEY,
-    restaurant_id INT NOT NULL,
-    table_id INT, -- NULL para comandas de barra
-    state VARCHAR(50) DEFAULT 'pending',
-    notes TEXT,
-    urgent BOOLEAN DEFAULT FALSE,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (table_id) REFERENCES tables(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Ocupaciones de mesas
-CREATE TABLE table_occupations (
-    id SERIAL PRIMARY KEY,
-    table_id INT NOT NULL,
-    order_id INT,
-    occupied_at TIMESTAMP NOT NULL,
-    released_at TIMESTAMP,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    FOREIGN KEY (table_id) REFERENCES tables(id),
-    FOREIGN KEY (order_id) REFERENCES orders(id)
-);
-
--- Reservas
-CREATE TABLE reservations (
-    id SERIAL PRIMARY KEY,
-    table_id INT NOT NULL,
-    date DATE NOT NULL,
-    time TIME NOT NULL,
-    number_of_people INT NOT NULL,
-    customer_name VARCHAR(255),
-    customer_contact VARCHAR(255),
-    state VARCHAR(50) DEFAULT 'pending',
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (table_id) REFERENCES tables(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Ingredientes
-CREATE TABLE ingredients (
-    id SERIAL PRIMARY KEY,
-    restaurant_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    unit_id INT NOT NULL,
-    quantity FLOAT NOT NULL,
-    capacity FLOAT NOT NULL,
-    cost_per_unit DECIMAL(10,2) NOT NULL,
-    min_level FLOAT,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (unit_id) REFERENCES mt_units(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Relación ingredientes-atributos
-CREATE TABLE rel_ingredient_attributes (
-    id SERIAL PRIMARY KEY,
-    ingredient_id INT NOT NULL,
-    attribute_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id),
-    FOREIGN KEY (attribute_id) REFERENCES mt_attributes(id)
-);
-
--- Productos preparados
-CREATE TABLE prepared_products (
-    id SERIAL PRIMARY KEY,
-    restaurant_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    unit_id INT NOT NULL,
-    quantity FLOAT NOT NULL,
-    capacity FLOAT NOT NULL,
-    cost DECIMAL(10,2),
-    min_level FLOAT,
-    preparation_time INT,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (unit_id) REFERENCES mt_units(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Contextos de menú
-CREATE TABLE menu_contexts (
-    id SERIAL PRIMARY KEY,
-    restaurant_id INT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    active_from TIME,
-    active_to TIME,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
+    restaurant_id INT NOT NULL, -- ID del restaurante
+    name VARCHAR(100) NOT NULL, -- Nombre del diseño (ej. 'Planta Baja')
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
 );
 
--- Categorías de menú
+-- ### Mesas
+-- Mesas físicas en cada diseño del restaurante.
+CREATE TABLE tables (
+    id SERIAL PRIMARY KEY,
+    layout_id INT NOT NULL, -- ID del diseño al que pertenece
+    number INT NOT NULL, -- Número de la mesa (único por diseño)
+    state table_state NOT NULL, -- Estado actual de la mesa
+    capacity INT NOT NULL, -- Capacidad máxima de personas
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    UNIQUE (layout_id, number), -- Asegura que el número de mesa sea único por diseño
+    FOREIGN KEY (layout_id) REFERENCES layouts(id)
+);
+
+-- ### Reservas
+-- Reservas de mesas por clientes.
+CREATE TABLE reservations (
+    id SERIAL PRIMARY KEY,
+    restaurant_id INT NOT NULL, -- ID del restaurante
+    reserved_at TIMESTAMP NOT NULL, -- Fecha y hora de la reserva
+    customer_name VARCHAR(255) NOT NULL, -- Nombre del cliente
+    customer_contact VARCHAR(255), -- Contacto del cliente (podría ser obligatorio)
+    number_of_people INT NOT NULL, -- Número de personas
+    state reservation_state NOT NULL, -- Estado de la reserva
+    notes TEXT, -- Notas adicionales
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+);
+
+-- ### Relación Reservas-Mesas
+-- Mesas asignadas a una reserva.
+CREATE TABLE rel_reservation_tables (
+    reservation_id INT NOT NULL,
+    table_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    PRIMARY KEY (reservation_id, table_id), -- Clave compuesta para evitar duplicados
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id),
+    FOREIGN KEY (table_id) REFERENCES tables(id)
+);
+
+-- ### Comandas
+-- Pedidos realizados por los clientes.
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    restaurant_id INT NOT NULL, -- ID del restaurante
+    state order_state NOT NULL, -- Estado de la comanda
+    notes TEXT, -- Notas adicionales
+    urgent BOOLEAN DEFAULT FALSE, -- Si es urgente
+    payment_state payment_state NOT NULL, -- Estado del pago
+    payment_method payment_method NOT NULL, -- Método de pago    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+);
+
+-- ### Relación Comandas-Mesas
+-- Mesas asociadas a una comanda.
+CREATE TABLE rel_order_tables (
+    order_id INT NOT NULL,
+    table_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    PRIMARY KEY (order_id, table_id), -- Clave compuesta
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (table_id) REFERENCES tables(id)
+);
+
+-- ### Categorías de Menú
+-- Categorías para organizar los productos (ej. 'Antipasti', 'Pizzas').
 CREATE TABLE menu_categories (
     id SERIAL PRIMARY KEY,
-    restaurant_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    available BOOLEAN DEFAULT TRUE,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
+    restaurant_id INT NOT NULL, -- ID del restaurante
+    name VARCHAR(255) NOT NULL, -- Nombre de la categoría
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+);
+
+-- ### Ingredientes
+-- Ingredientes usados en los productos.
+CREATE TABLE ingredients (
+    id SERIAL PRIMARY KEY,
+    restaurant_id INT NOT NULL, -- ID del restaurante
+    name VARCHAR(255) NOT NULL, -- Nombre del ingrediente
+    unit_id INT NOT NULL, -- ID de la unidad de medida (referencia a mt_units)
+    stock DECIMAL(10, 2) NOT NULL, -- Cantidad en inventario
+    cost_per_unit DECIMAL(10, 2) NOT NULL, -- Costo por unidad
+    min_stock DECIMAL(10, 2), -- Nivel mínimo para reordenar
+    is_composite BOOLEAN DEFAULT FALSE NOT NULL, -- Si es un ingrediente compuesto (ej. 'Salsa de tomate')
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Ítems de menú
-CREATE TABLE menu_items (
-    id SERIAL PRIMARY KEY,
-    category_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    available BOOLEAN DEFAULT TRUE,
-	is_kitchen BOOLEAN DEFAULT TRUE,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES menu_categories(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Relación ítems de menú-atributos
-CREATE TABLE rel_menu_item_attributes (
-    id SERIAL PRIMARY KEY,
-    menu_item_id INT NOT NULL,
-    attribute_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id),
-    FOREIGN KEY (attribute_id) REFERENCES mt_attributes(id)
-);
-
--- Asignaciones de menú
-CREATE TABLE menu_assignments (
-    id SERIAL PRIMARY KEY,
-    menu_context_id INT NOT NULL,
-    menu_item_id INT NOT NULL,
-    price DECIMAL(10,2),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (menu_context_id) REFERENCES menu_contexts(id),
-    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id)
-);
-
--- Relación consumos de ítems de menú
-CREATE TABLE rel_menu_item_consumptions (
-    id SERIAL PRIMARY KEY,
-    menu_item_id INT NOT NULL,
-    ingredient_id INT,
-    prepared_product_id INT,
-    quantity FLOAT NOT NULL,
-    unit_id INT NOT NULL,
-    CONSTRAINT check_one_not_null CHECK (
-        (ingredient_id IS NOT NULL AND prepared_product_id IS NULL) OR
-        (ingredient_id IS NULL AND prepared_product_id IS NOT NULL)
-    ),
-    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id),
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id),
-    FOREIGN KEY (prepared_product_id) REFERENCES prepared_products(id),
     FOREIGN KEY (unit_id) REFERENCES mt_units(id)
 );
 
--- Ofertas especiales
-CREATE TABLE special_offers (
+-- ### Relación Ingredientes Compuestos-Componentes
+-- Ingredientes que componen otros ingredientes compuestos.
+CREATE TABLE rel_ingredient_ingredients (
+    parent_ingredient_id INT NOT NULL, -- ID del ingrediente compuesto
+    component_ingredient_id INT NOT NULL, -- ID del ingrediente componente
+    quantity DECIMAL(10, 2) NOT NULL, -- Cantidad del componente
+    unit_id INT NOT NULL, -- ID de la unidad de medida para la cantidad
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    PRIMARY KEY (parent_ingredient_id, component_ingredient_id), -- Clave compuesta
+    FOREIGN KEY (parent_ingredient_id) REFERENCES ingredients(id),
+    FOREIGN KEY (component_ingredient_id) REFERENCES ingredients(id),
+    FOREIGN KEY (unit_id) REFERENCES mt_units(id)
+);
+
+-- ### Relación Ingredientes-Atributos
+-- Atributos asociados a los ingredientes (ej. 'Sin gluten', 'Vegano').
+CREATE TABLE rel_ingredient_attributes (
+    ingredient_id INT NOT NULL,
+    attribute_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    PRIMARY KEY (ingredient_id, attribute_id), -- Clave compuesta
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id),
+    FOREIGN KEY (attribute_id) REFERENCES mt_attributes(id)
+);
+
+-- ### Productos
+-- Platos y bebidas que se ofrecen en el menú.
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,    
+    name VARCHAR(255) NOT NULL, -- Nombre del producto
+    total_cost DECIMAL(10, 2) NOT NULL, -- Calculado desde los ingredientes
+    available BOOLEAN DEFAULT TRUE, -- Si está disponible para ordenar
+    is_kitchen BOOLEAN DEFAULT TRUE, -- Si requiere preparación en cocina (FALSE para bebidas, por ejemplo)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP    
+);
+
+-- ### Relación Productos-Ingredientes
+-- Ingredientes necesarios para cada producto.
+CREATE TABLE rel_product_ingredients (
+    product_id INT NOT NULL,
+    ingredient_id INT NOT NULL,
+    quantity DECIMAL(10, 2) NOT NULL, -- Cantidad del ingrediente necesaria
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    PRIMARY KEY (product_id, ingredient_id), -- Clave compuesta
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
+);
+
+-- ### Ítems de Menú
+-- Representan ítems individuales o combinaciones que se pueden ordenar, como productos simples o promociones (ej. "2x1").
+CREATE TABLE menu_items (
     id SERIAL PRIMARY KEY,
-    restaurant_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    offer_type VARCHAR(50) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    start_date DATE,
-    end_date DATE,
-    active_from TIME,
-    active_to TIME,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
+    name VARCHAR(255) NOT NULL, -- Nombre del ítem de menú (ej. "2x1" o "Oferta San Valentín")
+    category_id INT NOT NULL,   -- ID de la categoría a la que pertenece (ej. "Pizzas", "Ofertas")
+    price DECIMAL(10,2) NOT NULL, -- Precio de venta del ítem, calculado a partir del costo total más un margen
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES menu_categories(id)
+);
+
+-- ### Relación Ítems de Menú - Productos
+-- Define qué productos componen cada ítem de menú y en qué cantidad (ej. un combo con 2 pizzas y 1 bebida).
+CREATE TABLE rel_menu_item_products (
+    menu_item_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1, -- Cantidad de cada producto en el ítem de menú
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    PRIMARY KEY (menu_item_id, product_id), -- Clave compuesta para evitar duplicados
+    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- ### Menús
+-- Colecciones de ítems de menú con precios o condiciones especiales, como "Menú del Día" o "Menú Infantil".
+CREATE TABLE menus (
+    id SERIAL PRIMARY KEY,
+    restaurant_id INT NOT NULL, -- ID del restaurante al que pertenece el menú
+    name VARCHAR(100) NOT NULL, -- Nombre del menú (ej. "Menú del Día")
+    description TEXT,           -- Descripción del menú
+    active_from TIME,           -- Hora de inicio de disponibilidad (ej. 12:00 para almuerzos)
+    active_to TIME,             -- Hora de fin de disponibilidad (ej. 15:00)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
 );
 
--- Relación ofertas-productos
-CREATE TABLE rel_offer_products (
-    id SERIAL PRIMARY KEY,
-    offer_id INT NOT NULL,
+-- ### Relación Menús - Ítems de Menú
+-- Asocia ítems de menú a un menú específico (ej. un "Menú del Día" que incluye entrante, plato principal y postre).
+CREATE TABLE rel_menus_menu_items (
+    menu_id INT NOT NULL,
     menu_item_id INT NOT NULL,
-    quantity INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (offer_id) REFERENCES special_offers(id),
+    PRIMARY KEY (menu_id, menu_item_id), -- Clave compuesta para evitar duplicados
+    FOREIGN KEY (menu_id) REFERENCES menus(id),
     FOREIGN KEY (menu_item_id) REFERENCES menu_items(id)
 );
 
--- Ítems de pedido
+-- ### Ítems de comanda
+-- Productos específicos en una comanda.
 CREATE TABLE order_items (
     id SERIAL PRIMARY KEY,
-    order_id INT NOT NULL,
-    menu_item_id INT NOT NULL,
-    quantity FLOAT NOT NULL,
-    notes TEXT,
-    state VARCHAR(50) DEFAULT 'pending',
-    price_at_order DECIMAL(10,2) NOT NULL,
-    prepared_at TIMESTAMP,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
+    order_id INT NOT NULL, -- ID de la comanda
+	menu_item_id INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL, -- Precio al momento de la comanda
+    notes TEXT, -- Notas adicionales (ej. 'Sin cebolla')
+    state order_item_state NOT NULL, -- Estado del ítem
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id),
-    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
+    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id)
 );
 
--- Pagos
-CREATE TABLE payments (
-    id SERIAL PRIMARY KEY,
-    order_id INT NOT NULL,
-    method_id INT NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    state VARCHAR(50) DEFAULT 'pending',
-    transaction_id VARCHAR(255),
-    payment_timestamp TIMESTAMP,
-    refund_amount DECIMAL(10,2),
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES orders(id),
-    FOREIGN KEY (method_id) REFERENCES mt_payment_methods(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Turnos
-CREATE TABLE shifts (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    restaurant_id INT NOT NULL,
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP NOT NULL,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-);
-
--- Retroalimentación
+-- ### Retroalimentación
+-- Comentarios y calificaciones de los clientes sobre las comandas.
 CREATE TABLE feedback (
     id SERIAL PRIMARY KEY,
-    order_id INT,
-    rating INT,
-    comment TEXT,
-    created_by INT NOT NULL,
-    updated_by INT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
+    order_id INT NOT NULL, -- ID de la comanda
+    rating INT, -- Calificación (1 a 5)
+    comment TEXT, -- Comentario
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES orders(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
+    CHECK (rating >= 1 AND rating <= 5), -- Restricción para calificación
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+-- ### Turnos
+-- Horarios de trabajo para los empleados.
+CREATE TABLE shifts (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, -- Nombre del turno (ej. 'Turno Mañana')
+    restaurant_id INT NOT NULL, -- ID del restaurante
+    start_time TIME NOT NULL, -- Hora de inicio
+    end_time TIME NOT NULL, -- Hora de fin
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+);
+
+-- ### Relación Usuarios-Turnos
+-- Asignación de turnos a empleados.
+CREATE TABLE rel_user_shifts (
+    user_id INT NOT NULL,
+    shift_id INT NOT NULL,
+    shift_date DATE NOT NULL, -- Fecha del turno
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    PRIMARY KEY (user_id, shift_id, shift_date), -- Clave compuesta para evitar duplicados
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (shift_id) REFERENCES shifts(id)
 );
