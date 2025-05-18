@@ -37,16 +37,16 @@ INSERT INTO restaurants (name, address, cuisine_type, description) VALUES
 
 -- Usuarios
 -- Nota: password_hash es un placeholder. En producción, usa un hash real (ej. bcrypt).
-INSERT INTO users (name, email, password_hash, role_id, phone, restaurant_id) VALUES
-    ('Admin', 'admin@trattoria.com', 'hash_admin', 1, '123456789', NULL), -- ROLE_ADMIN
-    ('Propietario', 'owner@trattoria.com', 'hash_owner', 4, '987654321', 1), -- ROLE_OWNER
-    ('Gerente', 'manager@trattoria.com', 'hash_manager', 5, '555555555', 1), -- ROLE_MANAGER
-    ('Mesero1', 'waiter1@trattoria.com', 'hash_waiter1', 6, '666666666', 1), -- ROLE_WAITER
-    ('Mesero2', 'waiter2@trattoria.com', 'hash_waiter2', 6, '777777777', 1), -- ROLE_WAITER
-    ('Cocinero1', 'cook1@trattoria.com', 'hash_cook1', 7, '888888888', 1), -- ROLE_COOK
-    ('Cocinero2', 'cook2@trattoria.com', 'hash_cook2', 7, '999999999', 1), -- ROLE_COOK
-    ('Cajero', 'cashier@trattoria.com', 'hash_cashier', 8, '111111111', 1), -- ROLE_CASHIER
-    ('Delivery', 'delivery@trattoria.com', 'hash_delivery', 9, '222222222', 1); -- ROLE_DELIVERY
+INSERT INTO users (name, email, password_hash, role_id, phone, restaurant_id, verified) VALUES
+    ('Admin', 'admin@trattoria.com', 'hash_admin', 1, '123456789', NULL, true), -- ROLE_ADMIN
+    ('Propietario', 'owner@trattoria.com', 'hash_owner', 4, '987654321', 1, true), -- ROLE_OWNER
+    ('Gerente', 'manager@trattoria.com', 'hash_manager', 5, '555555555', 1, true), -- ROLE_MANAGER
+    ('Mesero1', 'waiter1@trattoria.com', 'hash_waiter1', 6, '666666666', 1, true), -- ROLE_WAITER
+    ('Mesero2', 'waiter2@trattoria.com', 'hash_waiter2', 6, '777777777', 1, true), -- ROLE_WAITER
+    ('Cocinero1', 'cook1@trattoria.com', 'hash_cook1', 7, '888888888', 1, true), -- ROLE_COOK
+    ('Cocinero2', 'cook2@trattoria.com', 'hash_cook2', 7, '999999999', 1, true), -- ROLE_COOK
+    ('Cajero', 'cashier@trattoria.com', 'hash_cashier', 8, '111111111', 1, true), -- ROLE_CASHIER
+    ('Delivery', 'delivery@trattoria.com', 'hash_delivery', 9, '222222222', 1, true); -- ROLE_DELIVERY
 
 -- Diseños
 INSERT INTO layouts (restaurant_id, name) VALUES

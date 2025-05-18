@@ -16,3 +16,4 @@ frontend/*.aab
 backend/src/main/java/com/abel/gastrohub/util/KeyGenerator.java
 backend/.env
 frontend/.env.local
+backend/database/playground.sql

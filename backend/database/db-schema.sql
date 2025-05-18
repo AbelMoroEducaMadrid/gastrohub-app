@@ -65,7 +65,7 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL, -- Nombre del usuario
     email VARCHAR(255) UNIQUE NOT NULL, -- Email único
     password_hash VARCHAR(255) NOT NULL, -- Hash de la contraseña
-	verified BOOLEAN DEFAULT TRUE NOT NULL, -- Para la verificación con email
+	verified BOOLEAN DEFAULT FALSE NOT NULL, -- Para la verificación con email
     role_id INT NOT NULL, -- ID del rol (referencia a mt_roles)
     phone VARCHAR(50) UNIQUE, -- Teléfono (único, aunque podría ser NULL)
     restaurant_id INT, -- ID del restaurante al que pertenece (NULL para administradores generales)
