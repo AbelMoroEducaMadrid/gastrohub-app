@@ -16,9 +16,6 @@ class PaymentPlanService {
         'Authorization': 'Bearer $token',
       },
     );
-    print('URL: $url');
-    print('Status Code: ${response.statusCode}');
-    print('Response Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);

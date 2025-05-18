@@ -6,6 +6,9 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
+  final int? minLines;
+  final int? maxLines;
+  final bool isTextArea; // Nuevo: indica si es un área de texto
 
   const CustomTextField({
     super.key,
@@ -14,6 +17,9 @@ class CustomTextField extends StatefulWidget {
     required this.controller,
     this.validator,
     this.onChanged,
+    this.minLines,
+    this.maxLines,
+    this.isTextArea = false, // Por defecto, no es área de texto
   });
 
   @override
@@ -33,40 +39,30 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // Decoración condicional: borde solo si es área de texto
+    final inputDecoration = widget.isTextArea
+        ? InputDecoration(
+            labelText: widget.label,
+            border: OutlineInputBorder(), // Borde para área de texto
+            contentPadding: const EdgeInsets.all(12),
+          )
+        : InputDecoration(
+            labelText: widget.label, // Estilo por defecto para una línea
+          );
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Semantics(
-        label: widget.label,
-        child: TextFormField(
-          controller: widget.controller,
-          obscureText: _obscureText,
-          cursorColor: theme.primaryColor,
-          style: TextStyle(color: theme.textTheme.bodyMedium?.color),
-          validator: widget.validator,
-          onChanged: widget.onChanged,
-          decoration: InputDecoration(
-            labelText: widget.label,
-            labelStyle: TextStyle(
-              color: theme.inputDecorationTheme.labelStyle?.color,
-            ),
-            hintStyle: TextStyle(
-                color: theme.textTheme.bodyMedium?.color?.withAlpha(150)),
-            suffixIcon: widget.obscureText
-                ? IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility : Icons.visibility_off,
-                      color: theme.primaryColor,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                  )
-                : null,
-          ),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-        ),
+      child: TextFormField(
+        controller: widget.controller,
+        obscureText: _obscureText,
+        cursorColor: theme.primaryColor,
+        style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+        validator: widget.validator,
+        onChanged: widget.onChanged,
+        minLines: widget.minLines ?? 1,
+        maxLines: widget.maxLines ?? 1,
+        decoration: inputDecoration,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
       ),
     );
   }

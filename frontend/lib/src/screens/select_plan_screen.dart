@@ -83,9 +83,17 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
           actions: [
             TextButton(
               onPressed: () {
+                // Ir a la pantalla de registro del restaurante
+                Navigator.of(context)
+                    .pushReplacementNamed('/restaurant-registration');
+              },
+              child: const Text('Sí'),
+            ),
+            TextButton(
+              onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cerrar'),
+              child: const Text('No'),
             ),
           ],
         );

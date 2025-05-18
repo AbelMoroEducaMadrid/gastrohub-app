@@ -6,6 +6,7 @@ import 'package:gastrohub_app/src/screens/login_screen.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/screens/onboarding_screen.dart';
 import 'package:gastrohub_app/src/screens/registration_screen.dart';
+import 'package:gastrohub_app/src/screens/restaurant_registration_screen.dart';
 import 'package:gastrohub_app/src/screens/select_plan_screen.dart';
 import 'package:gastrohub_app/src/screens/verification_pending_screen.dart';
 import 'package:gastrohub_app/src/screens/welcome_screen.dart';
@@ -41,6 +42,8 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => const DashboardScreen(),
         '/welcome': (context) => const WelcomeScreen(),
         '/select-plan': (context) => const SelectPlanScreen(),
+        '/restaurant-registration': (context) =>
+            const RestaurantRegistrationScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/verification-pending') {
