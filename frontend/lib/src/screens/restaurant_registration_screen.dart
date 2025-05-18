@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
@@ -40,22 +39,6 @@ class _RestaurantRegistrationScreenState
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/dashboard');
     }
-  }
-
-  void _showErrorDialog(String error) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error de registro'),
-        content: Text(error),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override

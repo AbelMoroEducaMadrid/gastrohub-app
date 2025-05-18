@@ -63,7 +63,7 @@ class VerificationPendingScreen extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           Text(
-            '$email',
+            email,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppTheme.hyperlinkColor,
             ),
