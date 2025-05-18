@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class JoinRestaurantDTO {
+public class UserJoinRestaurantDTO {
     @NotNull(message = "El código de invitación no puede ser nulo")
     @JsonProperty("invitation_code")
     private String invitationCode;

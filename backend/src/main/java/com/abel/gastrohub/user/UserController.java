@@ -1,8 +1,9 @@
 package com.abel.gastrohub.user;
 
 import com.abel.gastrohub.security.CustomUserDetails;
-import com.abel.gastrohub.user.dto.JoinRestaurantDTO;
+import com.abel.gastrohub.user.dto.UserJoinRestaurantDTO;
 import com.abel.gastrohub.user.dto.UserChangePasswordDTO;
+import com.abel.gastrohub.user.dto.UserJoinRestaurantResponseDTO;
 import com.abel.gastrohub.user.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -82,12 +83,11 @@ public class UserController {
 
     @PostMapping("/join-restaurant")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM','USER')")
-    public ResponseEntity<Void> joinRestaurant(@RequestBody JoinRestaurantDTO joinDTO) {
+    public ResponseEntity<UserJoinRestaurantResponseDTO> joinRestaurant(@RequestBody UserJoinRestaurantDTO joinDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Integer userId = userDetails.getId();
-        System.out.println("COOOOODIGO" + joinDTO.getInvitationCode());
-        userService.joinRestaurant(userId, joinDTO.getInvitationCode());
-        return ResponseEntity.ok().build();
+        User user = userService.joinRestaurant(userId, joinDTO.getInvitationCode());
+        return ResponseEntity.ok(new UserJoinRestaurantResponseDTO(user));
     }
 }

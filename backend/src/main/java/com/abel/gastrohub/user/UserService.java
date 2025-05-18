@@ -94,15 +94,14 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void joinRestaurant(Integer userId, String invitationCode) {
+    public User joinRestaurant(Integer userId, String invitationCode) {
         User user = getUserById(userId);
-        System.out.println("CODIGO:" + invitationCode);
         Restaurant restaurant = restaurantRepository.findByInvitationCodeAndDeletedAtIsNull(invitationCode)
                 .orElseThrow(() -> new NoSuchElementException("Código de invitación no válido"));
         if (restaurant.getInvitationExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("El código de invitación ha expirado");
         }
         user.setRestaurant(restaurant);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }
