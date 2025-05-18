@@ -1,5 +1,7 @@
 package com.abel.gastrohub.restaurant;
 
+import com.abel.gastrohub.paymentPlan.PaymentPlan;
+import com.abel.gastrohub.paymentPlan.PaymentPlanService;
 import com.abel.gastrohub.restaurant.dto.RestaurantRegistrationDTO;
 import com.abel.gastrohub.restaurant.dto.RestaurantResponseDTO;
 import com.abel.gastrohub.restaurant.dto.RestaurantUpdateDTO;
@@ -10,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +20,12 @@ import java.util.stream.Collectors;
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
+    private final PaymentPlanService paymentPlanService;
 
     @Autowired
-    public RestaurantController(RestaurantService restaurantService, UserRepository userRepository) {
+    public RestaurantController(RestaurantService restaurantService, PaymentPlanService paymentPlanService, UserRepository userRepository) {
         this.restaurantService = restaurantService;
+        this.paymentPlanService = paymentPlanService;
     }
 
     @GetMapping
@@ -43,11 +46,14 @@ public class RestaurantController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<RestaurantResponseDTO> createRestaurant(@Valid @RequestBody RestaurantRegistrationDTO restaurantDTO) {
+        PaymentPlan paymentPlan = paymentPlanService.getPaymentPlanById(restaurantDTO.getPaymentPlanId());
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantDTO.getName());
         restaurant.setAddress(restaurantDTO.getAddress());
         restaurant.setCuisineType(restaurantDTO.getCuisineType());
         restaurant.setDescription(restaurantDTO.getDescription());
+        restaurant.setPaymentPlan(paymentPlan);
+        restaurant.setPaid(false); // Inicialmente no pagado
         Restaurant savedRestaurant = restaurantService.createRestaurant(restaurant);
         return ResponseEntity.status(201).body(new RestaurantResponseDTO(savedRestaurant));
     }
@@ -76,5 +82,16 @@ public class RestaurantController {
     public ResponseEntity<String> regenerateInvitationCode(@PathVariable Integer id) {
         Restaurant updatedRestaurant = restaurantService.regenerateInvitationCode(id);
         return ResponseEntity.ok(updatedRestaurant.getInvitationCode());
+    }
+
+    @PutMapping("/{id}/change-plan")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM', 'OWNER')")
+    public ResponseEntity<RestaurantResponseDTO> changePaymentPlan(@PathVariable Integer id, @RequestParam Integer newPlanId) {
+        PaymentPlan newPlan = paymentPlanService.getPaymentPlanById(newPlanId);
+        Restaurant restaurant = restaurantService.getRestaurantById(id);
+        restaurant.setPaymentPlan(newPlan);
+        restaurant.setPaid(false); // Requiere nuevo pago tras cambio
+        Restaurant updatedRestaurant = restaurantService.updateRestaurant(id, restaurant);
+        return ResponseEntity.ok(new RestaurantResponseDTO(updatedRestaurant));
     }
 }

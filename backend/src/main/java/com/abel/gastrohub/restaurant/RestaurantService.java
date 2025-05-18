@@ -37,6 +37,13 @@ public class RestaurantService {
         restaurant.setName(restaurantDetails.getName());
         restaurant.setAddress(restaurantDetails.getAddress());
         restaurant.setCuisineType(restaurantDetails.getCuisineType());
+        restaurant.setDescription(restaurantDetails.getDescription());
+        if (restaurantDetails.getPaymentPlan() != null) {
+            restaurant.setPaymentPlan(restaurantDetails.getPaymentPlan());
+        }
+        if (restaurantDetails.getPaid() != null) {
+            restaurant.setPaid(restaurantDetails.getPaid());
+        }
         return restaurantRepository.save(restaurant);
     }
 

@@ -17,4 +17,7 @@ public class RestaurantRegistrationDTO {
     private String cuisineType;
 
     private String description;
+
+    @NotNull(message = "El ID del plan de pago no puede ser nulo")
+    private Integer paymentPlanId;
 }
