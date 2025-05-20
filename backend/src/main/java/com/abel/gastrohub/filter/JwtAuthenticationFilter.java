@@ -1,6 +1,9 @@
 package com.abel.gastrohub.filter;
 
+import com.abel.gastrohub.exception.InvalidTokenException;
+import com.abel.gastrohub.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -14,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -71,11 +75,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     System.out.println("Autenticación establecida para el usuario: " + username);
                 }
-            } catch (Exception e) {
-                System.out.println("Error al procesar el token: " + e.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Token inválido o expirado");
-                return;
+            } catch (ExpiredJwtException e) {
+                throw new TokenExpiredException("Token expirado");
+            } catch (JwtException e) {
+                throw new InvalidTokenException("Token inválido");
             }
         } else {
             System.out.println("No se encontró token en la solicitud");
