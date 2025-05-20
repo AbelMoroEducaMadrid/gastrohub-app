@@ -4,7 +4,6 @@ import com.abel.gastrohub.paymentPlan.dto.PaymentPlanRegistrationDTO;
 import com.abel.gastrohub.paymentPlan.dto.PaymentPlanResponseDTO;
 import com.abel.gastrohub.paymentPlan.dto.PaymentPlanUpdateDTO;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ public class PaymentPlanController {
 
     private final PaymentPlanService paymentPlanService;
 
-    @Autowired
     public PaymentPlanController(PaymentPlanService paymentPlanService) {
         this.paymentPlanService = paymentPlanService;
     }

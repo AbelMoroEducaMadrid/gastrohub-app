@@ -1,6 +1,5 @@
 package com.abel.gastrohub.restaurant;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,7 +12,6 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    @Autowired
     public RestaurantService(RestaurantRepository restaurantRepository) {
         this.restaurantRepository = restaurantRepository;
     }

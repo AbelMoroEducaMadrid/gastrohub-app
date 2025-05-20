@@ -7,7 +7,6 @@ import com.abel.gastrohub.restaurant.dto.RestaurantResponseDTO;
 import com.abel.gastrohub.restaurant.dto.RestaurantUpdateDTO;
 import com.abel.gastrohub.user.UserRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,6 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
     private final PaymentPlanService paymentPlanService;
 
-    @Autowired
     public RestaurantController(RestaurantService restaurantService, PaymentPlanService paymentPlanService, UserRepository userRepository) {
         this.restaurantService = restaurantService;
         this.paymentPlanService = paymentPlanService;

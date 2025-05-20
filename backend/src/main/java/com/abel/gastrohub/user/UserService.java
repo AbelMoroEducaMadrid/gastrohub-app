@@ -4,7 +4,6 @@ import com.abel.gastrohub.masterdata.MtRole;
 import com.abel.gastrohub.masterdata.MtRoleRepository;
 import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.restaurant.RestaurantRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,6 @@ public class UserService {
     private final RestaurantRepository restaurantRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
     public UserService(UserRepository userRepository, MtRoleRepository roleRepository, RestaurantRepository restaurantRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;

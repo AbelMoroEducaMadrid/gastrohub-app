@@ -5,7 +5,6 @@ import com.abel.gastrohub.user.dto.UserChangePasswordDTO;
 import com.abel.gastrohub.user.dto.UserJoinRestaurantDTO;
 import com.abel.gastrohub.user.dto.UserJoinRestaurantResponseDTO;
 import com.abel.gastrohub.user.dto.UserResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,7 +20,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }

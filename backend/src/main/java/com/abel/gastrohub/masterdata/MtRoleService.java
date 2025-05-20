@@ -1,6 +1,5 @@
 package com.abel.gastrohub.masterdata;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +10,6 @@ public class MtRoleService {
 
     private final MtRoleRepository roleRepository;
 
-    @Autowired
     public MtRoleService(MtRoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }

@@ -1,6 +1,5 @@
 package com.abel.gastrohub.paymentPlan;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,7 +11,6 @@ public class PaymentPlanService {
 
     private final PaymentPlanRepository paymentPlanRepository;
 
-    @Autowired
     public PaymentPlanService(PaymentPlanRepository paymentPlanRepository) {
         this.paymentPlanRepository = paymentPlanRepository;
     }
