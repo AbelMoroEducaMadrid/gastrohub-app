@@ -62,6 +62,13 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     );
   }
 
+  void _scanQRCode() {
+    // TODO: Implementar lógica para escanear QR code en el futuro
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Escaneo de QR code no implementado aún')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -130,10 +137,10 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
           ),
           const SizedBox(height: 24),
           CustomButton(
-            text: 'Sleccionar un plan',
+            text: 'Elige tu plan',
             onPressed: _createRestaurant,
-            iconData: Icons.subscriptions_outlined,
-            iconPosition: IconPosition.right,
+            iconData: Icons.layers_outlined,
+            iconPosition: IconPosition.left,
           ),
           const SizedBox(height: 32),
           Row(
@@ -155,6 +162,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
             child: CustomTextField(
               label: 'Código del establecimiento',
               controller: codeController,
+              icon: Icons.storefront_outlined,
             ),
           ),
           Row(
@@ -189,20 +197,10 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                     },
                   );
                 },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: AppTheme.hyperlinkColor,
-                      size: 20,
-                    ),
-                    Text(
-                      ' ¿Qué es esto? ',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: AppTheme.hyperlinkColor,
-                      ),
-                    ),
-                  ],
+                child: Icon(
+                  Icons.info_outline,
+                  color: AppTheme.textColor,
+                  size: 22,
                 ),
               ),
             ],
@@ -210,11 +208,25 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
           const SizedBox(height: 16),
           isJoining
               ? const Center(child: CircularProgressIndicator())
-              : CustomButton(
-                  text: 'Unirse',
-                  onPressed: _joinRestaurant,
-                  iconData: Icons.group_add_outlined,
-                  iconPosition: IconPosition.right,
+              : Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Escanear QR',
+                        onPressed: _scanQRCode,
+                        iconData: Icons.qr_code,
+                        iconPosition: IconPosition.left,
+                        backgroundColor: AppTheme.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(width: 24),
+                    CustomButton(
+                      text: 'Unirse',
+                      onPressed: _joinRestaurant,
+                      iconData: Icons.group_add_outlined,
+                      iconPosition: IconPosition.left,
+                    ),
+                  ],
                 ),
         ],
       ),
