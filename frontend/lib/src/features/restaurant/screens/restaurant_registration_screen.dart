@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gastrohub_app/src/core/utils/logger.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/payment_plan.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/services/restaurant_service.dart';
@@ -31,11 +32,11 @@ class _RestaurantRegistrationScreenState
   @override
   void initState() {
     super.initState();
-    print('Plan recibido: ${widget.plan.name}, ID: ${widget.plan.id}');
+    AppLogger.debug('Plan recibido: ${widget.plan.name}, ID: ${widget.plan.id}');
   }
 
   void _registerRestaurant() async {
-    print('Registrando restaurante con paymentPlanId: ${widget.plan.id}');
+    AppLogger.debug('Registrando restaurante con paymentPlanId: ${widget.plan.id}');
     if (_formKey.currentState!.validate()) {
       final restaurant = RestaurantRegistration(
         name: nameController.text,

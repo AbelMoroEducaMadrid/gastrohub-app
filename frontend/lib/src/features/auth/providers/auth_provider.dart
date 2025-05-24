@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:gastrohub_app/src/core/utils/logger.dart';
 import 'package:gastrohub_app/src/exceptions/api_exception.dart';
 import 'package:gastrohub_app/src/features/auth/models/user.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/restaurant_provider.dart';
@@ -47,7 +48,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       if (e is ApiException) {
         state = AuthState(error: e.message, errorTitle: e.title);
-        print('Estado actualizado con error: ${e.message}');
+        AppLogger.debug('Estado actualizado con error: ${e.message}');
       } else {
         state = AuthState(error: e.toString());
       }
@@ -139,7 +140,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       isLoading: state.isLoading,
       registrationSuccess: state.registrationSuccess,
     );
-    print('Error limpiado');
+    AppLogger.debug('Error limpiado');
   }
 
   Future<void> logout() async {

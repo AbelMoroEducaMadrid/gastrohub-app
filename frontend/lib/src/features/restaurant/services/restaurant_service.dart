@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:gastrohub_app/src/core/utils/logger.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/restaurant.dart';
 import 'package:http/http.dart' as http;
 import 'package:gastrohub_app/src/exceptions/api_error_handler.dart';
@@ -46,8 +47,8 @@ class RestaurantService {
       },
       body: jsonEncode(restaurant.toJson()),
     );
-    print('POST /api/restaurants - Status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+    AppLogger.debug('POST /api/restaurants - Status: ${response.statusCode}');
+    AppLogger.debug('Response body: ${response.body}');
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
       return Restaurant.fromJson(data);

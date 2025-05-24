@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/utils/logger.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/payment_plan.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/payment_plan_provider.dart';
@@ -181,7 +182,7 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
                   CustomButton(
                     text: 'Seleccionar',
                     onPressed: () {
-                      print('Plan seleccionado: ${plan.name}, ID: ${plan.id}');
+                      AppLogger.debug('Plan seleccionado: ${plan.name}, ID: ${plan.id}');
                       Navigator.of(context).pushNamed(
                         '/restaurant-registration',
                         arguments: plan,
