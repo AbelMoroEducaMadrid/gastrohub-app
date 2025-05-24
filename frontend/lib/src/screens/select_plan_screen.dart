@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/auth/models/payment_plan.dart';
 import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/auth/providers/payment_plan_provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:gastrohub_app/src/core/themes/app_theme.dart';
+import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
+import 'package:gastrohub_app/src/core/widgets/background_image.dart';
+import 'package:introduction_screen/introduction_screen.dart';
 
 class SelectPlanScreen extends ConsumerStatefulWidget {
   const SelectPlanScreen({super.key});
@@ -13,28 +17,14 @@ class SelectPlanScreen extends ConsumerStatefulWidget {
 }
 
 class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
-  int? selectedPlanId;
   List<PaymentPlan>? plans;
   bool isLoading = true;
   String? error;
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
     _loadPlans();
-    _pageController.addListener(() {
-      setState(() {
-        _currentPage = _pageController.page?.round() ?? 0;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadPlans() async {
@@ -60,49 +50,73 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
     }
   }
 
-  void _showPlanDialog(BuildContext context) {
-    if (plans == null || plans!.isEmpty) return;
-    final selectedPlan = plans![_currentPage];
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Plan Seleccionado'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Nombre: ${selectedPlan.name}'),
-              Text('Descripción: ${selectedPlan.description}'),
-              Text('Precio mensual: \$${selectedPlan.monthlyPrice}'),
-              Text('Descuento anual: ${selectedPlan.yearlyDiscount}%'),
-              if (selectedPlan.maxUsers != null)
-                Text('Máximo de usuarios: ${selectedPlan.maxUsers}'),
-            ],
+  List<PageViewModel> _buildPlanPages(List<PaymentPlan> plans) {
+    final theme = Theme.of(context);
+    return plans.map((plan) {
+      return PageViewModel(
+        titleWidget: Text(
+          plan.name,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            color: AppTheme.secondaryColor,
+            fontWeight: FontWeight.bold,
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Ir a la pantalla de registro del restaurante
-                Navigator.of(context)
-                    .pushReplacementNamed('/restaurant-registration');
-              },
-              child: const Text('Sí'),
+          textAlign: TextAlign.center,
+        ),
+        bodyWidget: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              plan.description,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: AppTheme.textColor,
+              ),
+              textAlign: TextAlign.center,
             ),
-            TextButton(
+            const SizedBox(height: 16),
+            Text(
+              'Precio mensual: \$${plan.monthlyPrice}',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: AppTheme.textColor,
+              ),
+            ),
+            Text(
+              'Descuento anual: ${plan.yearlyDiscount}%',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: AppTheme.textColor,
+              ),
+            ),
+            if (plan.maxUsers != null)
+              Text(
+                'Máximo de usuarios: ${plan.maxUsers}',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: AppTheme.textColor,
+                ),
+              ),
+            const SizedBox(height: 24),
+            CustomButton(
+              text: 'Seleccionar este plan',
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed(
+                  '/restaurant-registration',
+                  arguments: plan,
+                );
               },
-              child: const Text('No'),
+              iconData: Icons.check_circle_outline,
+              iconPosition: IconPosition.right,
             ),
           ],
-        );
-      },
-    );
+        ),
+        decoration: const PageDecoration(
+          contentMargin: EdgeInsets.all(16.0),
+        ),
+      );
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -120,76 +134,67 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Selecciona un plan')),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: plans!.length,
-              itemBuilder: (context, index) {
-                return PlanPage(plan: plans![index]);
-              },
+          BackgroundImage(image: 'assets/images/background_00.png'),
+          SafeArea(
+            child: Center(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/logo.svg',
+                      height: 150,
+                      semanticsLabel: 'Logo de Gastro & Hub',
+                      colorFilter: const ColorFilter.mode(
+                        AppTheme.secondaryColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'GASTRO & HUB',
+                        style: theme.textTheme.headlineLarge?.copyWith(
+                          fontSize: 200,
+                          color: AppTheme.secondaryColor,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Expanded(
+                      child: IntroductionScreen(
+                        pages: _buildPlanPages(plans!),
+                        showDoneButton: false,
+                        showNextButton: true,
+                        showSkipButton: false,
+                        next: Text(
+                          'Siguiente',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: AppTheme.hyperlinkColor,
+                          ),
+                        ),
+                        dotsDecorator: DotsDecorator(
+                          activeColor: AppTheme.primaryColor,
+                          color: AppTheme.textColor.withAlpha((255 * 0.5).toInt()),
+                          size: const Size(10.0, 10.0),
+                          activeSize: const Size(22.0, 10.0),
+                          activeShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                        ),
+                        globalBackgroundColor: Colors.transparent,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-          SmoothPageIndicator(
-            controller: _pageController,
-            count: plans!.length,
-            effect: const WormEffect(
-              dotHeight: 8,
-              dotWidth: 8,
-              activeDotColor: Colors.blue,
-              dotColor: Colors.grey,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () => _showPlanDialog(context),
-              child: const Text('Continuar'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PlanPage extends StatelessWidget {
-  final PaymentPlan plan;
-
-  const PlanPage({required this.plan, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            plan.name,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          Text(plan.description),
-          const SizedBox(height: 16),
-          Text(
-            'Precio mensual: \$${plan.monthlyPrice}',
-            style: const TextStyle(fontSize: 18),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Descuento anual: ${plan.yearlyDiscount}%',
-            style: const TextStyle(fontSize: 18),
-          ),
-          if (plan.maxUsers != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Máximo de usuarios: ${plan.maxUsers}',
-              style: const TextStyle(fontSize: 18),
-            ),
-          ],
         ],
       ),
     );
