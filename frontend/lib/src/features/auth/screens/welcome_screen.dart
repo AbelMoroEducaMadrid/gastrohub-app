@@ -46,7 +46,10 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
           _showErrorDialog(authState.error!, title: authState.errorTitle);
           ref.read(authProvider.notifier).clearError();
         } else {
-          Navigator.of(context).pushReplacementNamed('/dashboard');
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/dashboard',
+            (Route<dynamic> route) => false,
+          );
         }
       } catch (e) {
         _showErrorDialog(e.toString());

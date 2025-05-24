@@ -32,11 +32,13 @@ class _RestaurantRegistrationScreenState
   @override
   void initState() {
     super.initState();
-    AppLogger.debug('Plan recibido: ${widget.plan.name}, ID: ${widget.plan.id}');
+    AppLogger.debug(
+        'Plan recibido: ${widget.plan.name}, ID: ${widget.plan.id}');
   }
 
   void _registerRestaurant() async {
-    AppLogger.debug('Registrando restaurante con paymentPlanId: ${widget.plan.id}');
+    AppLogger.debug(
+        'Registrando restaurante con paymentPlanId: ${widget.plan.id}');
     if (_formKey.currentState!.validate()) {
       final restaurant = RestaurantRegistration(
         name: nameController.text,
@@ -48,13 +50,18 @@ class _RestaurantRegistrationScreenState
 
       await ref.read(authProvider.notifier).registerRestaurant(restaurant);
 
+      if (!mounted) return;
+
       final authState = ref.read(authProvider);
       if (authState.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(authState.error!)),
         );
       } else {
-        Navigator.of(context).pushReplacementNamed('/dashboard');
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          '/dashboard',
+          (Route<dynamic> route) => false,
+        );
       }
     }
   }

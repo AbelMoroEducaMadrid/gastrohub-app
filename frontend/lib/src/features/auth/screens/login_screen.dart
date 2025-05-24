@@ -33,7 +33,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final authState = ref.read(authProvider);
       if (authState.user != null) {
         if (authState.user!.restaurantId != null) {
-          Navigator.of(context).pushReplacementNamed('/dashboard');
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/dashboard',
+            (Route<dynamic> route) => false,
+          );
         } else {
           Navigator.of(context).pushReplacementNamed('/welcome');
         }
@@ -41,7 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         DialogUtils.showErrorDialog(
           context: context,
           message: authState.error!,
-          title: authState.errorTitle,          
+          title: authState.errorTitle,
         ).then((_) {
           ref.read(authProvider.notifier).clearError();
         });
