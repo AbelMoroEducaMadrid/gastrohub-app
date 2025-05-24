@@ -5,7 +5,7 @@ enum IconPosition { left, right }
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color? backgroundColor;
   final Color? foregroundColor;
   final String? iconAssetPath;

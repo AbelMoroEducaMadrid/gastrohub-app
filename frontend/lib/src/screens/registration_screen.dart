@@ -7,6 +7,7 @@ import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/core/utils/form_validators.dart';
 import 'package:gastrohub_app/src/core/widgets/form_container.dart';
+import 'package:gastrohub_app/src/core/utils/dialog_utils.dart';
 
 class RegistrationScreen extends ConsumerStatefulWidget {
   const RegistrationScreen({super.key});
@@ -31,9 +32,15 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
     return null;
   }
 
-  void _register() async {
-    ref.read(authProvider.notifier).logout();
+  void _showErrorDialog(String message, {String? title}) {
+    DialogUtils.showErrorDialog(
+      context: context,
+      message: message,
+      title: title,
+    );
+  }
 
+  void _register() async {
     if (_formKey.currentState!.validate()) {
       await ref.read(authProvider.notifier).register(
             nameController.text,
@@ -53,25 +60,10 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
             });
         ref.read(authProvider.notifier).resetRegistration();
       } else if (authState.error != null) {
-        _showErrorDialog(authState.error!);
+        _showErrorDialog(authState.error!, title: authState.errorTitle);
+        ref.read(authProvider.notifier).clearError();
       }
     }
-  }
-
-  void _showErrorDialog(String error) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error de registro'),
-        content: Text(error),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -166,7 +158,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
             const SizedBox(height: 24),
             CustomButton(
               text: 'Registrarse',
-              onPressed: _register,
+              onPressed: authState.isLoading ? null : _register,
               iconData: Icons.app_registration,
               iconPosition: IconPosition.right,
             ),

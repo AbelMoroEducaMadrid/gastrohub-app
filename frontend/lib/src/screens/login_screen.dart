@@ -31,12 +31,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
 
       final authState = ref.read(authProvider);
-      if (authState.user != null) {        
-        if (authState.user!.restaurantId != null) {         
+      if (authState.user != null) {
+        if (authState.user!.restaurantId != null) {
           Navigator.of(context).pushReplacementNamed('/dashboard');
-        } else {         
+        } else {
           Navigator.of(context).pushReplacementNamed('/welcome');
         }
+      } else if (authState.error != null) {
+        DialogUtils.showErrorDialog(
+          context: context,
+          message: authState.error!,
+          title: authState.errorTitle,          
+        ).then((_) {
+          ref.read(authProvider.notifier).clearError();
+        });
       }
     }
   }
@@ -46,16 +54,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
     final fillColor = Colors.grey.shade500.withAlpha((255 * 0.5).toInt());
-
-    if (authState.error != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        DialogUtils.showErrorDialog(
-          context: context,
-          message: authState.error!,
-          title: 'Error de inicio de sesión',
-        );
-      });
-    }
 
     return FormContainer(
       backgroundImage: 'assets/images/background_01.png',
@@ -128,7 +126,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: 24),
             CustomButton(
               text: 'Iniciar sesión',
-              onPressed: _validateAndSubmit,
+              onPressed: authState.isLoading ? null : _validateAndSubmit,
               iconData: Icons.login,
               iconPosition: IconPosition.right,
             ),

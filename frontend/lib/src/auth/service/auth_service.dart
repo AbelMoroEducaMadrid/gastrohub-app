@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:gastrohub_app/src/auth/exception/api_error_handler.dart';
+import 'package:gastrohub_app/src/auth/exception/api_exception.dart';
 import 'package:http/http.dart' as http;
 import 'package:gastrohub_app/src/auth/models/user.dart';
 
@@ -17,10 +19,9 @@ class AuthService {
 
     if (response.statusCode == 200) {
       return response.body;
-    } else if (response.statusCode == 401) {
-      throw Exception('Credenciales incorrectas');
     } else {
-      throw Exception('Error al iniciar sesión: ${response.statusCode}');
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
     }
   }
 
@@ -38,8 +39,8 @@ class AuthService {
       final data = jsonDecode(response.body);
       return User.fromJson(data);
     } else {
-      throw Exception(
-          'Error al obtener datos del usuario: ${response.statusCode}');
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
     }
   }
 
@@ -60,8 +61,8 @@ class AuthService {
     if (response.statusCode == 201) {
       // Registro exitoso
     } else {
-      final errorData = jsonDecode(response.body);
-      throw Exception(errorData['message'] ?? 'Error al registrar');
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
     }
   }
 
@@ -81,8 +82,8 @@ class AuthService {
       final data = jsonDecode(response.body);
       return data;
     } else {
-      final errorData = jsonDecode(response.body);
-      throw Exception(errorData['message'] ?? 'Error al unirse al restaurante');
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
     }
   }
 }

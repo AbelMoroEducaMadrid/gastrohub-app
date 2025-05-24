@@ -72,7 +72,7 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [                 
+                children: [
                   const SizedBox(height: 8),
                   Text(
                     plan.description,
@@ -228,7 +228,7 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,        
+        elevation: 0,
       ),
       extendBodyBehindAppBar: true,
       body: Stack(
@@ -242,7 +242,13 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
                   pages: _buildPlanPages(plans!),
                   showDoneButton: false,
                   showNextButton: true,
-                  showSkipButton: false,
+                  showBackButton: true,
+                  back: Text(
+                    'Anterior',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: AppTheme.hyperlinkColor,
+                    ),
+                  ),
                   next: Text(
                     'Siguiente',
                     style: theme.textTheme.labelMedium?.copyWith(

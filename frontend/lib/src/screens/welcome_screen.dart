@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/core/utils/dialog_utils.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
@@ -23,6 +24,14 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     Navigator.of(context).pushNamed('/select-plan');
   }
 
+  void _showErrorDialog(String message, {String? title}) {
+    DialogUtils.showErrorDialog(
+      context: context,
+      message: message,
+      title: title,
+    );
+  }
+
   void _joinRestaurant() async {
     if (_formKey.currentState!.validate()) {
       setState(() => isJoining = true);
@@ -34,32 +43,18 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
         final authState = ref.read(authProvider);
         if (authState.error != null) {
-          _showErrorDialog(authState.error!);
+          _showErrorDialog(authState.error!, title: authState.errorTitle);
+          ref.read(authProvider.notifier).clearError();
         } else {
           Navigator.of(context).pushReplacementNamed('/dashboard');
         }
       } catch (e) {
         _showErrorDialog(e.toString());
+        ref.read(authProvider.notifier).clearError();
       } finally {
         setState(() => isJoining = false);
       }
     }
-  }
-
-  void _showErrorDialog(String error) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error al unirse al restaurante'),
-        content: Text(error),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _scanQRCode() {
@@ -222,7 +217,9 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                     const SizedBox(width: 24),
                     CustomButton(
                       text: 'Unirse',
-                      onPressed: _joinRestaurant,
+                      onPressed: authState.isLoading || isJoining
+                          ? null
+                          : _joinRestaurant,
                       iconData: Icons.group_add_outlined,
                       iconPosition: IconPosition.left,
                     ),

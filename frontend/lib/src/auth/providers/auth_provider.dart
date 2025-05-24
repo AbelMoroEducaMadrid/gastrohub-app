@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:gastrohub_app/src/auth/exception/api_exception.dart';
 import 'package:gastrohub_app/src/auth/models/user.dart';
 import 'package:gastrohub_app/src/auth/service/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,6 +10,7 @@ class AuthState {
   final String? token;
   final bool isLoading;
   final String? error;
+  final String? errorTitle;
   final bool registrationSuccess;
 
   AuthState({
@@ -16,6 +18,7 @@ class AuthState {
     this.token,
     this.isLoading = false,
     this.error,
+    this.errorTitle,
     this.registrationSuccess = false,
   });
 }
@@ -35,10 +38,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
         final user = await _authService.getUserData(token);
         state = AuthState(user: user, token: token);
       } else {
-        throw Exception('No se recibió token');
+        throw ApiException('Error', 'No se recibió token');
       }
     } catch (e) {
-      state = AuthState(error: e.toString());
+      if (e is ApiException) {
+        state = AuthState(error: e.message, errorTitle: e.title);
+        print('Estado actualizado con error: ${e.message}');
+      } else {
+        state = AuthState(error: e.toString());
+      }
     }
   }
 
@@ -49,7 +57,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.register(name, email, password, phone);
       state = AuthState(registrationSuccess: true);
     } catch (e) {
-      state = AuthState(error: e.toString());
+      if (e is ApiException) {
+        state = AuthState(error: e.message, errorTitle: e.title);
+      } else {
+        state = AuthState(error: e.toString());
+      }
     }
   }
 
@@ -58,10 +70,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final token = state.token;
       if (token == null) {
-        throw Exception('No hay token de autenticación');
+        throw ApiException('Error', 'No hay token de autenticación');
       }
 
-      // Esperamos una respuesta tipo: {"restaurantId": 1, "restaurantName": "La Trattoria"}
       final response = await _authService.joinRestaurant(token, invitationCode);
       final restaurantId = response['restaurantId'];
       final restaurantName = response['restaurantName'];
@@ -73,12 +84,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       state = AuthState(user: updatedUser, token: token);
     } catch (e) {
-      state =
-          AuthState(error: e.toString(), user: state.user, token: state.token);
+      if (e is ApiException) {
+        state = AuthState(
+            error: e.message,
+            errorTitle: e.title,
+            user: state.user,
+            token: state.token);
+      } else {
+        state = AuthState(
+            error: e.toString(), user: state.user, token: state.token);
+      }
     }
   }
 
-  void logout() {
+  void clearError() {
+    state = AuthState(
+      user: state.user,
+      token: state.token,
+      isLoading: state.isLoading,
+      registrationSuccess: state.registrationSuccess,
+    );
+    print('Error limpiado');
+  }
+
+  Future<void> logout() async {
+    await _secureStorage.delete(key: 'jwt_token');
     state = AuthState();
   }
 
