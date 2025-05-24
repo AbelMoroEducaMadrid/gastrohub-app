@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/auth/models/payment_plan.dart';
 import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/auth/providers/payment_plan_provider.dart';
@@ -56,55 +55,144 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
       return PageViewModel(
         titleWidget: Text(
           plan.name,
-          style: theme.textTheme.headlineMedium?.copyWith(
+          style: theme.textTheme.headlineLarge?.copyWith(
             color: AppTheme.secondaryColor,
-            fontWeight: FontWeight.bold,
+            fontSize: 66,
           ),
           textAlign: TextAlign.center,
         ),
-        bodyWidget: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              plan.description,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: AppTheme.textColor,
-              ),
-              textAlign: TextAlign.center,
+        bodyWidget: Center(
+          child: Card(
+            color: Colors.black.withAlpha((255 * 0.6).toInt()),
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Precio mensual: \$${plan.monthlyPrice}',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: AppTheme.textColor,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [                 
+                  const SizedBox(height: 8),
+                  Text(
+                    plan.description,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: AppTheme.textColor,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (plan.features.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 8),
+                          ...plan.features.map((feature) => Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 16.0, bottom: 4.0),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.check,
+                                        size: 16,
+                                        color: AppTheme.hyperlinkColor),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        feature,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: AppTheme.textColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  if (plan.monthlyPrice == 0 && plan.yearlyDiscount == 0)
+                    Text(
+                      'Contactar para Detalles',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: AppTheme.hyperlinkColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                  else
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${plan.monthlyPrice.toStringAsFixed(2)}€',
+                              style: theme.textTheme.headlineLarge?.copyWith(
+                                color: AppTheme.hyperlinkColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 70,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '/mes',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: AppTheme.textColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${(plan.monthlyPrice * 12 * (1 - plan.yearlyDiscount / 100)).toStringAsFixed(2)}€',
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                color: AppTheme.secondaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '/año',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: AppTheme.textColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Ahorra un ${plan.yearlyDiscount}% pagando anualmente',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppTheme.hyperlinkColor,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 24),
+                  CustomButton(
+                    text: 'Seleccionar',
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(
+                        '/restaurant-registration',
+                        arguments: plan,
+                      );
+                    },
+                    iconData: Icons.check_circle_outline,
+                    iconPosition: IconPosition.right,
+                  ),
+                ],
               ),
             ),
-            Text(
-              'Descuento anual: ${plan.yearlyDiscount}%',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: AppTheme.textColor,
-              ),
-            ),
-            if (plan.maxUsers != null)
-              Text(
-                'Máximo de usuarios: ${plan.maxUsers}',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: AppTheme.textColor,
-                ),
-              ),
-            const SizedBox(height: 24),
-            CustomButton(
-              text: 'Seleccionar este plan',
-              onPressed: () {
-                Navigator.of(context).pushNamed(
-                  '/restaurant-registration',
-                  arguments: plan,
-                );
-              },
-              iconData: Icons.check_circle_outline,
-              iconPosition: IconPosition.right,
-            ),
-          ],
+          ),
         ),
         decoration: const PageDecoration(
           contentMargin: EdgeInsets.all(16.0),
@@ -134,63 +222,43 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: AppTheme.secondaryColor,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,        
+      ),
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          BackgroundImage(image: 'assets/images/background_00.png'),
+          BackgroundImage(image: 'assets/images/background_01.png'),
           SafeArea(
             child: Center(
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 400),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/logo.svg',
-                      height: 150,
-                      semanticsLabel: 'Logo de Gastro & Hub',
-                      colorFilter: const ColorFilter.mode(
-                        AppTheme.secondaryColor,
-                        BlendMode.srcIn,
-                      ),
+                child: IntroductionScreen(
+                  pages: _buildPlanPages(plans!),
+                  showDoneButton: false,
+                  showNextButton: true,
+                  showSkipButton: false,
+                  next: Text(
+                    'Siguiente',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: AppTheme.hyperlinkColor,
                     ),
-                    const SizedBox(height: 16),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        'GASTRO & HUB',
-                        style: theme.textTheme.headlineLarge?.copyWith(
-                          fontSize: 200,
-                          color: AppTheme.secondaryColor,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                  ),
+                  dotsDecorator: DotsDecorator(
+                    activeColor: AppTheme.primaryColor,
+                    color: AppTheme.textColor.withAlpha((255 * 0.5).toInt()),
+                    size: const Size(10.0, 10.0),
+                    activeSize: const Size(22.0, 10.0),
+                    activeShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25.0),
                     ),
-                    const SizedBox(height: 32),
-                    Expanded(
-                      child: IntroductionScreen(
-                        pages: _buildPlanPages(plans!),
-                        showDoneButton: false,
-                        showNextButton: true,
-                        showSkipButton: false,
-                        next: Text(
-                          'Siguiente',
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: AppTheme.hyperlinkColor,
-                          ),
-                        ),
-                        dotsDecorator: DotsDecorator(
-                          activeColor: AppTheme.primaryColor,
-                          color: AppTheme.textColor.withAlpha((255 * 0.5).toInt()),
-                          size: const Size(10.0, 10.0),
-                          activeSize: const Size(22.0, 10.0),
-                          activeShape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                          ),
-                        ),
-                        globalBackgroundColor: Colors.transparent,
-                      ),
-                    ),
-                  ],
+                  ),
+                  globalBackgroundColor: Colors.transparent,
                 ),
               ),
             ),

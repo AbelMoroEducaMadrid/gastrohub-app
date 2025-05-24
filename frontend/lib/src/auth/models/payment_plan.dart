@@ -5,6 +5,7 @@ class PaymentPlan {
   final double monthlyPrice;
   final double yearlyDiscount;
   final int? maxUsers;
+  final List<String> features;
 
   PaymentPlan({
     required this.id,
@@ -13,6 +14,7 @@ class PaymentPlan {
     required this.monthlyPrice,
     required this.yearlyDiscount,
     this.maxUsers,
+    required this.features,
   });
 
   factory PaymentPlan.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class PaymentPlan {
       monthlyPrice: json['monthlyPrice'].toDouble(),
       yearlyDiscount: json['yearlyDiscount'].toDouble(),
       maxUsers: json['maxUsers'],
+      features: List<String>.from(json['features']),
     );
   }
 }
