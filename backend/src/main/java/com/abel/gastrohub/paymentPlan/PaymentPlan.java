@@ -7,10 +7,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -32,6 +35,11 @@ public class PaymentPlan {
     @NotNull
     @Column(name = "description", nullable = false, length = Integer.MAX_VALUE)
     private String description;
+
+    @NotNull
+    @Column(name = "features", nullable = false)
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    private List<String> features;
 
     @NotNull
     @Column(name = "monthly_price", nullable = false, precision = 10, scale = 2)

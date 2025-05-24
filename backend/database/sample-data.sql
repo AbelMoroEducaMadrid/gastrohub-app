@@ -31,15 +31,39 @@ VALUES ('Sin gluten', 'Producto apto para celíacos'),
        ('Contiene lactosa', 'Contiene productos lácteos'),
        ('Contiene frutos secos', 'Contiene almendras, nueces, etc.');
 
-INSERT INTO payment_plans (name, description, monthly_price, max_users)
-VALUES ('Básico', 'Ideal para pequeños negocios que necesitan gestionar mesas y pedidos de manera eficiente.', 9.99, 5),
-       ('Avanzado', 'Perfecto para negocios en expansión que requieren gestión de inventario y control adicional.',
-        24.99, 15),
-       ('Pro', 'Diseñado para negocios en crecimiento que buscan análisis predictivo y optimización operativa.', 39.99,
-        25),
-       ('Premium', 'Para grandes negocios o cadenas que necesitan todas las funciones y soporte prioritario.', 69.99,
-        35),
-       ('Personalizado', 'Plan a medida para necesidades específicas. Contáctanos para más detalles.', 0.00, NULL);
+INSERT INTO payment_plans (name, description, monthly_price, max_users, yearly_discount, features)
+VALUES ('Básico', 'Gestión esencial de pedidos y mesas.', 9.99, 5, 5,
+        ARRAY [
+            'Pedidos y mesas en tiempo real',
+            'Soporte para hasta 5 usuarios',
+            'Acceso desde dispositivos móviles'
+            ]),
+       ('Avanzado', 'Control avanzado e inventario.', 24.99, 15, 10,
+        ARRAY [
+            'Gestión de inventario con alertas',
+            'Gestión de reservas',
+            'Notificaciones en tiempo real',
+            'Soporte para hasta 15 usuarios'
+            ]),
+       ('Pro', 'Optimización y análisis predictivo.', 39.99, 25, 15,
+        ARRAY [
+            'Análisis predictivo de inventario',
+            'Reportes detallados con predicciones',
+            'Integración con sistemas externos',
+            'Soporte para hasta 25 usuarios'
+            ]),
+       ('Premium', 'Todas las funciones + soporte VIP.', 69.99, 35, 20,
+        ARRAY [
+            'Soporte prioritario 24/7',
+            'Escalabilidad para múltiples locales',
+            'Gestión de promociones y sugerencias',
+            'Soporte para hasta 35 usuarios'
+            ]),
+       ('Personalizado', 'Soluciones a medida para tu negocio.', 0.00, NULL, 0,
+        ARRAY [
+            'Funcionalidades personalizadas',
+            'Soporte dedicado'
+            ]);
 
 -- Restaurantes
 INSERT INTO restaurants (name, address, cuisine_type, description, payment_plan_id, paid)

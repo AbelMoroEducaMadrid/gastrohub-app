@@ -55,6 +55,7 @@ CREATE TABLE payment_plans
     id              SERIAL PRIMARY KEY,
     name            VARCHAR(255)                        NOT NULL,           -- Nombre del plan (Ej: Básico, Pro, Premium)
     description     TEXT                                NOT NULL,           -- Descripción del plan
+    features        TEXT[]                              NOT NULL,
     monthly_price   DECIMAL(10, 2)                      NOT NULL,           -- Precio en euros
     yearly_discount INT                                 NOT NULL DEFAULT 0, -- Descuento si se paga anualmente
     max_users       INT,                                                    -- Máximo de usuarios permitidos
