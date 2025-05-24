@@ -2,8 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:gastrohub_app/src/auth/exception/api_exception.dart';
 import 'package:gastrohub_app/src/auth/models/user.dart';
+import 'package:gastrohub_app/src/auth/providers/restaurant_provider.dart';
 import 'package:gastrohub_app/src/auth/service/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:gastrohub_app/src/auth/service/restaurant_service.dart';
 
 class AuthState {
   final User? user;
@@ -26,8 +28,10 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthService _authService;
   final FlutterSecureStorage _secureStorage;
+  final Ref ref;
 
-  AuthNotifier(this._authService, this._secureStorage) : super(AuthState());
+  AuthNotifier(this._authService, this._secureStorage, this.ref)
+      : super(AuthState());
 
   Future<void> login(String email, String password) async {
     state = AuthState(isLoading: true);
@@ -97,6 +101,37 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> registerRestaurant(RestaurantRegistration restaurant) async {
+    state = AuthState(isLoading: true, user: state.user, token: state.token);
+    try {
+      final token = state.token;
+      if (token == null) {
+        throw ApiException('Error', 'No hay token de autenticación');
+      }
+
+      final restaurantService = ref.read(restaurantServiceProvider);
+      await restaurantService.registerRestaurant(token, restaurant);
+
+      final updatedUser = await _authService.getUserData(token);
+      state = AuthState(user: updatedUser, token: token);
+    } catch (e) {
+      if (e is ApiException) {
+        state = AuthState(
+          error: e.message,
+          errorTitle: e.title,
+          user: state.user,
+          token: state.token,
+        );
+      } else {
+        state = AuthState(
+          error: e.toString(),
+          user: state.user,
+          token: state.token,
+        );
+      }
+    }
+  }
+
   void clearError() {
     state = AuthState(
       user: state.user,
@@ -132,5 +167,5 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);
   final secureStorage = ref.watch(secureStorageProvider);
-  return AuthNotifier(authService, secureStorage);
+  return AuthNotifier(authService, secureStorage, ref);
 });

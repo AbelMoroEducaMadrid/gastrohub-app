@@ -181,6 +181,7 @@ class _SelectPlanScreenState extends ConsumerState<SelectPlanScreen> {
                   CustomButton(
                     text: 'Seleccionar',
                     onPressed: () {
+                      print('Plan seleccionado: ${plan.name}, ID: ${plan.id}');
                       Navigator.of(context).pushNamed(
                         '/restaurant-registration',
                         arguments: plan,

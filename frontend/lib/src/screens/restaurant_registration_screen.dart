@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gastrohub_app/src/auth/models/payment_plan.dart';
+import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/auth/service/restaurant_service.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/core/utils/form_validators.dart';
 import 'package:gastrohub_app/src/core/widgets/form_container.dart';
 
-// Asumimos que existe un provider para manejar el registro del restaurante
-// final restaurantProvider = StateNotifierProvider<RestaurantNotifier, RestaurantState>((ref) => RestaurantNotifier());
-
 class RestaurantRegistrationScreen extends ConsumerStatefulWidget {
-  const RestaurantRegistrationScreen({super.key});
+  final PaymentPlan plan;
+
+  const RestaurantRegistrationScreen({super.key, required this.plan});
 
   @override
   ConsumerState<RestaurantRegistrationScreen> createState() =>
@@ -26,19 +28,33 @@ class _RestaurantRegistrationScreenState
   final TextEditingController descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void _registerRestaurant() async {
-    if (_formKey.currentState!.validate()) {
-      // Llamada al provider para registrar el restaurante (descomentar y ajustar según tu implementación)
-      // await ref.read(restaurantProvider.notifier).registerRestaurant(
-      //   name: nameController.text,
-      //   address: addressController.text,
-      //   cuisineType: cuisineTypeController.text,
-      //   description: descriptionController.text,
-      // );
+  @override
+  void initState() {
+    super.initState();
+    print('Plan recibido: ${widget.plan.name}, ID: ${widget.plan.id}');
+  }
 
-      // Simulación de registro exitoso para navegación
-      if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed('/dashboard');
+  void _registerRestaurant() async {
+    print('Registrando restaurante con paymentPlanId: ${widget.plan.id}');
+    if (_formKey.currentState!.validate()) {
+      final restaurant = RestaurantRegistration(
+        name: nameController.text,
+        address: addressController.text,
+        cuisineType: cuisineTypeController.text,
+        description: descriptionController.text,
+        paymentPlanId: widget.plan.id,
+      );
+
+      await ref.read(authProvider.notifier).registerRestaurant(restaurant);
+
+      final authState = ref.read(authProvider);
+      if (authState.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(authState.error!)),
+        );
+      } else {
+        Navigator.of(context).pushReplacementNamed('/dashboard');
+      }
     }
   }
 
@@ -122,7 +138,7 @@ class _RestaurantRegistrationScreenState
             const SizedBox(height: 16),
             CustomTextField(
               label: 'Descripción',
-              controller: descriptionController,  
+              controller: descriptionController,
               fillColor: fillColor,
               validator: (value) =>
                   FormValidators.requiredField(value, 'Descripción'),
