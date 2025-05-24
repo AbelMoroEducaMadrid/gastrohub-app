@@ -1,28 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gastrohub_app/src/features/restaurant/models/payment_plan.dart';
-import 'package:gastrohub_app/src/features/dashboard/dashboard_screen.dart';
-import 'package:gastrohub_app/src/features/auth/screens/login_screen.dart';
+import 'package:gastrohub_app/src/core/config/app_config.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
-import 'package:gastrohub_app/src/features/auth/screens/onboarding_screen.dart';
-import 'package:gastrohub_app/src/features/auth/screens/registration_screen.dart';
-import 'package:gastrohub_app/src/features/restaurant/screens/restaurant_registration_screen.dart';
-import 'package:gastrohub_app/src/features/restaurant/screens/select_plan_screen.dart';
-import 'package:gastrohub_app/src/features/auth/screens/verification_pending_screen.dart';
-import 'package:gastrohub_app/src/features/auth/screens/welcome_screen.dart';
+import 'package:gastrohub_app/src/routes/app_routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    await dotenv.load(fileName: '.env.local');
-    debugPrint(".env.local cargado");
-  } catch (_) {
-    await dotenv.load(fileName: '.env');
-    debugPrint(".env.local no encontrado, usando .env");
-  }
-
+  await AppConfig.initialize();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -35,32 +19,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Gastro & Hub',
       theme: AppTheme.lightTheme,
-      initialRoute: '/onboarding',
-      routes: {
-        '/onboarding': (context) => const OnboardingScreen(),
-        '/login': (context) => LoginScreen(),
-        '/register': (context) => RegistrationScreen(),
-        '/dashboard': (context) => const DashboardScreen(),
-        '/welcome': (context) => const WelcomeScreen(),
-        '/select-plan': (context) => const SelectPlanScreen(),
-      },
-      onGenerateRoute: (settings) {
-        if (settings.name == '/verification-pending') {
-          final args = settings.arguments as Map<String, String>?;
-          final email = args?['email'] ?? 'email@ejemplo.com';
-          final name = args?['name'] ?? 'Nombre';
-          return MaterialPageRoute(
-            builder: (context) =>
-                VerificationPendingScreen(email: email, name: name),
-          );
-        } else if (settings.name == '/restaurant-registration') {
-          final plan = settings.arguments as PaymentPlan;
-          return MaterialPageRoute(
-            builder: (context) => RestaurantRegistrationScreen(plan: plan),
-          );
-        }
-        return null;
-      },
+      initialRoute: AppRoutes.onboarding,
+      routes: AppRoutes.getRoutes(),
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }
