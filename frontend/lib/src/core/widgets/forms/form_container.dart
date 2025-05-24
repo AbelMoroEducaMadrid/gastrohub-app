@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'background_image.dart';
+import '../backgrounds/background_image.dart';
 
 class FormContainer extends StatelessWidget {
   final Widget child;

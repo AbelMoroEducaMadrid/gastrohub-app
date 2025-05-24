@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/utils/date_utils.dart' as my_date_utils;
 
 class DashboardScreen extends ConsumerWidget {

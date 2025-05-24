@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:gastrohub_app/src/auth/exception/api_error_handler.dart';
-import 'package:gastrohub_app/src/auth/exception/api_exception.dart';
+import 'package:gastrohub_app/src/exceptions/api_error_handler.dart';
+import 'package:gastrohub_app/src/exceptions/api_exception.dart';
 
 class RestaurantRegistration {
   final String name;

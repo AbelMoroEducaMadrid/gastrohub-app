@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
-import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
-import 'package:gastrohub_app/src/core/widgets/form_container.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
+import 'package:gastrohub_app/src/core/widgets/forms/form_container.dart';
 
 class VerificationPendingScreen extends StatelessWidget {
   final String name;

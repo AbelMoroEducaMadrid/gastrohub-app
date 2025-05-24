@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/utils/dialog_utils.dart';
-import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
-import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/core/utils/form_validators.dart';
-import 'package:gastrohub_app/src/core/widgets/form_container.dart';
+import 'package:gastrohub_app/src/core/widgets/forms/form_container.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});

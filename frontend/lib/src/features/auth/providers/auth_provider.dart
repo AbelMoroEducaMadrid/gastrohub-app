@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:gastrohub_app/src/auth/exception/api_exception.dart';
-import 'package:gastrohub_app/src/auth/models/user.dart';
-import 'package:gastrohub_app/src/auth/providers/restaurant_provider.dart';
-import 'package:gastrohub_app/src/auth/service/auth_service.dart';
+import 'package:gastrohub_app/src/exceptions/api_exception.dart';
+import 'package:gastrohub_app/src/features/auth/models/user.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/restaurant_provider.dart';
+import 'package:gastrohub_app/src/features/auth/service/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:gastrohub_app/src/auth/service/restaurant_service.dart';
+import 'package:gastrohub_app/src/features/restaurant/services/restaurant_service.dart';
 
 class AuthState {
   final User? user;

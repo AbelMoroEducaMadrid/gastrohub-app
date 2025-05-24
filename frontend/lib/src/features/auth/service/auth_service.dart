@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:gastrohub_app/src/auth/exception/api_error_handler.dart';
-import 'package:gastrohub_app/src/auth/exception/api_exception.dart';
+import 'package:gastrohub_app/src/exceptions/api_error_handler.dart';
+import 'package:gastrohub_app/src/exceptions/api_exception.dart';
 import 'package:http/http.dart' as http;
-import 'package:gastrohub_app/src/auth/models/user.dart';
+import 'package:gastrohub_app/src/features/auth/models/user.dart';
 
 class AuthService {
   final String baseUrl;

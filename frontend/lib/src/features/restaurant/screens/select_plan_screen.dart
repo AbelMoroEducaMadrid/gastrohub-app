@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gastrohub_app/src/auth/models/payment_plan.dart';
-import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
-import 'package:gastrohub_app/src/auth/providers/payment_plan_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/models/payment_plan.dart';
+import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/payment_plan_provider.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
-import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
-import 'package:gastrohub_app/src/core/widgets/background_image.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
+import 'package:gastrohub_app/src/core/widgets/backgrounds/background_image.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class SelectPlanScreen extends ConsumerStatefulWidget {

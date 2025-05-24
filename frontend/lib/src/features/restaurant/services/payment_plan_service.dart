@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:gastrohub_app/src/auth/models/payment_plan.dart';
+import 'package:gastrohub_app/src/features/restaurant/models/payment_plan.dart';
 
 class PaymentPlanService {
   final String baseUrl;

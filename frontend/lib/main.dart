@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gastrohub_app/src/auth/models/payment_plan.dart';
-import 'package:gastrohub_app/src/screens/dashboard_screen.dart';
-import 'package:gastrohub_app/src/screens/login_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/models/payment_plan.dart';
+import 'package:gastrohub_app/src/features/dashboard/dashboard_screen.dart';
+import 'package:gastrohub_app/src/features/auth/screens/login_screen.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
-import 'package:gastrohub_app/src/screens/onboarding_screen.dart';
-import 'package:gastrohub_app/src/screens/registration_screen.dart';
-import 'package:gastrohub_app/src/screens/restaurant_registration_screen.dart';
-import 'package:gastrohub_app/src/screens/select_plan_screen.dart';
-import 'package:gastrohub_app/src/screens/verification_pending_screen.dart';
-import 'package:gastrohub_app/src/screens/welcome_screen.dart';
+import 'package:gastrohub_app/src/features/auth/screens/onboarding_screen.dart';
+import 'package:gastrohub_app/src/features/auth/screens/registration_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/restaurant_registration_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/select_plan_screen.dart';
+import 'package:gastrohub_app/src/features/auth/screens/verification_pending_screen.dart';
+import 'package:gastrohub_app/src/features/auth/screens/welcome_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
