@@ -50,11 +50,23 @@ public class UserService {
     public User updateUser(Integer id, User userDetails) {
         User user = userRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
-        user.setName(userDetails.getName());
-        user.setEmail(userDetails.getEmail());
-        user.setPhone(userDetails.getPhone());
+        if (userDetails.getName() != null) {
+            user.setName(userDetails.getName());
+        }
+        if (userDetails.getEmail() != null) {
+            user.setEmail(userDetails.getEmail());
+        }
+        if (userDetails.getPhone() != null) {
+            user.setPhone(userDetails.getPhone());
+        }
         if (userDetails.getPasswordHash() != null && !userDetails.getPasswordHash().isEmpty()) {
             user.setPasswordHash(passwordEncoder.encode(userDetails.getPasswordHash()));
+        }
+        if (userDetails.getRole() != null) {
+            user.setRole(userDetails.getRole());
+        }
+        if (userDetails.getRestaurant() != null) {
+            user.setRestaurant(userDetails.getRestaurant());
         }
         return userRepository.save(user);
     }
@@ -99,5 +111,10 @@ public class UserService {
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public MtRole getRoleByName(String name) {
+        return roleRepository.findByName(name)
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + name));
     }
 }
