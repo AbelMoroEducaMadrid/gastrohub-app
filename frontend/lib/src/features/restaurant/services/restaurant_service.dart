@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:gastrohub_app/src/features/restaurant/models/restaurant.dart';
 import 'package:http/http.dart' as http;
 import 'package:gastrohub_app/src/exceptions/api_error_handler.dart';
 import 'package:gastrohub_app/src/exceptions/api_exception.dart';
@@ -34,7 +35,7 @@ class RestaurantService {
 
   RestaurantService({required this.baseUrl});
 
-  Future<void> registerRestaurant(
+  Future<Restaurant> registerRestaurant(
       String token, RestaurantRegistration restaurant) async {
     final url = Uri.parse('$baseUrl/api/restaurants');
     final response = await http.post(
@@ -47,7 +48,10 @@ class RestaurantService {
     );
     print('POST /api/restaurants - Status: ${response.statusCode}');
     print('Response body: ${response.body}');
-    if (response.statusCode != 201) {
+    if (response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      return Restaurant.fromJson(data);
+    } else {
       final error = ApiErrorHandler.handleErrorResponse(response);
       throw ApiException(error['title']!, error['message']!);
     }
