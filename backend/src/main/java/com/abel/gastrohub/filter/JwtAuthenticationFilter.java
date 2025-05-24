@@ -1,7 +1,6 @@
 package com.abel.gastrohub.filter;
 
-import com.abel.gastrohub.exception.InvalidTokenException;
-import com.abel.gastrohub.exception.TokenExpiredException;
+import com.abel.gastrohub.exception.ErrorResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -12,11 +11,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -49,40 +48,71 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            System.out.println("Token encontrado en el header: " + authorizationHeader);
             String token = authorizationHeader.substring(7);
             try {
-                System.out.println("Intentando parsear el token");
                 Claims claims = Jwts.parser()
                         .verifyWith(secretKey)
                         .build()
                         .parseSignedClaims(token)
                         .getPayload();
                 String username = claims.getSubject();
-                System.out.println("Usuario extraído del token: " + username);
+
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    System.out.println("Cargando detalles del usuario");
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    System.out.println("Detalles del usuario cargados: " + userDetails.getUsername() + ", Roles: " + userDetails.getAuthorities());
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    System.out.println("Autenticación establecida para el usuario: " + username);
+                    try {
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } catch (UsernameNotFoundException e) {
+                        ErrorResponse errorResponse = new ErrorResponse(
+                                HttpServletResponse.SC_UNAUTHORIZED,
+                                "Usuario no encontrado",
+                                e.getMessage(),
+                                request.getRequestURI()
+                        );
+                        sendErrorResponse(response, errorResponse);
+                        return;
+                    }
                 }
             } catch (ExpiredJwtException e) {
-                throw new TokenExpiredException("Token expirado");
+                ErrorResponse errorResponse = new ErrorResponse(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        "Token expirado",
+                        e.getMessage(),
+                        request.getRequestURI()
+                );
+                sendErrorResponse(response, errorResponse);
+                return;
             } catch (JwtException e) {
-                throw new InvalidTokenException("Token inválido");
+                ErrorResponse errorResponse = new ErrorResponse(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        "Token inválido",
+                        e.getMessage(),
+                        request.getRequestURI()
+                );
+                sendErrorResponse(response, errorResponse);
+                return;
             }
-        } else {
-            System.out.println("No se encontró token en la solicitud");
         }
         chain.doFilter(request, response);
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, ErrorResponse errorResponse) throws IOException {
+        response.setStatus(errorResponse.getStatus());
+        response.setContentType("application/json");
+        String jsonResponse = String.format(
+                "{\"status\": %d, \"error\": \"%s\", \"message\": \"%s\", \"path\": \"%s\"}",
+                errorResponse.getStatus(),
+                errorResponse.getError(),
+                errorResponse.getMessage(),
+                errorResponse.getPath()
+        );
+        response.getWriter().write(jsonResponse);
     }
 }
