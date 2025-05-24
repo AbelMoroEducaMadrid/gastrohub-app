@@ -1,5 +1,6 @@
 package com.abel.gastrohub.security;
 
+import com.abel.gastrohub.exception.InvalidCredentialsException;
 import com.abel.gastrohub.user.User;
 import com.abel.gastrohub.user.UserService;
 import com.abel.gastrohub.user.dto.UserLoginDTO;
@@ -30,7 +31,7 @@ public class AuthController {
             String token = jwtUtil.generateToken(user);
             return ResponseEntity.ok(token);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).body("Credenciales inválidas");
+            throw new InvalidCredentialsException("Credenciales inválidas");
         }
     }
 

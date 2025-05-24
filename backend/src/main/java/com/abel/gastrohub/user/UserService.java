@@ -1,5 +1,6 @@
 package com.abel.gastrohub.user;
 
+import com.abel.gastrohub.exception.PhoneAlreadyInUseException;
 import com.abel.gastrohub.masterdata.MtRole;
 import com.abel.gastrohub.masterdata.MtRoleRepository;
 import com.abel.gastrohub.restaurant.Restaurant;
@@ -40,6 +41,9 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("El email " + user.getEmail() + " ya está registrado");
         }
+        if (user.getPhone() != null && userRepository.findByPhone(user.getPhone()).isPresent()) {
+            throw new PhoneAlreadyInUseException("El número de teléfono " + user.getPhone() + " ya está en uso");
+        }
         MtRole defaultRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Rol por defecto no encontrado"));
         user.setRole(defaultRole);
@@ -56,7 +60,10 @@ public class UserService {
         if (userDetails.getEmail() != null) {
             user.setEmail(userDetails.getEmail());
         }
-        if (userDetails.getPhone() != null) {
+        if (userDetails.getPhone() != null && !userDetails.getPhone().equals(user.getPhone())) {
+            if (userRepository.findByPhone(userDetails.getPhone()).isPresent()) {
+                throw new PhoneAlreadyInUseException("El número de teléfono " + userDetails.getPhone() + " ya está en uso");
+            }
             user.setPhone(userDetails.getPhone());
         }
         if (userDetails.getPasswordHash() != null && !userDetails.getPasswordHash().isEmpty()) {
