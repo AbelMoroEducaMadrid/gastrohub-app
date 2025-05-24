@@ -29,13 +29,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
 
       final authState = ref.read(authProvider);
-      if (authState.user != null) {
-        // Verifica si el usuario tiene un restaurante asignado
-        if (authState.user!.restaurantId != null) {
-          // Si tiene restaurante, va al dashboard
+      if (authState.user != null) {        
+        if (authState.user!.restaurantId != null) {         
           Navigator.of(context).pushReplacementNamed('/dashboard');
-        } else {
-          // Si no tiene restaurante, va a la pantalla de bienvenida
+        } else {         
           Navigator.of(context).pushReplacementNamed('/welcome');
         }
       }
