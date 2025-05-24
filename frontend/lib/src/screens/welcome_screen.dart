@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
@@ -61,6 +62,13 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     );
   }
 
+  void _scanQRCode() {
+    // TODO: Implementar lógica para escanear QR code en el futuro
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Escaneo de QR code no implementado aún')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -77,14 +85,26 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     final theme = Theme.of(context);
 
     return FormContainer(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: AppTheme.secondaryColor,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       backgroundImage: 'assets/images/background_01.png',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Image.asset(
-            'assets/images/logo.png',
+          SvgPicture.asset(
+            'assets/images/logo.svg',
             height: 150,
-            semanticLabel: 'Logo de Gastro & Hub',
+            semanticsLabel: 'Logo de Gastro & Hub',
+            colorFilter: ColorFilter.mode(
+              AppTheme.secondaryColor,
+              BlendMode.srcIn,
+            ),
           ),
           const SizedBox(height: 16),
           FittedBox(
@@ -93,7 +113,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
               'GASTRO & HUB',
               style: theme.textTheme.headlineLarge?.copyWith(
                 fontSize: 200,
-                color: AppTheme.primaryColor,
+                color: AppTheme.secondaryColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -102,7 +122,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
           Text(
             'Bienvenido, ${user.name}',
             style: theme.textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryColor,
+              color: AppTheme.secondaryColor,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -117,8 +137,10 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
           ),
           const SizedBox(height: 24),
           CustomButton(
-            text: 'Configurar',
+            text: 'Elige tu plan',
             onPressed: _createRestaurant,
+            iconData: Icons.layers_outlined,
+            iconPosition: IconPosition.left,
           ),
           const SizedBox(height: 32),
           Row(
@@ -140,6 +162,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
             child: CustomTextField(
               label: 'Código del establecimiento',
               controller: codeController,
+              icon: Icons.storefront_outlined,
             ),
           ),
           Row(
@@ -153,24 +176,31 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                       return AlertDialog(
                         title:
                             const Text('¿Qué es el código de establecimiento?'),
-                        content: const Text(
+                        content: Text(
                           'Es un código único que te permite unirte a un restaurante específico. Pídelo a tu gerente o dueño.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.black54,
+                          ),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Cerrar'),
+                            child: const Text(
+                              'Cerrar',
+                              style: TextStyle(
+                                color: AppTheme.secondaryColor,
+                              ),
+                            ),
                           ),
                         ],
                       );
                     },
                   );
                 },
-                child: Text(
-                  '¿Qué es esto? ',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: AppTheme.primaryColor,
-                  ),
+                child: Icon(
+                  Icons.info_outline,
+                  color: AppTheme.textColor,
+                  size: 22,
                 ),
               ),
             ],
@@ -178,9 +208,25 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
           const SizedBox(height: 16),
           isJoining
               ? const Center(child: CircularProgressIndicator())
-              : CustomButton(
-                  text: 'Unirse',
-                  onPressed: _joinRestaurant,
+              : Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Escanear QR',
+                        onPressed: _scanQRCode,
+                        iconData: Icons.qr_code,
+                        iconPosition: IconPosition.left,
+                        backgroundColor: AppTheme.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(width: 24),
+                    CustomButton(
+                      text: 'Unirse',
+                      onPressed: _joinRestaurant,
+                      iconData: Icons.group_add_outlined,
+                      iconPosition: IconPosition.left,
+                    ),
+                  ],
                 ),
         ],
       ),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color.fromARGB(255, 58, 90, 64);
-  static const Color secondaryColor = Color.fromARGB(255, 88, 129, 87);
-  static const Color backgroundColor = Color.fromARGB(255, 218, 215, 205);
-  static const Color textColor = Color.fromARGB(255, 52, 78, 65);
-  static const Color errorColor = Color.fromARGB(255, 176, 0, 32);
-  static const Color successColor = Color.fromARGB(255, 46, 125, 50);
+  static const Color primaryColor = Color.fromARGB(255, 131, 11, 11);
+  static const Color secondaryColor = Color.fromARGB(255, 255, 110, 110);
+  static const Color backgroundColor = Color(0xFFe7ecef);
+  static const Color textColor = Colors.white;
+  static const Color hyperlinkColor = Color.fromARGB(255, 255, 79, 79);
+  static const Color errorColor = Colors.red;
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -22,9 +22,9 @@ class AppTheme {
       ),
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
-          fontSize: 32,
+          fontSize: 40,
           fontWeight: FontWeight.bold,
-          color: textColor,
+          color: secondaryColor,
           fontFamily: 'BebasNeue',
         ),
         bodyLarge: TextStyle(
@@ -62,22 +62,22 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         border: const OutlineInputBorder(),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: secondaryColor, width: 1.5),
+          borderSide: BorderSide(color: textColor, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: primaryColor, width: 2.0),
+          borderSide: BorderSide(color: textColor, width: 2.0),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: errorColor, width: 2.0),
+          borderSide: BorderSide(color: textColor, width: 1.5),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: errorColor, width: 2.0),
+          borderSide: BorderSide(color: textColor, width: 2.0),
         ),
-        labelStyle: TextStyle(color: secondaryColor),
+        labelStyle: TextStyle(color: textColor),
         errorStyle: TextStyle(color: errorColor, fontSize: 12),
       ),
       dividerTheme: DividerThemeData(
-        color: secondaryColor.withAlpha(130),
+        color: textColor.withAlpha(130),
         thickness: 1,
         space: 16,
       ),

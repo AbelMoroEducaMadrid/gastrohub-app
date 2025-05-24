@@ -19,6 +19,7 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   flutter_dotenv: ^5.0.2
   smooth_page_indicator: ^1.0.0
+  wave: ^0.2.2
 
 dev_dependencies:
   flutter_test:
@@ -28,12 +29,13 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/logo.png
+    - assets/images/logo.svg
     - assets/images/welcome.svg
     - assets/images/orders.svg
     - assets/images/inventory.svg
     - assets/images/payments.svg
     - assets/images/google_logo.svg
+    - assets/images/background_00.png
     - assets/images/background_01.png
     - .env
     - .env.local

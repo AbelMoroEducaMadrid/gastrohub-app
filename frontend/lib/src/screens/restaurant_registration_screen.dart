@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gastrohub_app/src/auth/providers/auth_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
@@ -42,43 +42,62 @@ class _RestaurantRegistrationScreenState
     }
   }
 
-  void _showErrorDialog(String error) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error de registro'),
-        content: Text(error),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final fillColor = Colors.grey.shade500.withAlpha((255 * 0.5).toInt());
 
     return FormContainer(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: AppTheme.secondaryColor,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       backgroundImage: 'assets/images/background_01.png',
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SvgPicture.asset(
+              'assets/images/logo.svg',
+              height: 150,
+              semanticsLabel: 'Logo de Gastro & Hub',
+              colorFilter: ColorFilter.mode(
+                AppTheme.secondaryColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(height: 16),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'GASTRO & HUB',
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  fontSize: 200,
+                  color: AppTheme.secondaryColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 32),
             Text(
-              'Registrar Restaurante',
-              style: theme.textTheme.headlineLarge
-                  ?.copyWith(color: AppTheme.primaryColor),
+              'Datos del local',
+              style: theme.textTheme.headlineMedium?.copyWith(
+                color: AppTheme.secondaryColor,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
             CustomTextField(
-              label: 'Nombre del Restaurante',
+              label: 'Nombre',
               controller: nameController,
+              icon: Icons.restaurant_menu,
+              fillColor: fillColor,
               validator: (value) =>
                   FormValidators.requiredField(value, 'Nombre del Restaurante'),
             ),
@@ -86,6 +105,8 @@ class _RestaurantRegistrationScreenState
             CustomTextField(
               label: 'Dirección',
               controller: addressController,
+              icon: Icons.location_on,
+              fillColor: fillColor,
               validator: (value) =>
                   FormValidators.requiredField(value, 'Dirección'),
             ),
@@ -93,13 +114,16 @@ class _RestaurantRegistrationScreenState
             CustomTextField(
               label: 'Tipo de Cocina',
               controller: cuisineTypeController,
+              icon: Icons.restaurant,
+              fillColor: fillColor,
               validator: (value) =>
                   FormValidators.requiredField(value, 'Tipo de Cocina'),
             ),
             const SizedBox(height: 16),
             CustomTextField(
               label: 'Descripción',
-              controller: descriptionController,
+              controller: descriptionController,  
+              fillColor: fillColor,
               validator: (value) =>
                   FormValidators.requiredField(value, 'Descripción'),
               minLines: 3,
@@ -108,9 +132,11 @@ class _RestaurantRegistrationScreenState
             ),
             const SizedBox(height: 24),
             CustomButton(
-              text: 'Registrar Restaurante',
+              text: 'Continuar',
               onPressed: _registerRestaurant,
-            ),    
+              iconData: Icons.navigate_next_outlined,
+              iconPosition: IconPosition.right,
+            ),
           ],
         ),
       ),

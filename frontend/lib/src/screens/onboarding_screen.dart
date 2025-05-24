@@ -2,32 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
-import 'package:gastrohub_app/src/core/themes/introduction_screen_theme.dart';
+import 'package:gastrohub_app/src/core/widgets/background_image.dart';
 
-// Pantalla de onboarding usando introduction_screen
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
 
-  // Navegar al login manualmente
   void _goToLogin(BuildContext context) {
     Navigator.of(context).pushReplacementNamed('/login');
   }
 
+  Widget _buildImageWithCircle(
+      BuildContext context, String assetPath, String semanticsLabel) {
+    final screenSize = MediaQuery.of(context).size;
+    final circleSize = screenSize.width * 0.9;
+    final imageSize = screenSize.width * 0.5;
+
+    return Center(
+      child: Container(
+        width: circleSize,
+        height: circleSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withAlpha(150),
+        ),
+        child: Center(
+          child: SvgPicture.asset(
+            assetPath,
+            height: imageSize,
+            semanticsLabel: semanticsLabel,
+            colorFilter: assetPath == 'assets/images/logo.svg'
+                ? ColorFilter.mode(
+                    AppTheme.secondaryColor,
+                    BlendMode.srcIn,
+                  )
+                : null,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Combinar el tema principal con la extensión para IntroductionScreen
-    final theme = Theme.of(context).copyWith(
-      extensions: [
-        IntroductionScreenTheme.defaultTheme(),
-      ],
+    final theme = Theme.of(context);
+    final pageDecoration = PageDecoration(
+      bodyFlex: 2,
+      imageFlex: 4,
+      contentMargin: EdgeInsets.all(MediaQuery.of(context).size.width * 0.06),
     );
-    // Obtener el tema de IntroductionScreen, con fallback a defaultTheme
-    final introTheme = theme.extension<IntroductionScreenTheme>() ??
-        IntroductionScreenTheme.defaultTheme();
 
-    // Lista de páginas del onboarding
     final List<PageViewModel> pages = [
       PageViewModel(
+        decoration: pageDecoration,
         titleWidget: Text(
           "Bienvenido a Gastro & Hub",
           style: theme.textTheme.headlineLarge,
@@ -38,15 +64,14 @@ class OnboardingScreen extends StatelessWidget {
           style: theme.textTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
-        image: Center(
-          child: Image.asset(
-            'assets/images/logo.png',
-            height: 200,
-            semanticLabel: 'Ilustración de bienvenida',
-          ),
+        image: _buildImageWithCircle(
+          context,
+          'assets/images/logo.svg',
+          'Ilustración de bienvenida',
         ),
       ),
       PageViewModel(
+        decoration: pageDecoration,
         titleWidget: Text(
           "Pedidos en tiempo real",
           style: theme.textTheme.headlineLarge,
@@ -57,15 +82,14 @@ class OnboardingScreen extends StatelessWidget {
           style: theme.textTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
-        image: Center(
-          child: SvgPicture.asset(
-            'assets/images/orders.svg',
-            height: 200,
-            semanticsLabel: 'Ilustración de pedidos',
-          ),
+        image: _buildImageWithCircle(
+          context,
+          'assets/images/orders.svg',
+          'Ilustración de pedidos',
         ),
       ),
       PageViewModel(
+        decoration: pageDecoration,
         titleWidget: Text(
           "Controla tu inventario",
           style: theme.textTheme.headlineLarge,
@@ -76,15 +100,14 @@ class OnboardingScreen extends StatelessWidget {
           style: theme.textTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
-        image: Center(
-          child: SvgPicture.asset(
-            'assets/images/inventory.svg',
-            height: 200,
-            semanticsLabel: 'Ilustración de inventario',
-          ),
+        image: _buildImageWithCircle(
+          context,
+          'assets/images/inventory.svg',
+          'Ilustración de inventario',
         ),
       ),
       PageViewModel(
+        decoration: pageDecoration,
         titleWidget: Text(
           "Pagos y cierres fáciles",
           style: theme.textTheme.headlineLarge,
@@ -95,35 +118,57 @@ class OnboardingScreen extends StatelessWidget {
           style: theme.textTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
-        image: Center(
-          child: SvgPicture.asset(
-            'assets/images/payments.svg',
-            height: 200,
-            semanticsLabel: 'Ilustración de pagos',
-          ),
+        image: _buildImageWithCircle(
+          context,
+          'assets/images/payments.svg',
+          'Ilustración de pagos',
         ),
       ),
     ];
 
-    return Theme(
-      data: theme,
-      child: Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
-        body: IntroductionScreen(
-          pages: pages,
-          onDone: () => _goToLogin(context),
-          onSkip: () => _goToLogin(context),
-          showSkipButton: true,
-          skip: Text("Omitir", style: introTheme.skipStyle),
-          next: Text("Siguiente", style: introTheme.nextStyle),
-          done: Text("Comenzar", style: introTheme.doneStyle),
-          dotsDecorator: introTheme.dotsDecorator,
-          globalBackgroundColor: AppTheme.backgroundColor,
-          isProgress: true,
-          freeze: false,
-          bodyPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-          animationDuration: 300,
-        ),
+    return Scaffold(
+      body: Stack(
+        children: [
+          BackgroundImage(image: 'assets/images/background_00.png'),
+          SafeArea(
+            child: Center(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: IntroductionScreen(
+                  pages: pages,
+                  onDone: () => _goToLogin(context),
+                  onSkip: () => _goToLogin(context),
+                  showSkipButton: true,
+                  skip: Text("Omitir",
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: AppTheme.hyperlinkColor,
+                      )),
+                  next: Text("Siguiente",
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: AppTheme.hyperlinkColor,
+                      )),
+                  done: Text("Comenzar",
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: AppTheme.hyperlinkColor,
+                      )),
+                  dotsDecorator: DotsDecorator(
+                    activeColor: AppTheme.primaryColor,
+                    color: AppTheme.textColor.withAlpha((255 * 0.5).toInt()),
+                    size: const Size(10.0, 10.0),
+                    activeSize: const Size(22.0, 10.0),
+                    activeShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                    ),
+                  ),
+                  globalBackgroundColor: Colors.transparent,
+                  isProgress: true,
+                  freeze: false,
+                  animationDuration: 300,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
