@@ -177,7 +177,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                         title:
                             const Text('¿Qué es el código de establecimiento?'),
                         content: Text(
-                          'Es un código único que te permite unirte a un restaurante específico. Pídelo a tu gerente o dueño.',
+                          'Es un código único que te permite unirte a un establecimiento específico. Pídelo a tu gerente o dueño.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.black54,
                           ),
