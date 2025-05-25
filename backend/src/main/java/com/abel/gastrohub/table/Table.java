@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,7 +22,7 @@ public class Table {
     private Integer id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "layout_id", nullable = false)
     private Layout layout;
 
@@ -44,12 +46,13 @@ public class Table {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @Column(name = "state", nullable = false)
+    @Column(name = "state", nullable = false, columnDefinition = "table_state")
     @Enumerated(EnumType.STRING)
     private TableState state;
 
     @PrePersist
     public void prePersist() {
+        this.state = TableState.disponible;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

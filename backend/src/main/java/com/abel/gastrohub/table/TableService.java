@@ -32,7 +32,6 @@ public class TableService {
     }
 
     public List<TableResponseDTO> getAllTablesByLayout(Integer layoutId) {
-        Layout layout = layoutService.getLayoutById(layoutId);
         return tableRepository.findByLayoutIdAndDeletedAtIsNull(layoutId).stream()
                 .map(TableResponseDTO::new)
                 .collect(Collectors.toList());
@@ -59,7 +58,6 @@ public class TableService {
         table.setLayout(layout);
         table.setNumber(tableDTO.getNumber());
         table.setCapacity(tableDTO.getCapacity());
-        table.setState(tableDTO.getState());
         table.setCreatedAt(LocalDateTime.now());
         table.setUpdatedAt(LocalDateTime.now());
         Table savedTable = tableRepository.save(table);

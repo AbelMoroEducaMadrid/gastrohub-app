@@ -4,7 +4,6 @@ import com.abel.gastrohub.layout.dto.LayoutCreateDTO;
 import com.abel.gastrohub.layout.dto.LayoutUpdateDTO;
 import com.abel.gastrohub.restaurant.RestaurantRepository;
 import com.abel.gastrohub.security.CustomUserDetails;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ public class LayoutService {
     private final LayoutRepository layoutRepository;
     private final RestaurantRepository restaurantRepository;
 
-    @Autowired
     public LayoutService(LayoutRepository layoutRepository, RestaurantRepository restaurantRepository) {
         this.layoutRepository = layoutRepository;
         this.restaurantRepository = restaurantRepository;
@@ -57,8 +55,6 @@ public class LayoutService {
         layout.setRestaurant(restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado")));
         layout.setName(layoutDTO.getName());
-        layout.setCreatedAt(LocalDateTime.now());
-        layout.setUpdatedAt(LocalDateTime.now());
         return layoutRepository.save(layout);
     }
 
