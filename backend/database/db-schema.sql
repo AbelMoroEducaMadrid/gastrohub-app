@@ -7,11 +7,17 @@ CREATE SCHEMA public;
 -- ### Tipos Enumerados (ENUM)
 -- Estos tipos restringen los valores permitidos para mejorar la integridad de los datos.
 CREATE TYPE order_state AS ENUM ('pendiente', 'en progreso', 'servida', 'cancelada'); -- Estados posibles de una comanda
+CREATE CAST (varchar AS order_state) WITH INOUT AS IMPLICIT;
 CREATE TYPE order_item_state AS ENUM ('esperando', 'preparándose', 'listo', 'entregado', 'cancelado'); -- Estados de un ítem en una comanda
+CREATE CAST (varchar AS order_item_state) WITH INOUT AS IMPLICIT;
 CREATE TYPE table_state AS ENUM ('disponible', 'ocupada', 'reservada'); -- Estados de una mesa
+CREATE CAST (varchar AS table_state) WITH INOUT AS IMPLICIT;
 CREATE TYPE payment_state AS ENUM ('pendiente', 'completado', 'fallido', 'cancelado'); -- Estados de pago
+CREATE CAST (varchar AS payment_state) WITH INOUT AS IMPLICIT;
 CREATE TYPE payment_method AS ENUM ('efectivo', 'tarjeta', 'móvil', 'vale'); -- Métodos de pago
+CREATE CAST (varchar AS payment_method) WITH INOUT AS IMPLICIT;
 CREATE TYPE reservation_state AS ENUM ('pendiente', 'cancelada', 'no presentada', 'completada');
+CREATE CAST (varchar AS reservation_state) WITH INOUT AS IMPLICIT;
 -- Estados de una reserva
 
 -- ### Tablas Maestras (mt_*)
