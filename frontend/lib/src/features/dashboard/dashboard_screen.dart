@@ -15,28 +15,93 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _selectedIndex = 0;
+  String _role = '';
 
   @override
   void initState() {
     super.initState();
     final authState = ref.read(authProvider);
     if (authState.user != null) {
-      ref
-          .read(layoutNotifierProvider(authState.user!.restaurantId!).notifier)
-          .loadLayouts();
+      _role = authState.user!.role;
+      _loadInitialData(authState.user!.restaurantId!, _role);
     }
   }
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomeTab(),
-    OrdersTab(),
-    WorkTablesScreen(),
-  ];
+  void _loadInitialData(int restaurantId, String role) {
+    ref.read(layoutNotifierProvider(restaurantId).notifier).loadLayouts();
+    // Aquí cargar datos según el rol
+  }
+
+  List<Widget> _getWidgetOptions(String role, int restaurantId) {
+    switch (role) {
+      case 'ROLE_OWNER':
+        return [
+          WorkTablesScreen(),
+          OrdersTab(),
+          EditMenusScreen(restaurantId: restaurantId),
+        ];
+      case 'ROLE_MANAGER':
+        return [
+          WorkTablesScreen(),
+          OrdersTab(),
+          EditMenusScreen(restaurantId: restaurantId),
+        ];
+      case 'ROLE_WAITER':
+        return [
+          WorkTablesScreen(),
+          OrdersTab(),
+          WorkMenusScreen(restaurantId: restaurantId),
+        ];
+      case 'ROLE_COOK':
+        return [OrdersTab()];
+      default:
+        return [WorkTablesScreen()];
+    }
+  }
+
+  List<BottomNavigationBarItem> _getBottomNavItems(String role) {
+    switch (role) {
+      case 'ROLE_OWNER':
+        return [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: 'Pedidos'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
+        ];
+      case 'ROLE_MANAGER':
+        return [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: 'Pedidos'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
+        ];
+      case 'ROLE_WAITER':
+        return [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: 'Pedidos'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
+        ];
+      case 'ROLE_COOK':
+        return [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt), label: 'Comandas'),
+        ];
+      default:
+        return [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart), label: 'Mesas'),
+        ];
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      if (index == 2) {
+      if (index == 0 && _role != 'ROLE_COOK') {
         final restaurantId = ref.read(authProvider).user!.restaurantId!;
         ref.read(layoutNotifierProvider(restaurantId).notifier).loadLayouts();
         final layouts = ref.read(layoutNotifierProvider(restaurantId));
@@ -64,10 +129,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final user = authState.user!;
+    final widgetOptions = _getWidgetOptions(user.role, user.restaurantId!);
+    final bottomNavItems = _getBottomNavItems(user.role);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getTitle(_selectedIndex)),
+        title: Text(_getTitle(_selectedIndex, user.role)),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -78,7 +145,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
-              // Navegar a la pantalla de perfil (placeholder)
+              // Navegar a la pantalla de perfil
             },
           ),
         ],
@@ -86,7 +153,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: <Widget>[
+          children: [
             DrawerHeader(
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
@@ -120,8 +187,33 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
+              leading: const Icon(Icons.menu_book),
+              title: const Text('Menús'),
+              onTap: () {
+                Navigator.pop(context);
+                if (user.role == 'ROLE_OWNER' || user.role == 'ROLE_MANAGER') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EditMenusScreen(restaurantId: user.restaurantId!),
+                    ),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          WorkMenusScreen(restaurantId: user.restaurantId!),
+                    ),
+                  );
+                }
+              },
+              enabled: user.role != 'ROLE_COOK',
+            ),
+            ListTile(
+              leading: const Icon(Icons.table_chart),
+              title: const Text('Mesas'),
               onTap: () {
                 _onItemTapped(0);
                 Navigator.pop(context);
@@ -135,52 +227,30 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 Navigator.pop(context);
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.table_chart),
-              title: const Text('Mesas'),
-              onTap: () {
-                _onItemTapped(2);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.map),
-              title: const Text('Zonas y mesas'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LayoutsScreen(
-                        restaurantId: authState.user!.restaurantId!),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.inventory),
-              title: const Text('Inventario'),
-              onTap: () {
-                // Navegar a la pantalla de inventario
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.book_online),
-              title: const Text('Reservas'),
-              onTap: () {
-                // Navegar a la pantalla de reservas
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Configuración'),
-              onTap: () {
-                // Navegar a la pantalla de configuración
-                Navigator.pop(context);
-              },
-            ),
+            if (user.role == 'ROLE_OWNER' || user.role == 'ROLE_MANAGER')
+              ListTile(
+                leading: const Icon(Icons.map),
+                title: const Text('Zonas y mesas'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          LayoutsScreen(restaurantId: user.restaurantId!),
+                    ),
+                  );
+                },
+              ),
+            if (user.role == 'ROLE_OWNER' || user.role == 'ROLE_MANAGER')
+              ListTile(
+                leading: const Icon(Icons.inventory),
+                title: const Text('Inventario'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Navegar a Inventario
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Cerrar sesión'),
@@ -192,98 +262,64 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ],
         ),
       ),
-      body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Pedidos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.table_chart),
-            label: 'Mesas',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).primaryColor,
-        onTap: _onItemTapped,
-      ),
-      floatingActionButton: _selectedIndex == 1
-          ? FloatingActionButton(
-              onPressed: () {
-                // Añadir nuevo pedido (placeholder)
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Añadir nuevo pedido')),
-                );
-              },
-              child: const Icon(Icons.add),
+      body: widgetOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: bottomNavItems.length >= 2
+          ? BottomNavigationBar(
+              items: bottomNavItems,
+              currentIndex: _selectedIndex,
+              selectedItemColor: Theme.of(context).primaryColor,
+              onTap: _onItemTapped,
             )
           : null,
     );
   }
 
-  String _getTitle(int index) {
-    switch (index) {
-      case 0:
-        return 'Home';
-      case 1:
-        return 'Pedidos';
-      case 2:
-        return 'Mesas';
+  String _getTitle(int index, String role) {
+    switch (role) {
+      case 'ROLE_OWNER':
+        return ['Mesas', 'Pedidos', 'Menús'][index];
+      case 'ROLE_MANAGER':
+        return ['Mesas', 'Pedidos', 'Menús'][index];
+      case 'ROLE_WAITER':
+        return ['Mesas', 'Pedidos', 'Menús'][index];
+      case 'ROLE_COOK':
+        return ['Comandas'][index];
       default:
         return 'Gastro & Hub';
     }
   }
 }
 
-// Pantallas placeholder
-class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Bienvenido a Home', style: TextStyle(fontSize: 24)),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Acción en Home')),
-              );
-            },
-            child: const Text('Explorar'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
+// Pantallas placeholder existentes
 class OrdersTab extends StatelessWidget {
   const OrdersTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Pantalla de Pedidos', style: TextStyle(fontSize: 24)),
+    return const Center(child: Text('Pantalla de Pedidos'));
+  }
+}
+
+class EditMenusScreen extends StatelessWidget {
+  final int restaurantId;
+  const EditMenusScreen({super.key, required this.restaurantId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Editar Menús - Restaurante: $restaurantId'),
     );
   }
 }
 
-class TablesTab extends StatelessWidget {
-  const TablesTab({super.key});
+class WorkMenusScreen extends StatelessWidget {
+  final int restaurantId;
+  const WorkMenusScreen({super.key, required this.restaurantId});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Pantalla de Mesas', style: TextStyle(fontSize: 24)),
+    return Center(
+      child: Text('Menús de Trabajo - Restaurante: $restaurantId'),
     );
   }
 }
