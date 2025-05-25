@@ -145,7 +145,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.map),
-              title: const Text('Layouts'),
+              title: const Text('Zonas y mesas'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
