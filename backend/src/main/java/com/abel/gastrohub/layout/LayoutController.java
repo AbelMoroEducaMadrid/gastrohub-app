@@ -21,7 +21,7 @@ public class LayoutController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SYSTEM', 'OWNER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SYSTEM', 'OWNER', 'MANAGER', 'WAITER')")
     public ResponseEntity<List<LayoutResponseDTO>> getAllLayoutsByRestaurant() {
         List<Layout> layouts = layoutService.getAllLayoutsByRestaurant();
         List<LayoutResponseDTO> dtos = layouts.stream()
@@ -31,7 +31,7 @@ public class LayoutController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SYSTEM', 'OWNER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SYSTEM', 'OWNER', 'MANAGER', 'WAITER')")
     public ResponseEntity<LayoutResponseDTO> getLayoutById(@PathVariable Integer id) {
         Layout layout = layoutService.getLayoutById(id);
         LayoutResponseDTO dto = new LayoutResponseDTO(layout);

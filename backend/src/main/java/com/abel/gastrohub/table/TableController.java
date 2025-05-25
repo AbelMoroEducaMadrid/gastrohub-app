@@ -21,14 +21,14 @@ public class TableController {
     }
 
     @GetMapping("/layout/{layoutId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
     public ResponseEntity<List<TableResponseDTO>> getAllTablesByLayout(@PathVariable Integer layoutId) {
         List<TableResponseDTO> tables = tableService.getAllTablesByLayout(layoutId);
         return ResponseEntity.ok(tables);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
     public ResponseEntity<TableResponseDTO> getTableById(@PathVariable Integer id) {
         TableResponseDTO table = tableService.getTableById(id);
         return ResponseEntity.ok(table);
