@@ -6,26 +6,13 @@ CREATE SCHEMA public;
 
 -- ### Tipos Enumerados (ENUM)
 -- Estos tipos restringen los valores permitidos para mejorar la integridad de los datos.
-CREATE TYPE order_state AS ENUM ('pending', 'in_progress', 'served', 'cancelled');
--- Estados posibles de una comanda: pendiente, en progreso, servida, cancelada
-
-CREATE TYPE order_item_state AS ENUM ('waiting', 'preparing', 'ready', 'delivered', 'cancelled');
--- Estados de un ítem en una comanda: esperando, preparándose, listo, entregado, cancelado
-
-CREATE TYPE table_state AS ENUM ('available', 'occupied', 'reserved', 'cleaning', 'disabled');
--- Estados de una mesa: disponible, ocupada, reservada, en limpieza, deshabilitada
-
-CREATE TYPE payment_state AS ENUM ('pending', 'completed', 'failed', 'cancelled');
--- Estados de pago: pendiente, completado, fallido, cancelado
-
-CREATE TYPE payment_method AS ENUM ('cash', 'card', 'mobile', 'voucher');
--- Métodos de pago: efectivo, tarjeta, móvil, vale
-
-CREATE TYPE reservation_state AS ENUM ('pending', 'confirmed', 'cancelled', 'no_show', 'completed');
--- Estados de una reserva: pendiente, confirmada, cancelada, no presentada, completada
-
-CREATE TYPE billing_cycle AS ENUM ('monthly', 'yearly');
--- Periodicidad de facturación: mensual, anual
+CREATE TYPE order_state AS ENUM ('pendiente', 'en progreso', 'servida', 'cancelada'); -- Estados posibles de una comanda
+CREATE TYPE order_item_state AS ENUM ('esperando', 'preparándose', 'listo', 'entregado', 'cancelado'); -- Estados de un ítem en una comanda
+CREATE TYPE table_state AS ENUM ('disponible', 'ocupada', 'reservada'); -- Estados de una mesa
+CREATE TYPE payment_state AS ENUM ('pendiente', 'completado', 'fallido', 'cancelado'); -- Estados de pago
+CREATE TYPE payment_method AS ENUM ('efectivo', 'tarjeta', 'móvil', 'vale'); -- Métodos de pago
+CREATE TYPE reservation_state AS ENUM ('pendiente', 'cancelada', 'no presentada', 'completada');
+-- Estados de una reserva
 
 -- ### Tablas Maestras (mt_*)
 -- Contienen datos de referencia que no cambian frecuentemente.

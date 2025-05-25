@@ -85,45 +85,69 @@ VALUES ('Admin', 'admin@trattoria.com', 'hash_admin', 1, '123456789', NULL, true
 
 -- Diseños
 INSERT INTO layouts (restaurant_id, name)
-VALUES (1, 'Planta Baja'),
+VALUES (1, 'Comedor Principal'),
        (1, 'Terraza'),
        (1, 'Sala Privada');
 
 -- Mesas
 INSERT INTO tables (layout_id, number, state, capacity)
-VALUES (1, 1, 'available', 4),
-       (1, 2, 'available', 4),
-       (1, 3, 'available', 6),
-       (1, 4, 'available', 2),
-       (2, 1, 'available', 4),
-       (2, 2, 'available', 4),
-       (2, 3, 'available', 6),
-       (3, 1, 'available', 8),
-       (3, 2, 'available', 10);
+VALUES (1, 1, 'disponible', 4),  -- Comedor Principal: small table
+       (1, 2, 'ocupada', 6),     -- Comedor Principal: medium table, occupied
+       (1, 3, 'reservada', 8),   -- Comedor Principal: large table, reserved
+       (1, 4, 'disponible', 2),  -- Comedor Principal: couple’s table
+       (2, 1, 'disponible', 4),  -- Terraza: small table
+       (2, 2, 'ocupada', 4),     -- Terraza: small table, occupied
+       (2, 3, 'reservada', 6),   -- Terraza: medium table, reserved
+       (2, 4, 'disponible', 4),  -- Terraza: small table
+       (3, 1, 'disponible', 10), -- Sala Privada: large table for events
+       (3, 2, 'reservada', 12),  -- Sala Privada: large table, reserved
+       (3, 3, 'ocupada', 8),     -- Sala Privada: medium table, occupied
+       (3, 4, 'disponible', 6);
+-- Sala Privada: medium table
 
 -- Reservas
 INSERT INTO reservations (restaurant_id, reserved_at, customer_name, customer_contact, number_of_people, state, notes)
-VALUES (1, '2023-10-20 19:00:00', 'Carlos Gómez', '555123456', 4, 'confirmed', 'Mesa cerca de la ventana'),
-       (1, '2023-10-20 20:00:00', 'Ana Martínez', '555987654', 6, 'pending', 'Cumpleaños'),
-       (1, '2023-10-21 18:30:00', 'Luis Rodríguez', '555111222', 2, 'confirmed', NULL);
+VALUES (1, '2025-05-25 19:00:00', 'María López', '555123456', 4, 'pendiente',
+        'Mesa cerca de la ventana'), -- Single table, pending
+       (1, '2025-05-25 20:00:00', 'Juan Pérez', '555987654', 12, 'completada',
+        'Evento corporativo'),       -- Multi-table, completed
+       (1, '2025-05-24 18:30:00', 'Ana Gómez', '555111222', 2, 'cancelada',
+        'Cancelado por cliente'),    -- Single table, cancelled
+       (1, '2025-05-24 19:30:00', 'Luis Martínez', '555333444', 6, 'no presentada',
+        'Grupo no llegó'),           -- Single table, no-show
+       (1, '2025-05-26 21:00:00', 'Sofía Ruiz', '555555666', 20, 'pendiente',
+        'Fiesta de cumpleaños'); -- Multi-table, pending
 
 INSERT INTO rel_reservation_tables (reservation_id, table_id)
-VALUES (1, 1),
+VALUES (1, 1), -- María López: single table (table 1)
        (2, 3),
-       (3, 4);
+       (2, 2), -- Juan Pérez: two tables for large group (tables 3, 2)
+       (3, 4), -- Ana Gómez: single table (table 4)
+       (4, 7), -- Luis Martínez: single table (table 7)
+       (5, 9),
+       (5, 10);
+-- Sofía Ruiz: two tables for birthday party (tables 9, 10)
 
--- Órdenes
+-- Comandas
 INSERT INTO orders (restaurant_id, state, notes, urgent, payment_state, payment_method)
-VALUES (1, 'pending', 'Sin cebolla', FALSE, 'pending', 'cash'),
-       (1, 'in_progress', 'Extra queso', FALSE, 'pending', 'card'),
-       (1, 'served', 'Para llevar', FALSE, 'completed', 'mobile'),
-       (1, 'pending', 'Sin gluten', TRUE, 'pending', 'voucher');
+VALUES (1, 'pendiente', 'Sin cebolla', FALSE, 'pendiente', 'efectivo'), -- Single table, pending
+       (1, 'en progreso', 'Extra queso', TRUE, 'pendiente', 'tarjeta'), -- Single table, in progress
+       (1, 'servida', 'Para llevar', FALSE, 'completado', 'móvil'),     -- Single table, served
+       (1, 'cancelada', 'Cliente se fue', FALSE, 'cancelado', 'vale'),  -- Single table, cancelled
+       (1, 'en progreso', 'Grupo grande', FALSE, 'fallido', 'tarjeta'), -- Multi-table, payment failed
+       (1, 'servida', 'Evento privado', FALSE, 'completado', 'efectivo'); -- Multi-table, served
+
 
 INSERT INTO rel_order_tables (order_id, table_id)
-VALUES (1, 1),
-       (2, 2),
-       (3, 3),
-       (4, 4);
+VALUES (1, 1), -- Order 1: single table (table 1)
+       (2, 6), -- Order 2: single table (table 6)
+       (3, 4), -- Order 3: single table (table 4)
+       (4, 8), -- Order 4: single table (table 8)
+       (5, 2),
+       (5, 3), -- Order 5: two tables for group (tables 2, 3)
+       (6, 9),
+       (6, 10);
+-- Order 6: two tables for event (tables 9, 10)
 
 -- Categorías de menú
 INSERT INTO menu_categories (restaurant_id, name)
@@ -237,13 +261,18 @@ VALUES (1, 1),  -- Menú del Día: Bruschetta
 
 -- Ítems de pedido
 INSERT INTO order_items (order_id, menu_item_id, price, notes, state)
-VALUES (1, 2, 12.50, 'Sin queso extra', 'waiting'),
-       (1, 8, 2.00, NULL, 'waiting'),
-       (2, 3, 14.00, 'Extra pepperoni', 'preparing'),
-       (2, 9, 8.00, NULL, 'preparing'),
-       (3, 1, 5.00, 'Con extra tomate', 'delivered'),
-       (3, 5, 15.00, NULL, 'delivered'),
-       (4, 4, 13.00, 'Sin gluten', 'waiting');
+VALUES (1, 2, 12.50, 'Sin queso extra', 'esperando'),     -- Order 1: Pizza Margarita, waiting
+       (1, 8, 2.00, NULL, 'esperando'),                   -- Order 1: Agua Mineral, waiting
+       (2, 3, 14.00, 'Extra pepperoni', 'preparándose'),  -- Order 2: Pizza Pepperoni, preparing
+       (2, 9, 8.00, NULL, 'listo'),                       -- Order 2: Vino Tinto, ready
+       (3, 1, 5.00, 'Con extra tomate', 'entregado'),     -- Order 3: Bruschetta, delivered
+       (3, 5, 15.00, NULL, 'entregado'),                  -- Order 3: Lasagna, delivered
+       (4, 4, 13.00, 'Sin gluten', 'cancelado'),          -- Order 4: Spaghetti Carbonara, cancelled
+       (5, 10, 12.50, 'Pizzas variadas', 'preparándose'), -- Order 5: 2x1 Pizzas, preparing
+       (5, 11, 25.00, NULL, 'esperando'),                 -- Order 5: Combo Familiar, waiting
+       (6, 2, 12.50, 'Extra mozzarella', 'entregado'),    -- Order 6: Pizza Margarita, delivered
+       (6, 6, 6.00, NULL, 'entregado');
+-- Order 6: Tiramisú, delivered
 
 -- Retroalimentación
 INSERT INTO feedback (order_id, rating, comment)
