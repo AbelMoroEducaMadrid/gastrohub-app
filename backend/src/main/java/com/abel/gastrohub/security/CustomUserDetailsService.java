@@ -26,8 +26,10 @@ public class CustomUserDetailsService implements UserDetailsService {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + idStr));
             boolean enabled = user.getDeletedAt() == null;
+            Integer restaurantId = user.getRestaurant() != null ? user.getRestaurant().getId() : null;
             return new CustomUserDetails(
                     user.getId(),
+                    restaurantId,
                     user.getEmail(),
                     user.getPasswordHash(),
                     Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName())),

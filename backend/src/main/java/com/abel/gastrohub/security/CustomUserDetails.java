@@ -9,14 +9,16 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
     @Getter
     private int id;
+    @Getter
+    private Integer restaurantId;
     private String passwordHash;
     private Collection<? extends GrantedAuthority> authorities;
     private boolean enabled;
 
-    public CustomUserDetails(Integer id, String email, String passwordHash,
-                             Collection<? extends GrantedAuthority> authorities,
-                             boolean enabled) {
+    public CustomUserDetails(Integer id, Integer restaurantId, String email, String passwordHash,
+                             Collection<? extends GrantedAuthority> authorities, boolean enabled) {
         this.id = id;
+        this.restaurantId = restaurantId;
         this.passwordHash = passwordHash;
         this.authorities = authorities;
         this.enabled = enabled;
