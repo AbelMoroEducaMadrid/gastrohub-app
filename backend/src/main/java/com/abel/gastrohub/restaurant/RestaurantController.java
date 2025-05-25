@@ -95,7 +95,7 @@ public class RestaurantController {
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<RestaurantResponseDTO> deleteRestaurant(@PathVariable Integer id) {
         Restaurant deletedRestaurant = restaurantService.deleteRestaurant(id);
-        return ResponseEntity.ok(new RestaurantResponseDTO(deletedRestaurant));
+        return ResponseEntity.status(204).body(new RestaurantResponseDTO(deletedRestaurant));
     }
 
     @PostMapping("/{id}/regenerate-invitation")

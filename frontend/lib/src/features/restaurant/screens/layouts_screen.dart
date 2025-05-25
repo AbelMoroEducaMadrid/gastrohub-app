@@ -22,6 +22,32 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
         .loadLayouts();
   }
 
+  void _confirmDelete(BuildContext context, int layoutId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar Eliminación'),
+        content:
+            const Text('¿Estás seguro de que quieres eliminar este layout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref
+                  .read(layoutNotifierProvider(widget.restaurantId).notifier)
+                  .deleteLayout(layoutId);
+              Navigator.pop(context);
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final layouts = ref.watch(layoutNotifierProvider(widget.restaurantId));
@@ -43,10 +69,7 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete),
-                  onPressed: () => ref
-                      .read(
-                          layoutNotifierProvider(widget.restaurantId).notifier)
-                      .deleteLayout(layout.id),
+                  onPressed: () => _confirmDelete(context, layout.id),
                 ),
               ],
             ),

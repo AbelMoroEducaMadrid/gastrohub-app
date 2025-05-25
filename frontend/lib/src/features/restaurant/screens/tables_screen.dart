@@ -73,7 +73,6 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
   void _addTable(BuildContext context) {
     final numberController = TextEditingController();
     final capacityController = TextEditingController();
-    final stateController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -91,10 +90,6 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               decoration: const InputDecoration(labelText: 'Capacity'),
               keyboardType: TextInputType.number,
             ),
-            TextField(
-              controller: stateController,
-              decoration: const InputDecoration(labelText: 'State'),
-            ),
           ],
         ),
         actions: [
@@ -106,12 +101,17 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
             onPressed: () {
               final number = int.tryParse(numberController.text) ?? 0;
               final capacity = int.tryParse(capacityController.text) ?? 0;
-              final state = stateController.text.isEmpty
-                  ? 'disponible'
-                  : stateController.text;
+              if (number <= 0 || capacity <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content:
+                          Text('Número y capacidad deben ser mayores a 0')),
+                );
+                return;
+              }
               ref
                   .read(tableNotifierProvider(widget.layoutId).notifier)
-                  .addTable(number, capacity, state);
+                  .addTable(number, capacity);
               Navigator.pop(context);
             },
             child: const Text('Add'),

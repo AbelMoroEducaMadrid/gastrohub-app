@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -12,15 +16,39 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    final authState = ref.read(authProvider);
+    if (authState.user != null) {
+      ref
+          .read(layoutNotifierProvider(authState.user!.restaurantId!).notifier)
+          .loadLayouts();
+    }
+  }
+
   static const List<Widget> _widgetOptions = <Widget>[
     HomeTab(),
     OrdersTab(),
-    TablesTab(),
+    WorkTablesScreen(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 2) {
+        final restaurantId = ref.read(authProvider).user!.restaurantId!;
+        ref.read(layoutNotifierProvider(restaurantId).notifier).loadLayouts();
+        final layouts = ref.read(layoutNotifierProvider(restaurantId));
+        final currentLayoutId = ref.read(activeLayoutProvider);
+        if (currentLayoutId == null && layouts.isNotEmpty) {
+          Future.microtask(() {
+            ref.read(activeLayoutProvider.notifier).state = layouts.first.id;
+          });
+        }
+        final layoutId = ref.read(activeLayoutProvider) ?? layouts.first.id;
+        ref.read(tableNotifierProvider(layoutId).notifier).loadTables();
+      }
     });
   }
 
@@ -113,6 +141,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               onTap: () {
                 _onItemTapped(2);
                 Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.map),
+              title: const Text('Layouts'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LayoutsScreen(
+                        restaurantId: authState.user!.restaurantId!),
+                  ),
+                );
               },
             ),
             ListTile(

@@ -30,7 +30,7 @@ class TableService {
   }
 
   Future<RestaurantTable> createTable(String token, int layoutId, int number,
-      int capacity, String state) async {
+      int capacity) async {
     final url = Uri.parse('$baseUrl/api/tables');
     final response = await http.post(
       url,
@@ -41,8 +41,7 @@ class TableService {
       body: jsonEncode({
         'layoutId': layoutId,
         'number': number,
-        'capacity': capacity,
-        'state': state,
+        'capacity': capacity,        
       }),
     );
     AppLogger.debug('POST /api/tables - Status: ${response.statusCode}');

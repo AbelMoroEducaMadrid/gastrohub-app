@@ -52,6 +52,6 @@ public class TableController {
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
     public ResponseEntity<TableResponseDTO> deleteTable(@PathVariable Integer id) {
         TableResponseDTO deletedTable = tableService.deleteTable(id);
-        return ResponseEntity.ok(deletedTable);
+        return ResponseEntity.status(204).body(deletedTable);
     }
 }

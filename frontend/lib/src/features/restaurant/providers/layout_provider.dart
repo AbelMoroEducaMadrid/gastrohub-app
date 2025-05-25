@@ -67,3 +67,5 @@ final layoutServiceProvider = Provider<LayoutService>((ref) {
   final baseUrl = dotenv.env['API_URL'] ?? 'http://localhost:8080';
   return LayoutService(baseUrl: baseUrl);
 });
+
+final activeLayoutProvider = StateProvider<int?>((ref) => null);

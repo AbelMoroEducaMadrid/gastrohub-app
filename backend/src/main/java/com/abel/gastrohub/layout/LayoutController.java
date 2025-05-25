@@ -59,6 +59,6 @@ public class LayoutController {
     public ResponseEntity<LayoutResponseDTO> deleteLayout(@PathVariable Integer id) {
         Layout deletedLayout = layoutService.deleteLayout(id);
         LayoutResponseDTO dto = new LayoutResponseDTO(deletedLayout);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.status(204).body(dto);
     }
 }

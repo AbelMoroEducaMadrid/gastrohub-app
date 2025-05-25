@@ -20,10 +20,10 @@ class TableNotifier extends StateNotifier<List<RestaurantTable>> {
     }
   }
 
-  Future<void> addTable(int number, int capacity, String tableState) async {
+  Future<void> addTable(int number, int capacity) async {
     try {
       final newTable = await _tableService.createTable(
-          _token, _layoutId, number, capacity, tableState);
+          _token, _layoutId, number, capacity);
       state = [...state, newTable];
     } catch (e) {
       AppLogger.error('Failed to add table: $e');
