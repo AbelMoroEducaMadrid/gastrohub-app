@@ -66,7 +66,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.table_chart), label: 'Mesas'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Pedidos'),
+              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_MANAGER':
@@ -74,7 +74,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.table_chart), label: 'Mesas'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Pedidos'),
+              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_WAITER':
@@ -82,7 +82,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.table_chart), label: 'Mesas'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Pedidos'),
+              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_COOK':
@@ -221,7 +221,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.shopping_cart),
-              title: const Text('Pedidos'),
+              title: const Text('Comandas'),
               onTap: () {
                 _onItemTapped(1);
                 Navigator.pop(context);
@@ -277,11 +277,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   String _getTitle(int index, String role) {
     switch (role) {
       case 'ROLE_OWNER':
-        return ['Mesas', 'Pedidos', 'Menús'][index];
+        return ['Mesas', 'Comandas', 'Menús'][index];
       case 'ROLE_MANAGER':
-        return ['Mesas', 'Pedidos', 'Menús'][index];
+        return ['Mesas', 'Comandas', 'Menús'][index];
       case 'ROLE_WAITER':
-        return ['Mesas', 'Pedidos', 'Menús'][index];
+        return ['Mesas', 'Comandas', 'Menús'][index];
       case 'ROLE_COOK':
         return ['Comandas'][index];
       default:
@@ -296,7 +296,7 @@ class OrdersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Pantalla de Pedidos'));
+    return const Center(child: Text('Pantalla de Comandas'));
   }
 }
 

@@ -73,19 +73,19 @@ class OnboardingScreen extends StatelessWidget {
       PageViewModel(
         decoration: pageDecoration,
         titleWidget: Text(
-          "Pedidos en tiempo real",
+          "Comandas en tiempo real",
           style: theme.textTheme.headlineLarge,
           textAlign: TextAlign.center,
         ),
         bodyWidget: Text(
-          "Registra pedidos desde tu móvil y coordínate con la cocina al instante.",
+          "Registra comandas desde tu móvil y coordínate con la cocina al instante.",
           style: theme.textTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         image: _buildImageWithCircle(
           context,
           'assets/images/orders.svg',
-          'Ilustración de pedidos',
+          'Ilustración de comandas',
         ),
       ),
       PageViewModel(
