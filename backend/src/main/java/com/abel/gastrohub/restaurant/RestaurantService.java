@@ -17,11 +17,11 @@ public class RestaurantService {
     }
 
     public List<Restaurant> getAllRestaurants() {
-        return restaurantRepository.findByDeletedAtIsNull();
+        return restaurantRepository.findAll();
     }
 
     public Restaurant getRestaurantById(Integer id) {
-        return restaurantRepository.findByIdAndDeletedAtIsNull(id)
+        return restaurantRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + id));
     }
 
@@ -30,7 +30,7 @@ public class RestaurantService {
     }
 
     public Restaurant updateRestaurant(Integer id, Restaurant restaurantDetails) {
-        Restaurant restaurant = restaurantRepository.findByIdAndDeletedAtIsNull(id)
+        Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + id));
         restaurant.setName(restaurantDetails.getName());
         restaurant.setAddress(restaurantDetails.getAddress());
@@ -45,11 +45,17 @@ public class RestaurantService {
         return restaurantRepository.save(restaurant);
     }
 
-    public Restaurant deleteRestaurant(Integer id) {
-        Restaurant restaurant = restaurantRepository.findByIdAndDeletedAtIsNull(id)
+    public void deleteRestaurant(Integer id) {
+        Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + id));
-        restaurant.setDeletedAt(LocalDateTime.now());
-        return restaurantRepository.save(restaurant);
+//        if (orderRepository.existsByRestaurantIdAndStateNot(id, OrderState.SERVIDA, OrderState.CANCELADA)) {
+//            throw new IllegalStateException("No se puede eliminar: hay comandas activas");
+//        }
+//        if (reservationRepository.existsByRestaurantIdAndState(id, ReservationState.PENDIENTE)) {
+//            throw new IllegalStateException("No se puede eliminar: hay reservas pendientes");
+//        }
+// TODO Terminar de implementar esta parte
+        restaurantRepository.delete(restaurant);
     }
 
     public Restaurant regenerateInvitationCode(Integer id) {

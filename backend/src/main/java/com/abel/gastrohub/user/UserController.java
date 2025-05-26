@@ -60,7 +60,8 @@ public class UserController {
 
     @PostMapping("/{id}/change-password")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
-    public ResponseEntity<Void> changePassword(@PathVariable Integer id, @RequestBody UserChangePasswordDTO changePasswordDTO) {
+    public ResponseEntity<Void> changePassword(@PathVariable Integer id,
+                                               @RequestBody UserChangePasswordDTO changePasswordDTO) {
         userService.changePassword(id, changePasswordDTO.getNewPassword());
         return ResponseEntity.ok().build();
     }
@@ -75,8 +76,8 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
     public ResponseEntity<UserResponseDTO> deleteUser(@PathVariable Integer id) {
-        User deletedUser = userService.deleteUser(id);
-        return ResponseEntity.ok(new UserResponseDTO(deletedUser));
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/join-restaurant")

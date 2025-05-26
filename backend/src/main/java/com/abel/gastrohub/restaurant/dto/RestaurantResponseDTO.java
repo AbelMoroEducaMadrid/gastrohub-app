@@ -19,9 +19,6 @@ public class RestaurantResponseDTO {
     private LocalDateTime invitationExpiresAt;
     private Integer paymentPlanId;
     private Boolean paid;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
     public RestaurantResponseDTO(Restaurant restaurant) {
         this.id = restaurant.getId();
@@ -34,8 +31,5 @@ public class RestaurantResponseDTO {
         PaymentPlan paymentPlan = restaurant.getPaymentPlan();
         this.paymentPlanId = paymentPlan != null ? paymentPlan.getId() : null;
         this.paid = restaurant.getPaid();
-        this.createdAt = restaurant.getCreatedAt();
-        this.updatedAt = restaurant.getUpdatedAt();
-        this.deletedAt = restaurant.getDeletedAt();
     }
 }

@@ -53,8 +53,6 @@ public class Restaurant {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "restaurant")
     private Set<User> users = new LinkedHashSet<>();

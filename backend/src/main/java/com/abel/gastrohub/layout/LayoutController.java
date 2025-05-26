@@ -56,9 +56,8 @@ public class LayoutController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SYSTEM', 'OWNER', 'MANAGER')")
-    public ResponseEntity<LayoutResponseDTO> deleteLayout(@PathVariable Integer id) {
-        Layout deletedLayout = layoutService.deleteLayout(id);
-        LayoutResponseDTO dto = new LayoutResponseDTO(deletedLayout);
-        return ResponseEntity.status(204).body(dto);
+    public ResponseEntity<Void> deleteLayout(@PathVariable Integer id) {
+        layoutService.deleteLayout(id);
+        return ResponseEntity.noContent().build();
     }
 }

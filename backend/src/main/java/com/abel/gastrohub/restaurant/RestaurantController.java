@@ -27,7 +27,8 @@ public class RestaurantController {
     private final PaymentPlanService paymentPlanService;
     private final UserService userService;
 
-    public RestaurantController(RestaurantService restaurantService, PaymentPlanService paymentPlanService, UserService userService) {
+    public RestaurantController(RestaurantService restaurantService, PaymentPlanService paymentPlanService,
+                                UserService userService) {
         this.restaurantService = restaurantService;
         this.paymentPlanService = paymentPlanService;
         this.userService = userService;
@@ -50,7 +51,8 @@ public class RestaurantController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM','USER')")
-    public ResponseEntity<RestaurantResponseDTO> createRestaurant(@Valid @RequestBody RestaurantRegistrationDTO restaurantDTO) {
+    public ResponseEntity<RestaurantResponseDTO> createRestaurant(
+            @Valid @RequestBody RestaurantRegistrationDTO restaurantDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Integer userId = userDetails.getId();
@@ -81,7 +83,8 @@ public class RestaurantController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
-    public ResponseEntity<RestaurantResponseDTO> updateRestaurant(@PathVariable Integer id, @Valid @RequestBody RestaurantUpdateDTO restaurantDTO) {
+    public ResponseEntity<RestaurantResponseDTO> updateRestaurant(@PathVariable Integer id,
+                                                                  @Valid @RequestBody RestaurantUpdateDTO restaurantDTO) {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantDTO.getName());
         restaurant.setAddress(restaurantDTO.getAddress());
@@ -93,9 +96,9 @@ public class RestaurantController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM')")
-    public ResponseEntity<RestaurantResponseDTO> deleteRestaurant(@PathVariable Integer id) {
-        Restaurant deletedRestaurant = restaurantService.deleteRestaurant(id);
-        return ResponseEntity.status(204).body(new RestaurantResponseDTO(deletedRestaurant));
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Integer id) {
+        restaurantService.deleteRestaurant(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/regenerate-invitation")
@@ -107,7 +110,8 @@ public class RestaurantController {
 
     @PutMapping("/{id}/change-plan")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM', 'OWNER')")
-    public ResponseEntity<RestaurantResponseDTO> changePaymentPlan(@PathVariable Integer id, @RequestParam Integer newPlanId) {
+    public ResponseEntity<RestaurantResponseDTO> changePaymentPlan(@PathVariable Integer id,
+                                                                   @RequestParam Integer newPlanId) {
         PaymentPlan newPlan = paymentPlanService.getPaymentPlanById(newPlanId);
         Restaurant restaurant = restaurantService.getRestaurantById(id);
         restaurant.setPaymentPlan(newPlan);

@@ -4,6 +4,10 @@ import com.abel.gastrohub.layout.dto.LayoutCreateDTO;
 import com.abel.gastrohub.layout.dto.LayoutUpdateDTO;
 import com.abel.gastrohub.restaurant.RestaurantRepository;
 import com.abel.gastrohub.security.CustomUserDetails;
+import com.abel.gastrohub.table.Table;
+import com.abel.gastrohub.table.TableRepository;
+import com.abel.gastrohub.table.TableState;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -17,10 +21,12 @@ public class LayoutService {
 
     private final LayoutRepository layoutRepository;
     private final RestaurantRepository restaurantRepository;
+    private final TableRepository tableRepository;
 
-    public LayoutService(LayoutRepository layoutRepository, RestaurantRepository restaurantRepository) {
+    public LayoutService(LayoutRepository layoutRepository, RestaurantRepository restaurantRepository, TableRepository tableRepository) {
         this.layoutRepository = layoutRepository;
         this.restaurantRepository = restaurantRepository;
+        this.tableRepository = tableRepository;
     }
 
     private Integer getCurrentUserRestaurantId() {
@@ -34,11 +40,11 @@ public class LayoutService {
 
     public List<Layout> getAllLayoutsByRestaurant() {
         Integer restaurantId = getCurrentUserRestaurantId();
-        return layoutRepository.findByRestaurantIdAndDeletedAtIsNull(restaurantId);
+        return layoutRepository.findByRestaurantId(restaurantId);
     }
 
     public Layout getLayoutById(Integer id) {
-        Layout layout = layoutRepository.findByIdAndDeletedAtIsNull(id)
+        Layout layout = layoutRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Layout no encontrado con ID: " + id));
         if (!layout.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para acceder a este layout");
@@ -48,7 +54,7 @@ public class LayoutService {
 
     public Layout createLayout(LayoutCreateDTO layoutDTO) {
         Integer restaurantId = getCurrentUserRestaurantId();
-        if (layoutRepository.findByRestaurantIdAndNameAndDeletedAtIsNull(restaurantId, layoutDTO.getName()).isPresent()) {
+        if (layoutRepository.findByRestaurantIdAndName(restaurantId, layoutDTO.getName()).isPresent()) {
             throw new IllegalArgumentException("Ya existe un layout con ese nombre en el restaurante");
         }
         Layout layout = new Layout();
@@ -59,13 +65,13 @@ public class LayoutService {
     }
 
     public Layout updateLayout(Integer id, LayoutUpdateDTO layoutDTO) {
-        Layout layout = layoutRepository.findByIdAndDeletedAtIsNull(id)
+        Layout layout = layoutRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Layout no encontrado con ID: " + id));
         if (!layout.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para actualizar este layout");
         }
         if (layoutDTO.getName() != null && !layoutDTO.getName().equals(layout.getName())) {
-            if (layoutRepository.findByRestaurantIdAndNameAndDeletedAtIsNull(layout.getRestaurant().getId(), layoutDTO.getName()).isPresent()) {
+            if (layoutRepository.findByRestaurantIdAndName(layout.getRestaurant().getId(), layoutDTO.getName()).isPresent()) {
                 throw new IllegalArgumentException("Ya existe un layout con ese nombre en el restaurante");
             }
             layout.setName(layoutDTO.getName());
@@ -74,13 +80,20 @@ public class LayoutService {
         return layoutRepository.save(layout);
     }
 
-    public Layout deleteLayout(Integer id) {
-        Layout layout = layoutRepository.findByIdAndDeletedAtIsNull(id)
+    public void deleteLayout(Integer id) {
+        Layout layout = layoutRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Layout no encontrado con ID: " + id));
         if (!layout.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para eliminar este layout");
         }
-        layout.setDeletedAt(LocalDateTime.now());
-        return layoutRepository.save(layout);
+
+        List<Table> tables = tableRepository.findByLayoutId(layout.getId());
+        boolean hasActiveTables = tables.stream()
+                .anyMatch(table -> table.getState() == TableState.ocupada || table.getState() == TableState.reservada);
+        if (hasActiveTables) {
+            throw new IllegalStateException("No se puede eliminar el layout: contiene mesas ocupadas o reservadas");
+        }
+
+        layoutRepository.delete(layout);
     }
 }

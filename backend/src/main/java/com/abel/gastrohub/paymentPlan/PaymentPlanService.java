@@ -15,11 +15,11 @@ public class PaymentPlanService {
     }
 
     public List<PaymentPlan> getAllPaymentPlans() {
-        return paymentPlanRepository.findByDeletedAtIsNull();
+        return paymentPlanRepository.findAll();
     }
 
     public PaymentPlan getPaymentPlanById(Integer id) {
-        return paymentPlanRepository.findByIdAndDeletedAtIsNull(id)
+        return paymentPlanRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Plan de pago no encontrado con ID: " + id));
     }
 }

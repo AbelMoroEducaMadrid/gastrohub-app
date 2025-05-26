@@ -8,9 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface LayoutRepository extends JpaRepository<Layout, Integer> {
-    List<Layout> findByRestaurantIdAndDeletedAtIsNull(Integer restaurantId);
+    List<Layout> findByRestaurantId(Integer restaurantId);
 
-    Optional<Layout> findByIdAndDeletedAtIsNull(Integer id);
-
-    Optional<Layout> findByRestaurantIdAndNameAndDeletedAtIsNull(Integer restaurantId, String name);
+    Optional<Layout> findByRestaurantIdAndName(Integer restaurantId, String name);
 }

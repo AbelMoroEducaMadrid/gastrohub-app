@@ -13,15 +13,13 @@ public class CustomUserDetails implements UserDetails {
     private Integer restaurantId;
     private String passwordHash;
     private Collection<? extends GrantedAuthority> authorities;
-    private boolean enabled;
 
     public CustomUserDetails(Integer id, Integer restaurantId, String email, String passwordHash,
-                             Collection<? extends GrantedAuthority> authorities, boolean enabled) {
+                             Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.restaurantId = restaurantId;
         this.passwordHash = passwordHash;
         this.authorities = authorities;
-        this.enabled = enabled;
     }
 
     @Override
@@ -36,7 +34,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return String.valueOf(id); // Devolver el ID como String
+        return String.valueOf(id);
     }
 
     @Override
@@ -52,10 +50,5 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 }

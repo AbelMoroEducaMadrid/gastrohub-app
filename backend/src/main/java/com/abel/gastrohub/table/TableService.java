@@ -32,13 +32,13 @@ public class TableService {
     }
 
     public List<TableResponseDTO> getAllTablesByLayout(Integer layoutId) {
-        return tableRepository.findByLayoutIdAndDeletedAtIsNull(layoutId).stream()
+        return tableRepository.findByLayoutId(layoutId).stream()
                 .map(TableResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
     public TableResponseDTO getTableById(Integer id) {
-        Table table = tableRepository.findByIdAndDeletedAtIsNull(id)
+        Table table = tableRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Mesa no encontrada con ID: " + id));
         if (!table.getLayout().getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para acceder a esta mesa");
@@ -51,7 +51,7 @@ public class TableService {
         if (!layout.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para crear mesas en este layout");
         }
-        if (tableRepository.findByLayoutIdAndNumberAndDeletedAtIsNull(layout.getId(), tableDTO.getNumber()).isPresent()) {
+        if (tableRepository.findByLayoutIdAndNumber(layout.getId(), tableDTO.getNumber()).isPresent()) {
             throw new IllegalArgumentException("Ya existe una mesa con ese número en el layout");
         }
         Table table = new Table();
@@ -65,13 +65,14 @@ public class TableService {
     }
 
     public TableResponseDTO updateTable(Integer id, TableUpdateDTO tableDTO) {
-        Table table = tableRepository.findByIdAndDeletedAtIsNull(id)
+        Table table = tableRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Mesa no encontrada con ID: " + id));
         if (!table.getLayout().getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para actualizar esta mesa");
         }
         if (tableDTO.getNumber() != null && !tableDTO.getNumber().equals(table.getNumber())) {
-            if (tableRepository.findByLayoutIdAndNumberAndDeletedAtIsNull(table.getLayout().getId(), tableDTO.getNumber()).isPresent()) {
+            if (tableRepository.findByLayoutIdAndNumber(table.getLayout().getId(), tableDTO.getNumber())
+                    .isPresent()) {
                 throw new IllegalArgumentException("Ya existe una mesa con ese número en el layout");
             }
             table.setNumber(tableDTO.getNumber());
@@ -87,14 +88,16 @@ public class TableService {
         return new TableResponseDTO(updatedTable);
     }
 
-    public TableResponseDTO deleteTable(Integer id) {
-        Table table = tableRepository.findByIdAndDeletedAtIsNull(id)
+    public void deleteTable(Integer id) {
+        Table table = tableRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Mesa no encontrada con ID: " + id));
         if (!table.getLayout().getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para eliminar esta mesa");
         }
-        table.setDeletedAt(LocalDateTime.now());
-        tableRepository.save(table);
-        return new TableResponseDTO(table);
+        // Validar estado
+        if (table.getState() == TableState.ocupada || table.getState() == TableState.reservada) {
+            throw new IllegalStateException("No se puede eliminar: la mesa está ocupada o reservada");
+        }
+        tableRepository.delete(table);
     }
 }

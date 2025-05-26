@@ -53,8 +53,7 @@ CREATE TABLE payment_plans
     yearly_discount INT                                 NOT NULL DEFAULT 0, -- Descuento si se paga anualmente
     max_users       INT,                                                    -- Máximo de usuarios permitidos
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at      TIMESTAMP                                               -- Fecha de eliminación (para borrado lógico)
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- ### Restaurantes
@@ -72,8 +71,7 @@ CREATE TABLE restaurants
     paid                  BOOLEAN   DEFAULT FALSE,
     created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- Fecha de creación
     updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- Fecha de última actualización
-    deleted_at            TIMESTAMP,                                    -- Fecha de eliminación (para borrado lógico)
-    FOREIGN KEY (payment_plan_id) REFERENCES payment_plans (id)
+    FOREIGN KEY (payment_plan_id) REFERENCES payment_plans (id) ON DELETE CASCADE
 );
 
 -- ### Usuarios
@@ -93,9 +91,8 @@ CREATE TABLE users
     locked_until          TIMESTAMP,                                    -- Fecha hasta la cual la cuenta está bloqueada
     created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at            TIMESTAMP,
-    FOREIGN KEY (role_id) REFERENCES mt_roles (id),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
+    FOREIGN KEY (role_id) REFERENCES mt_roles (id) ON DELETE CASCADE,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
 
 -- ### Diseños (Layouts)
@@ -107,8 +104,7 @@ CREATE TABLE layouts
     name          VARCHAR(100)                        NOT NULL, -- Nombre del diseño (ej. 'Planta Baja')
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at    TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
 
 -- ### Mesas
@@ -122,9 +118,8 @@ CREATE TABLE tables
     capacity   INT                                 NOT NULL, -- Capacidad máxima de personas
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at TIMESTAMP,
     UNIQUE (layout_id, number),                              -- Asegura que el número de mesa sea único por diseño
-    FOREIGN KEY (layout_id) REFERENCES layouts (id)
+    FOREIGN KEY (layout_id) REFERENCES layouts (id) ON DELETE CASCADE
 );
 
 -- ### Reservas
@@ -141,8 +136,7 @@ CREATE TABLE reservations
     notes            TEXT,                                         -- Notas adicionales
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at       TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
 
 -- ### Relación Reservas-Mesas
@@ -153,10 +147,9 @@ CREATE TABLE rel_reservation_tables
     table_id       INT                                 NOT NULL,
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at     TIMESTAMP,
     PRIMARY KEY (reservation_id, table_id), -- Clave compuesta para evitar duplicados
-    FOREIGN KEY (reservation_id) REFERENCES reservations (id),
-    FOREIGN KEY (table_id) REFERENCES tables (id)
+    FOREIGN KEY (reservation_id) REFERENCES reservations (id) ON DELETE CASCADE,
+    FOREIGN KEY (table_id) REFERENCES tables (id) ON DELETE CASCADE
 );
 
 -- ### Comandas
@@ -172,8 +165,7 @@ CREATE TABLE orders
     payment_method payment_method                      NOT NULL, -- Método de pago
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at     TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
 
 -- ### Relación Comandas-Mesas
@@ -184,10 +176,9 @@ CREATE TABLE rel_order_tables
     table_id   INT                                 NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at TIMESTAMP,
     PRIMARY KEY (order_id, table_id), -- Clave compuesta
-    FOREIGN KEY (order_id) REFERENCES orders (id),
-    FOREIGN KEY (table_id) REFERENCES tables (id)
+    FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE,
+    FOREIGN KEY (table_id) REFERENCES tables (id) ON DELETE CASCADE
 );
 
 -- ### Categorías de Menú
@@ -199,8 +190,7 @@ CREATE TABLE menu_categories
     name          VARCHAR(255)                        NOT NULL, -- Nombre de la categoría
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at    TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
 
 -- ### Ingredientes
@@ -217,9 +207,8 @@ CREATE TABLE ingredients
     is_composite  BOOLEAN   DEFAULT FALSE             NOT NULL, -- Si es un ingrediente compuesto (ej. 'Salsa de tomate')
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at    TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id),
-    FOREIGN KEY (unit_id) REFERENCES mt_units (id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE,
+    FOREIGN KEY (unit_id) REFERENCES mt_units (id) ON DELETE CASCADE
 );
 
 -- ### Relación Ingredientes Compuestos-Componentes
@@ -232,11 +221,10 @@ CREATE TABLE rel_ingredient_ingredients
     unit_id                 INT                                 NOT NULL, -- ID de la unidad de medida para la cantidad
     created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at              TIMESTAMP,
     PRIMARY KEY (parent_ingredient_id, component_ingredient_id),          -- Clave compuesta
-    FOREIGN KEY (parent_ingredient_id) REFERENCES ingredients (id),
-    FOREIGN KEY (component_ingredient_id) REFERENCES ingredients (id),
-    FOREIGN KEY (unit_id) REFERENCES mt_units (id)
+    FOREIGN KEY (parent_ingredient_id) REFERENCES ingredients (id) ON DELETE CASCADE,
+    FOREIGN KEY (component_ingredient_id) REFERENCES ingredients (id) ON DELETE CASCADE,
+    FOREIGN KEY (unit_id) REFERENCES mt_units (id) ON DELETE CASCADE
 );
 
 -- ### Relación Ingredientes-Atributos
@@ -260,8 +248,7 @@ CREATE TABLE products
     available  BOOLEAN   DEFAULT TRUE,                       -- Si está disponible para ordenar
     is_kitchen BOOLEAN   DEFAULT TRUE,                       -- Si requiere preparación en cocina (FALSE para bebidas, por ejemplo)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- ### Relación Productos-Ingredientes
@@ -273,10 +260,9 @@ CREATE TABLE rel_product_ingredients
     quantity      DECIMAL(10, 2)                      NOT NULL, -- Cantidad del ingrediente necesaria
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at    TIMESTAMP,
     PRIMARY KEY (product_id, ingredient_id),                    -- Clave compuesta
-    FOREIGN KEY (product_id) REFERENCES products (id),
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients (id)
+    FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients (id) ON DELETE CASCADE
 );
 
 -- ### Ítems de Menú
@@ -289,8 +275,7 @@ CREATE TABLE menu_items
     price       DECIMAL(10, 2)                      NOT NULL, -- Precio de venta del ítem, calculado a partir del costo total más un margen
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at  TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES menu_categories (id)
+    FOREIGN KEY (category_id) REFERENCES menu_categories (id) ON DELETE CASCADE
 );
 
 -- ### Relación Ítems de Menú - Productos
@@ -302,10 +287,9 @@ CREATE TABLE rel_menu_item_products
     quantity     INT                                 NOT NULL DEFAULT 1, -- Cantidad de cada producto en el ítem de menú
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at   TIMESTAMP,
     PRIMARY KEY (menu_item_id, product_id),                              -- Clave compuesta para evitar duplicados
-    FOREIGN KEY (menu_item_id) REFERENCES menu_items (id),
-    FOREIGN KEY (product_id) REFERENCES products (id)
+    FOREIGN KEY (menu_item_id) REFERENCES menu_items (id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
 );
 
 -- ### Menús
@@ -320,8 +304,7 @@ CREATE TABLE menus
     active_to     TIME,                                         -- Hora de fin de disponibilidad (ej. 15:00)
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at    TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
 
 -- ### Relación Menús - Ítems de Menú
@@ -332,10 +315,9 @@ CREATE TABLE rel_menus_menu_items
     menu_item_id INT                                 NOT NULL,
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at   TIMESTAMP,
     PRIMARY KEY (menu_id, menu_item_id), -- Clave compuesta para evitar duplicados
-    FOREIGN KEY (menu_id) REFERENCES menus (id),
-    FOREIGN KEY (menu_item_id) REFERENCES menu_items (id)
+    FOREIGN KEY (menu_id) REFERENCES menus (id) ON DELETE CASCADE,
+    FOREIGN KEY (menu_item_id) REFERENCES menu_items (id) ON DELETE CASCADE
 );
 
 -- ### Ítems de comanda
@@ -350,9 +332,8 @@ CREATE TABLE order_items
     state        order_item_state                    NOT NULL, -- Estado del ítem
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at   TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders (id),
-    FOREIGN KEY (menu_item_id) REFERENCES menu_items (id)
+    FOREIGN KEY (menu_item_id) REFERENCES menu_items (id) ON DELETE CASCADE
 );
 
 -- ### Retroalimentación
@@ -365,9 +346,8 @@ CREATE TABLE feedback
     comment    TEXT,                                         -- Comentario
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at TIMESTAMP,
     CHECK (rating >= 1 AND rating <= 5),                     -- Restricción para calificación
-    FOREIGN KEY (order_id) REFERENCES orders (id)
+    FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE
 );
 
 -- ### Turnos
@@ -381,8 +361,7 @@ CREATE TABLE shifts
     end_time      TIME                                NOT NULL, -- Hora de fin
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at    TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
 
 -- ### Relación Usuarios-Turnos
@@ -394,8 +373,7 @@ CREATE TABLE rel_user_shifts
     shift_date DATE                                NOT NULL, -- Fecha del turno
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at TIMESTAMP,
     PRIMARY KEY (user_id, shift_id, shift_date),             -- Clave compuesta para evitar duplicados
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (shift_id) REFERENCES shifts (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (shift_id) REFERENCES shifts (id) ON DELETE CASCADE
 );

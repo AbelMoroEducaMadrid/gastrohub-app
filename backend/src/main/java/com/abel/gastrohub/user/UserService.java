@@ -21,7 +21,8 @@ public class UserService {
     private final RestaurantRepository restaurantRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, MtRoleRepository roleRepository, RestaurantRepository restaurantRepository) {
+    public UserService(UserRepository userRepository, MtRoleRepository roleRepository,
+                       RestaurantRepository restaurantRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.restaurantRepository = restaurantRepository;
@@ -29,11 +30,11 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return userRepository.findByDeletedAtIsNull();
+        return userRepository.findAll();
     }
 
     public User getUserById(Integer id) {
-        return userRepository.findByIdAndDeletedAtIsNull(id)
+        return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
     }
 
@@ -52,7 +53,7 @@ public class UserService {
     }
 
     public User updateUser(Integer id, User userDetails) {
-        User user = userRepository.findByIdAndDeletedAtIsNull(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
         if (userDetails.getName() != null) {
             user.setName(userDetails.getName());
@@ -62,7 +63,8 @@ public class UserService {
         }
         if (userDetails.getPhone() != null && !userDetails.getPhone().equals(user.getPhone())) {
             if (userRepository.findByPhone(userDetails.getPhone()).isPresent()) {
-                throw new PhoneAlreadyInUseException("El número de teléfono " + userDetails.getPhone() + " ya está en uso");
+                throw new PhoneAlreadyInUseException(
+                        "El número de teléfono " + userDetails.getPhone() + " ya está en uso");
             }
             user.setPhone(userDetails.getPhone());
         }
@@ -78,19 +80,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User deleteUser(Integer id) {
-        User user = userRepository.findByIdAndDeletedAtIsNull(id)
+    public void deleteUser(Integer id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
-        user.setDeletedAt(LocalDateTime.now());
-        return userRepository.save(user);
+        userRepository.delete(user);
     }
 
     public User authenticate(String email, String password) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         User user = userOpt.orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
-        if (user.getDeletedAt() != null) {
-            throw new IllegalArgumentException("Usuario eliminado");
-        }
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new IllegalArgumentException("Credenciales inválidas");
         }
@@ -99,7 +97,7 @@ public class UserService {
     }
 
     public void changePassword(Integer id, String newPassword) {
-        User user = userRepository.findByIdAndDeletedAtIsNull(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + id));
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
@@ -107,7 +105,7 @@ public class UserService {
 
     public User joinRestaurant(Integer userId, String invitationCode) {
         User user = getUserById(userId);
-        Restaurant restaurant = restaurantRepository.findByInvitationCodeAndDeletedAtIsNull(invitationCode)
+        Restaurant restaurant = restaurantRepository.findByInvitationCode(invitationCode)
                 .orElseThrow(() -> new NoSuchElementException("Código de invitación no válido"));
         if (restaurant.getInvitationExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("El código de invitación ha expirado");
