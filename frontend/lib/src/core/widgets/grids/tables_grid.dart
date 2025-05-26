@@ -39,9 +39,11 @@ class TablesGrid extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Table ${table.number}'),
-                Text('Capacity: ${table.capacity}'),
-                Text(table.state),
+                Text('${table.number}',
+                    style: const TextStyle(
+                        fontSize: 35, fontWeight: FontWeight.bold)),
+                Text('Capacidad: ${table.capacity}',
+                    style: const TextStyle(fontSize: 16)),
               ],
             ),
           ),

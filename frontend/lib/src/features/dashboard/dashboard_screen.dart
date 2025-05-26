@@ -151,6 +151,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
       drawer: Drawer(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -165,23 +169,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     'Gastro & Hub',
                     style: Theme.of(context)
                         .textTheme
-                        .headlineSmall
-                        ?.copyWith(color: Colors.white),
+                        .headlineLarge
+                        ?.copyWith(color: Colors.white,
+                        fontSize: 50),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
+                  Text(
+                    user.restaurantName!,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22),
+                  ),
                   Text(
                     user.name,
                     style: Theme.of(context)
                         .textTheme
-                        .bodyLarge
-                        ?.copyWith(color: Colors.white70),
-                  ),
-                  Text(
-                    user.email,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: Colors.white70),
+                        .bodyMedium
+                        ?.copyWith(color: Colors.white70,
+                            fontSize: 14),
                   ),
                 ],
               ),
