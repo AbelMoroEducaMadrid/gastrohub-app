@@ -1,10 +1,12 @@
 package com.abel.gastrohub.ingredient;
 
+import com.abel.gastrohub.masterdata.MtUnit;
 import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.security.CustomUserDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -37,12 +39,8 @@ public class IngredientService {
 
     public Ingredient getIngredientById(Integer id) {
         Integer restaurantId = getCurrentRestaurantId();
-        Ingredient ingredient = ingredientRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + id));
-        if (!ingredient.getRestaurant().getId().equals(restaurantId)) {
-            throw new SecurityException("No autorizado para acceder a este ingrediente");
-        }
-        return ingredient;
+        return ingredientRepository.findByIdAndRestaurantId(id, restaurantId)
+                .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + id + " para el restaurante: " + restaurantId));
     }
 
     public Ingredient createIngredient(Ingredient ingredient) {
@@ -50,19 +48,35 @@ public class IngredientService {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(restaurantId);
         ingredient.setRestaurant(restaurant);
+        if (ingredient.getIsComposite() && ingredient.getCostPerUnit() != null && ingredient.getCostPerUnit().compareTo(BigDecimal.ZERO) != 0) {
+            throw new IllegalArgumentException("El costPerUnit no debe proporcionarse para ingredientes compuestos");
+        }
         validateIngredient(ingredient);
+        calculateCompositeCost(ingredient);
         return ingredientRepository.save(ingredient);
     }
 
     public Ingredient updateIngredient(Integer id, Ingredient ingredientDetails) {
         Ingredient ingredient = getIngredientById(id);
+        if (ingredient.getIsComposite() && ingredientDetails.getCostPerUnit() != null && ingredientDetails.getCostPerUnit().compareTo(BigDecimal.ZERO) != 0) {
+            throw new IllegalArgumentException("El costPerUnit no debe proporcionarse para ingredientes compuestos");
+        }
+        ingredient.setName(ingredientDetails.getName());
         ingredient.setName(ingredientDetails.getName());
         ingredient.setUnit(ingredientDetails.getUnit());
         ingredient.setStock(ingredientDetails.getStock());
         ingredient.setCostPerUnit(ingredientDetails.getCostPerUnit());
         ingredient.setMinStock(ingredientDetails.getMinStock());
         ingredient.setIsComposite(ingredientDetails.getIsComposite());
+        if (ingredientDetails.getRelIngredientIngredients() != null) {
+            ingredient.getRelIngredientIngredients().clear();
+            ingredient.getRelIngredientIngredients().addAll(ingredientDetails.getRelIngredientIngredients());
+            for (RelIngredientIngredient rel : ingredient.getRelIngredientIngredients()) {
+                rel.setParentIngredient(ingredient);
+            }
+        }
         validateIngredient(ingredient);
+        calculateCompositeCost(ingredient);
         return ingredientRepository.save(ingredient);
     }
 
@@ -91,12 +105,15 @@ public class IngredientService {
         if (child.getIsComposite()) {
             throw new IllegalStateException("Un ingrediente compuesto no puede ser componente de otro");
         }
-        if (!parent.getUnit().getId().equals(component.getUnit().getId())) {
-            throw new IllegalArgumentException("La unidad del componente debe coincidir con la del ingrediente compuesto");
+        if (!child.getUnit().getId().equals(component.getUnit().getId())) {
+            throw new IllegalArgumentException("La unidad del componente debe coincidir con la registrada: " + child.getUnit().getId());
         }
         component.setParentIngredient(parent);
         component.setComponentIngredient(child);
-        return relIngredientIngredientRepository.save(component);
+        RelIngredientIngredient savedComponent = relIngredientIngredientRepository.save(component);
+        calculateCompositeCost(parent);
+        ingredientRepository.save(parent);
+        return savedComponent;
     }
 
     public void deleteComponent(Integer parentId, Integer componentId) {
@@ -107,15 +124,42 @@ public class IngredientService {
         RelIngredientIngredient component = relIngredientIngredientRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Componente no encontrado"));
         relIngredientIngredientRepository.delete(component);
+        calculateCompositeCost(parent);
+        ingredientRepository.save(parent);
     }
 
     private void validateIngredient(Ingredient ingredient) {
-        if (ingredient.getIsComposite() && !ingredient.getRelIngredientIngredients().isEmpty()) {
+        if (ingredient.getIsComposite() && ingredient.getRelIngredientIngredients().isEmpty()) {
+            throw new IllegalArgumentException("Un ingrediente compuesto debe tener al menos un componente");
+        }
+        if (ingredient.getIsComposite()) {
             for (RelIngredientIngredient rel : ingredient.getRelIngredientIngredients()) {
-                if (!rel.getUnit().getId().equals(ingredient.getUnit().getId())) {
-                    throw new IllegalArgumentException("Las unidades de los componentes deben coincidir con la del ingrediente compuesto");
+                Ingredient component = rel.getComponentIngredient();
+                MtUnit componentRegisteredUnit = component.getUnit();
+                MtUnit componentRelationUnit = rel.getUnit();
+                if (!componentRelationUnit.getId().equals(componentRegisteredUnit.getId())) {
+                    throw new IllegalArgumentException(
+                            "La unidad del componente '" + component.getName() + "' en la relación (" +
+                                    componentRelationUnit.getId() + ") no coincide con su unidad registrada (" +
+                                    componentRegisteredUnit.getId() + ")"
+                    );
                 }
             }
+        }
+    }
+
+    private void calculateCompositeCost(Ingredient ingredient) {
+        if (ingredient.getIsComposite()) {
+            BigDecimal totalCost = BigDecimal.ZERO;
+            for (RelIngredientIngredient rel : ingredient.getRelIngredientIngredients()) {
+                Ingredient component = rel.getComponentIngredient();
+                if (component.getCostPerUnit() == null) {
+                    throw new IllegalStateException("El componente '" + component.getName() + "' no tiene un costPerUnit asignado");
+                }
+                BigDecimal componentCost = component.getCostPerUnit().multiply(rel.getQuantity());
+                totalCost = totalCost.add(componentCost);
+            }
+            ingredient.setCostPerUnit(totalCost);
         }
     }
 

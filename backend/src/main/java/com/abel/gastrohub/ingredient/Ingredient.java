@@ -37,7 +37,7 @@ public class Ingredient {
     private String name;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "unit_id", nullable = false)
     private MtUnit unit;
 
@@ -75,10 +75,21 @@ public class Ingredient {
     )
     private Set<MtAttribute> attributes = new HashSet<>();
 
-    @OneToMany(mappedBy = "parentIngredient")
+    @OneToMany(mappedBy = "parentIngredient", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RelIngredientIngredient> relIngredientIngredients = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "componentIngredient")
     private Set<RelIngredientIngredient> parentIngredients = new LinkedHashSet<>();
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }
