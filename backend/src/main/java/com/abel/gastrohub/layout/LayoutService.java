@@ -7,7 +7,6 @@ import com.abel.gastrohub.security.CustomUserDetails;
 import com.abel.gastrohub.table.Table;
 import com.abel.gastrohub.table.TableRepository;
 import com.abel.gastrohub.table.TableState;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.abel.gastrohub.layout;
 
-import com.abel.gastrohub.table.Table;
 import com.abel.gastrohub.restaurant.Restaurant;
+import com.abel.gastrohub.table.Table;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
