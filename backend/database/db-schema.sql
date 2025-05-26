@@ -243,14 +243,11 @@ CREATE TABLE rel_ingredient_ingredients
 -- Atributos asociados a los ingredientes (ej. 'Sin gluten', 'Vegano').
 CREATE TABLE rel_ingredient_attributes
 (
-    ingredient_id INT                                 NOT NULL,
-    attribute_id  INT                                 NOT NULL,
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at    TIMESTAMP,
+    ingredient_id INT NOT NULL,
+    attribute_id  INT NOT NULL,
     PRIMARY KEY (ingredient_id, attribute_id), -- Clave compuesta
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients (id),
-    FOREIGN KEY (attribute_id) REFERENCES mt_attributes (id)
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients (id) ON DELETE CASCADE,
+    FOREIGN KEY (attribute_id) REFERENCES mt_attributes (id) ON DELETE CASCADE
 );
 
 -- ### Productos

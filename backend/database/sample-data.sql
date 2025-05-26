@@ -23,13 +23,33 @@ VALUES ('ROLE_ADMIN'),
        ('ROLE_DELIVERY');
 
 -- Atributos
+-- Inserts para los 14 alérgenos obligatorios
+INSERT INTO mt_attributes (name, description)
+VALUES ('Gluten', 'Contiene cereales como trigo, centeno, cebada o avena'),
+       ('Crustáceos', 'Contiene crustáceos como cangrejo, langosta, gambas, etc.'),
+       ('Huevo', 'Contiene huevos o productos derivados del huevo'),
+       ('Pescado', 'Contiene pescado o productos derivados del pescado'),
+       ('Cacahuetes', 'Contiene cacahuetes o productos a base de cacahuetes'),
+       ('Soja', 'Contiene soja o productos a base de soja'),
+       ('Lactosa', 'Contiene leche o productos lácteos'),
+       ('Frutos secos', 'Contiene almendras, avellanas, nueces, anacardos, etc.'),
+       ('Apio', 'Contiene apio o productos derivados del apio'),
+       ('Mostaza', 'Contiene mostaza o productos derivados de la mostaza'),
+       ('Sésamo', 'Contiene granos de sésamo o productos a base de sésamo'),
+       ('Sulfitos', 'Contiene dióxido de azufre y sulfitos en concentraciones superiores a 10 mg/kg o 10 mg/l'),
+       ('Altramuces', 'Contiene altramuces o productos a base de altramuces'),
+       ('Moluscos', 'Contiene moluscos como mejillones, ostras, calamares, etc.');
+
+-- Inserts para otros atributos útiles
 INSERT INTO mt_attributes (name, description)
 VALUES ('Sin gluten', 'Producto apto para celíacos'),
        ('Picante', 'Contiene ingredientes picantes'),
-       ('Vegetariano', 'Apto para vegetarianos'),
-       ('Vegano', 'Apto para veganos'),
-       ('Contiene lactosa', 'Contiene productos lácteos'),
-       ('Contiene frutos secos', 'Contiene almendras, nueces, etc.');
+       ('Vegetariano', 'Apto para vegetarianos, sin carne ni pescado'),
+       ('Vegano', 'Apto para veganos, sin productos de origen animal'),
+       ('Carne', 'Contiene carne de cualquier tipo'),
+       ('Marisco', 'Contiene mariscos como gambas, langosta, etc.'),
+       ('Orgánico', 'Elaborado con ingredientes orgánicos certificados'),
+       ('Local', 'Elaborado con ingredientes de origen local');
 
 INSERT INTO payment_plans (name, description, monthly_price, max_users, yearly_discount, features)
 VALUES ('Básico', 'Gestión esencial de pedidos y mesas.', 9.99, 5, 5,
