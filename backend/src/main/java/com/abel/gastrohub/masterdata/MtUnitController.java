@@ -1,5 +1,6 @@
 package com.abel.gastrohub.masterdata;
 
+import com.abel.gastrohub.masterdata.dto.MtUnitResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/units")
@@ -19,31 +21,21 @@ public class MtUnitController {
         this.unitService = unitService;
     }
 
-    // Obtener todas las unidades
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<MtUnit>> getAllUnits() {
-        return ResponseEntity.ok(unitService.getAllUnits());
+    public ResponseEntity<List<MtUnitResponseDTO>> getAllUnits() {
+        List<MtUnit> units = unitService.getAllUnits();
+        List<MtUnitResponseDTO> dtos = units.stream()
+                .map(unit -> new MtUnitResponseDTO(unit.getId(), unit.getName(), unit.getSymbol()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    // Obtener una unidad por ID
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<MtUnit> getUnitById(@PathVariable Integer id) {
-        return ResponseEntity.ok(unitService.getUnitById(id));
-    }
-
-    // Obtener una unidad por nombre
-    @GetMapping("/name/{name}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<MtUnit> getUnitByName(@PathVariable String name) {
-        return ResponseEntity.ok(unitService.getUnitByName(name));
-    }
-
-    // Obtener una unidad por símbolo
-    @GetMapping("/symbol/{symbol}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<MtUnit> getUnitBySymbol(@PathVariable String symbol) {
-        return ResponseEntity.ok(unitService.getUnitBySymbol(symbol));
+    public ResponseEntity<MtUnitResponseDTO> getUnitById(@PathVariable Integer id) {
+        MtUnit unit = unitService.getUnitById(id);
+        MtUnitResponseDTO dto = new MtUnitResponseDTO(unit.getId(), unit.getName(), unit.getSymbol());
+        return ResponseEntity.ok(dto);
     }
 }
