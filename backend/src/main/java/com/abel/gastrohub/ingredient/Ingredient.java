@@ -75,7 +75,7 @@ public class Ingredient {
     )
     private Set<MtAttribute> attributes = new HashSet<>();
 
-    @OneToMany(mappedBy = "parentIngredient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parentIngredient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<RelIngredientIngredient> relIngredientIngredients = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "componentIngredient")

@@ -19,12 +19,12 @@ public class RelIngredientIngredient {
     private RelIngredientIngredientId id;
 
     @MapsId("parentIngredientId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "parent_ingredient_id", nullable = false)
     private Ingredient parentIngredient;
 
     @MapsId("componentIngredientId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "component_ingredient_id", nullable = false)
     private Ingredient componentIngredient;
 
@@ -33,7 +33,7 @@ public class RelIngredientIngredient {
     private BigDecimal quantity;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "unit_id", nullable = false)
     private MtUnit unit;
 
