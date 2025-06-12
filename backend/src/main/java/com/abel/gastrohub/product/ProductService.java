@@ -6,7 +6,6 @@ import com.abel.gastrohub.product.dto.IngredientAdditionDTO;
 import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.restaurant.RestaurantRepository;
 import com.abel.gastrohub.security.CustomUserDetails;
-import jakarta.persistence.EntityManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,18 +23,15 @@ public class ProductService {
     private final RelProductsIngredientRepository relProductsIngredientRepository;
     private final IngredientRepository ingredientRepository;
     private final RestaurantRepository restaurantRepository;
-    private final EntityManager entityManager;
 
     public ProductService(ProductRepository productRepository,
                           RelProductsIngredientRepository relProductsIngredientRepository,
                           IngredientRepository ingredientRepository,
-                          RestaurantRepository restaurantRepository,
-                          EntityManager entityManager) {
+                          RestaurantRepository restaurantRepository) {
         this.productRepository = productRepository;
         this.relProductsIngredientRepository = relProductsIngredientRepository;
         this.ingredientRepository = ingredientRepository;
         this.restaurantRepository = restaurantRepository;
-        this.entityManager = entityManager;
     }
 
     public List<Product> getAllProducts() {
@@ -86,12 +82,17 @@ public class ProductService {
         product.setIsKitchen(productDetails.getIsKitchen());
         product.setPrice(productDetails.getPrice());
 
+        relProductsIngredientRepository.deleteAll(product.getRelProductsIngredients());
+        product.getRelProductsIngredients().clear();
+
         if (productDetails.getRelProductsIngredients() != null) {
-            product.getRelProductsIngredients().clear();
             for (RelProductsIngredient newRel : productDetails.getRelProductsIngredients()) {
-                RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), newRel.getIngredient().getId());
+                Ingredient ingredient = ingredientRepository.findById(newRel.getIngredient().getId())
+                        .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + newRel.getIngredient().getId()));
+                RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), ingredient.getId());
                 newRel.setId(relId);
                 newRel.setProduct(product);
+                newRel.setIngredient(ingredient);
                 product.getRelProductsIngredients().add(newRel);
             }
         }
