@@ -1,13 +1,14 @@
 package com.abel.gastrohub.product.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 
+@Setter
+@Getter
 public class IngredientAdditionDTO {
     private Integer ingredientId;
     private BigDecimal quantity;
 
-    public Integer getIngredientId() { return ingredientId; }
-    public void setIngredientId(Integer ingredientId) { this.ingredientId = ingredientId; }
-    public BigDecimal getQuantity() { return quantity; }
-    public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
 }
