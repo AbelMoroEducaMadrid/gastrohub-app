@@ -103,10 +103,13 @@ public class ProductService {
             throw new IllegalArgumentException("El ingrediente no pertenece al mismo restaurante que el producto");
         }
 
+        RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), ingredient.getId());
+        if (relProductsIngredientRepository.existsById(relId)) {
+            throw new IllegalArgumentException("El ingrediente ya está asociado al producto");
+        }
+
         rel.setProduct(product);
         rel.setIngredient(ingredient);
-
-        RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), ingredient.getId());
         rel.setId(relId);
 
         RelProductsIngredient savedRel = relProductsIngredientRepository.save(rel);

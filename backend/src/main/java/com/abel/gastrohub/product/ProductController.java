@@ -1,7 +1,9 @@
 package com.abel.gastrohub.product;
 
 import com.abel.gastrohub.ingredient.Ingredient;
+import com.abel.gastrohub.ingredient.IngredientRepository;
 import com.abel.gastrohub.masterdata.MtCategory;
+import com.abel.gastrohub.masterdata.MtCategoryRepository;
 import com.abel.gastrohub.product.dto.IngredientAdditionDTO;
 import com.abel.gastrohub.product.dto.ProductCreateDTO;
 import com.abel.gastrohub.product.dto.ProductListDTO;
@@ -12,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,9 +23,15 @@ import java.util.stream.Collectors;
 public class ProductController {
 
     private final ProductService productService;
+    private final MtCategoryRepository mtCategoryRepository;
+    private final IngredientRepository ingredientRepository;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService,
+                             MtCategoryRepository mtCategoryRepository,
+                             IngredientRepository ingredientRepository) {
         this.productService = productService;
+        this.mtCategoryRepository = mtCategoryRepository;
+        this.ingredientRepository = ingredientRepository;
     }
 
     @GetMapping
@@ -121,25 +130,33 @@ public class ProductController {
     private Product toEntity(ProductCreateDTO dto) {
         Product product = new Product();
         product.setName(dto.getName());
-        MtCategory category = new MtCategory();
-        category.setId(dto.getCategoryId());
+
+        // Cargar la categoría completa desde la base de datos
+        MtCategory category = mtCategoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada con ID: " + dto.getCategoryId()));
         product.setCategory(category);
+
         product.setAvailable(dto.getAvailable());
         product.setIsKitchen(dto.getIsKitchen());
+
         if (dto.getIngredients() != null) {
             Set<RelProductsIngredient> rels = dto.getIngredients().stream()
                     .map(ingDTO -> {
                         RelProductsIngredient rel = new RelProductsIngredient();
-                        Ingredient ingredient = new Ingredient();
-                        ingredient.setId(ingDTO.getIngredientId());
+
+                        // Cargar el ingrediente completo desde la base de datos
+                        Ingredient ingredient = ingredientRepository.findById(ingDTO.getIngredientId())
+                                .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + ingDTO.getIngredientId()));
                         rel.setIngredient(ingredient);
                         rel.setQuantity(ingDTO.getQuantity());
                         rel.setProduct(product);
+
                         return rel;
                     })
                     .collect(Collectors.toSet());
             product.setRelProductsIngredients(rels);
         }
+
         return product;
     }
 
