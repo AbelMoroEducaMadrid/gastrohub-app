@@ -147,7 +147,7 @@ VALUES (1, 1),  -- Harina: Gluten
 -- Vino Tinto: Sulfitos
 
 -- Productos
-INSERT INTO products (name, restaurant_id, total_cost, available, is_kitchen, category_id)
+INSERT INTO products (name, restaurant_id, price, available, is_kitchen, category_id)
 VALUES ('Bruschetta', 1, 3.00, TRUE, TRUE, 1),
        ('Pizza Margarita', 1, 7.00, TRUE, TRUE, 2),
        ('Pizza Pepperoni', 1, 8.00, TRUE, TRUE, 2),

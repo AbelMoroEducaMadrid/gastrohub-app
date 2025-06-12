@@ -37,8 +37,8 @@ public class Product {
     private Restaurant restaurant;
 
     @NotNull
-    @Column(name = "total_cost", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalCost;
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
 
     @ColumnDefault("true")
     @Column(name = "available")

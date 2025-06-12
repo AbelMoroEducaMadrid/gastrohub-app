@@ -117,7 +117,7 @@ public class ProductController {
         ProductResponseDTO dto = new ProductResponseDTO();
         dto.setId(product.getId());
         dto.setName(product.getName());
-        dto.setTotalCost(product.getTotalCost());
+        dto.setPrice(product.getPrice());  // Correcto
         dto.setAvailable(product.getAvailable());
         dto.setIsKitchen(product.getIsKitchen());
         dto.setCategoryId(product.getCategory().getId());
@@ -131,26 +131,23 @@ public class ProductController {
         Product product = new Product();
         product.setName(dto.getName());
 
-        // Cargar la categoría completa desde la base de datos
         MtCategory category = mtCategoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada con ID: " + dto.getCategoryId()));
         product.setCategory(category);
 
         product.setAvailable(dto.getAvailable());
         product.setIsKitchen(dto.getIsKitchen());
+        product.setPrice(dto.getPrice());  // Asignar el precio desde el DTO
 
         if (dto.getIngredients() != null) {
             Set<RelProductsIngredient> rels = dto.getIngredients().stream()
                     .map(ingDTO -> {
                         RelProductsIngredient rel = new RelProductsIngredient();
-
-                        // Cargar el ingrediente completo desde la base de datos
                         Ingredient ingredient = ingredientRepository.findById(ingDTO.getIngredientId())
                                 .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + ingDTO.getIngredientId()));
                         rel.setIngredient(ingredient);
                         rel.setQuantity(ingDTO.getQuantity());
                         rel.setProduct(product);
-
                         return rel;
                     })
                     .collect(Collectors.toSet());

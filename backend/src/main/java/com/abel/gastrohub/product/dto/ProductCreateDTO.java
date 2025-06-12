@@ -13,6 +13,7 @@ public class ProductCreateDTO {
     private Integer categoryId;
     private Boolean available;
     private Boolean isKitchen;
+    private BigDecimal price;
     private List<IngredientDTO> ingredients;
 
     @Setter

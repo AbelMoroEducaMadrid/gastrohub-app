@@ -187,7 +187,7 @@ CREATE TABLE products
     id            SERIAL PRIMARY KEY,
     name          VARCHAR(255)                        NOT NULL,
     restaurant_id INT                                 NOT NULL,
-    total_cost    DECIMAL(10, 2)                      NOT NULL CHECK (total_cost >= 0),
+    price         DECIMAL(10, 2)                      NOT NULL CHECK (price >= 0),
     available     BOOLEAN   DEFAULT TRUE,
     is_kitchen    BOOLEAN   DEFAULT TRUE,
     category_id   INT                                 NOT NULL,

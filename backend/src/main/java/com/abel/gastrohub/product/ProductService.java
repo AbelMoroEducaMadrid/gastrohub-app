@@ -4,7 +4,9 @@ import com.abel.gastrohub.ingredient.Ingredient;
 import com.abel.gastrohub.ingredient.IngredientRepository;
 import com.abel.gastrohub.product.dto.IngredientAdditionDTO;
 import com.abel.gastrohub.restaurant.Restaurant;
+import com.abel.gastrohub.restaurant.RestaurantRepository;
 import com.abel.gastrohub.security.CustomUserDetails;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +23,19 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final RelProductsIngredientRepository relProductsIngredientRepository;
     private final IngredientRepository ingredientRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final EntityManager entityManager;
 
     public ProductService(ProductRepository productRepository,
                           RelProductsIngredientRepository relProductsIngredientRepository,
-                          IngredientRepository ingredientRepository) {
+                          IngredientRepository ingredientRepository,
+                          RestaurantRepository restaurantRepository,
+                          EntityManager entityManager) {
         this.productRepository = productRepository;
         this.relProductsIngredientRepository = relProductsIngredientRepository;
         this.ingredientRepository = ingredientRepository;
+        this.restaurantRepository = restaurantRepository;
+        this.entityManager = entityManager;
     }
 
     public List<Product> getAllProducts() {
@@ -44,21 +52,26 @@ public class ProductService {
     @Transactional
     public Product createProduct(Product product) {
         Integer restaurantId = getCurrentRestaurantId();
-        Restaurant restaurant = new Restaurant();
-        restaurant.setId(restaurantId);
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + restaurantId));
         product.setRestaurant(restaurant);
 
-        if (product.getRelProductsIngredients() != null) {
-            for (RelProductsIngredient rel : product.getRelProductsIngredients()) {
-                RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), rel.getIngredient().getId());
-                rel.setId(relId);
-                rel.setProduct(product);
+        Set<RelProductsIngredient> rels = product.getRelProductsIngredients();
+        product.setRelProductsIngredients(null);
+        Product savedProduct = productRepository.save(product);
+
+        if (rels != null && !rels.isEmpty()) {
+            for (RelProductsIngredient rel : rels) {
+                Ingredient managedIngredient = entityManager.merge(rel.getIngredient());
+                rel.setIngredient(managedIngredient);
+                rel.setProduct(savedProduct);
+                relProductsIngredientRepository.save(rel);
             }
+            savedProduct.setRelProductsIngredients(rels);
         }
 
-        validateProduct(product);
-        calculateTotalCost(product);
-        return productRepository.save(product);
+        validateProduct(savedProduct);
+        return savedProduct;
     }
 
     @Transactional
@@ -68,6 +81,7 @@ public class ProductService {
         product.setCategory(productDetails.getCategory());
         product.setAvailable(productDetails.getAvailable());
         product.setIsKitchen(productDetails.getIsKitchen());
+        product.setPrice(productDetails.getPrice());  // Asignar el precio
 
         if (productDetails.getRelProductsIngredients() != null) {
             product.getRelProductsIngredients().clear();
@@ -80,7 +94,6 @@ public class ProductService {
         }
 
         validateProduct(product);
-        calculateTotalCost(product);
         return productRepository.save(product);
     }
 
@@ -116,7 +129,6 @@ public class ProductService {
 
         product.getRelProductsIngredients().add(savedRel);
 
-        calculateTotalCost(product);
         productRepository.save(product);
 
         return savedRel;
@@ -131,7 +143,6 @@ public class ProductService {
 
         product.getRelProductsIngredients().remove(rel);
 
-        calculateTotalCost(product);
         productRepository.save(product);
     }
 
@@ -146,13 +157,16 @@ public class ProductService {
 
         RelProductsIngredient updatedRel = relProductsIngredientRepository.save(rel);
 
-        calculateTotalCost(product);
         productRepository.save(product);
 
         return updatedRel;
     }
 
     private void validateProduct(Product product) {
+        if (product.getPrice() == null || product.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("El precio no puede ser nulo ni negativo");
+        }
+
         Set<Integer> restaurantIds = product.getRelProductsIngredients().stream()
                 .map(rel -> rel.getIngredient().getRestaurant().getId())
                 .collect(Collectors.toSet());
@@ -162,16 +176,6 @@ public class ProductService {
         if (!restaurantIds.isEmpty() && !restaurantIds.iterator().next().equals(product.getRestaurant().getId())) {
             throw new IllegalArgumentException("Los ingredientes no pertenecen al restaurante del producto");
         }
-    }
-
-    private void calculateTotalCost(Product product) {
-        BigDecimal totalCost = BigDecimal.ZERO;
-        for (RelProductsIngredient rel : product.getRelProductsIngredients()) {
-            Ingredient ingredient = rel.getIngredient();
-            BigDecimal ingredientCost = ingredient.getCostPerUnit().multiply(rel.getQuantity());
-            totalCost = totalCost.add(ingredientCost);
-        }
-        product.setTotalCost(totalCost);
     }
 
     private Integer getCurrentRestaurantId() {
