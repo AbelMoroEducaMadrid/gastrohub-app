@@ -56,18 +56,26 @@ public class ProductService {
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + restaurantId));
         product.setRestaurant(restaurant);
 
-        Set<RelProductsIngredient> rels = product.getRelProductsIngredients();
-        product.setRelProductsIngredients(null);
+        // Guardar el producto sin relaciones primero
         Product savedProduct = productRepository.save(product);
 
+        Set<RelProductsIngredient> rels = product.getRelProductsIngredients();
         if (rels != null && !rels.isEmpty()) {
             for (RelProductsIngredient rel : rels) {
-                Ingredient managedIngredient = entityManager.merge(rel.getIngredient());
-                rel.setIngredient(managedIngredient);
-                rel.setProduct(savedProduct);
-                relProductsIngredientRepository.save(rel);
+                RelProductsIngredient newRel = new RelProductsIngredient();
+
+                newRel.setProduct(savedProduct);
+
+                Ingredient ingredient = ingredientRepository.findById(rel.getIngredient().getId())
+                        .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + rel.getIngredient().getId()));
+                newRel.setIngredient(ingredient);
+
+                newRel.setQuantity(rel.getQuantity());
+                
+                relProductsIngredientRepository.save(newRel);
             }
-            savedProduct.setRelProductsIngredients(rels);
+
+            savedProduct = productRepository.findById(savedProduct.getId()).orElse(savedProduct);
         }
 
         validateProduct(savedProduct);
@@ -81,7 +89,7 @@ public class ProductService {
         product.setCategory(productDetails.getCategory());
         product.setAvailable(productDetails.getAvailable());
         product.setIsKitchen(productDetails.getIsKitchen());
-        product.setPrice(productDetails.getPrice());  // Asignar el precio
+        product.setPrice(productDetails.getPrice());
 
         if (productDetails.getRelProductsIngredients() != null) {
             product.getRelProductsIngredients().clear();

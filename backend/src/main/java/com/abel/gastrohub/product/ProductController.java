@@ -117,7 +117,7 @@ public class ProductController {
         ProductResponseDTO dto = new ProductResponseDTO();
         dto.setId(product.getId());
         dto.setName(product.getName());
-        dto.setPrice(product.getPrice());  // Correcto
+        dto.setPrice(product.getPrice());
         dto.setAvailable(product.getAvailable());
         dto.setIsKitchen(product.getIsKitchen());
         dto.setCategoryId(product.getCategory().getId());
@@ -137,7 +137,7 @@ public class ProductController {
 
         product.setAvailable(dto.getAvailable());
         product.setIsKitchen(dto.getIsKitchen());
-        product.setPrice(dto.getPrice());  // Asignar el precio desde el DTO
+        product.setPrice(dto.getPrice());
 
         if (dto.getIngredients() != null) {
             Set<RelProductsIngredient> rels = dto.getIngredients().stream()
@@ -147,7 +147,7 @@ public class ProductController {
                                 .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + ingDTO.getIngredientId()));
                         rel.setIngredient(ingredient);
                         rel.setQuantity(ingDTO.getQuantity());
-                        rel.setProduct(product);
+
                         return rel;
                     })
                     .collect(Collectors.toSet());

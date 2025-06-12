@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "rel_products_ingredients")
 public class RelProductsIngredient {
-    @SequenceGenerator(name = "rel_products_ingredients_id_gen", sequenceName = "rel_orders_products_id_seq", allocationSize = 1)
     @EmbeddedId
     private RelProductsIngredientId id;
 
