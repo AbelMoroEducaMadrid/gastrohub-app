@@ -73,25 +73,48 @@ public class IngredientService {
 
     public Ingredient updateIngredient(Integer id, Ingredient ingredientDetails) {
         Ingredient ingredient = getIngredientById(id);
-        if (ingredient.getIsComposite() && ingredientDetails.getCostPerUnit() != null && ingredientDetails.getCostPerUnit().compareTo(BigDecimal.ZERO) != 0) {
-            throw new IllegalArgumentException("El costPerUnit no debe proporcionarse para ingredientes compuestos");
-        }
-        ingredient.setName(ingredientDetails.getName());
+
         ingredient.setName(ingredientDetails.getName());
         ingredient.setUnit(ingredientDetails.getUnit());
         ingredient.setStock(ingredientDetails.getStock());
         ingredient.setCostPerUnit(ingredientDetails.getCostPerUnit());
         ingredient.setMinStock(ingredientDetails.getMinStock());
         ingredient.setIsComposite(ingredientDetails.getIsComposite());
-        if (ingredientDetails.getRelIngredientIngredients() != null) {
-            ingredient.getRelIngredientIngredients().clear();
-            ingredient.getRelIngredientIngredients().addAll(ingredientDetails.getRelIngredientIngredients());
-            for (RelIngredientIngredient rel : ingredient.getRelIngredientIngredients()) {
-                rel.setParentIngredient(ingredient);
+
+        if (ingredient.getIsComposite()) {
+            Set<RelIngredientIngredient> newComponents = ingredientDetails.getRelIngredientIngredients();
+            Set<RelIngredientIngredient> currentComponents = ingredient.getRelIngredientIngredients();
+
+            if (newComponents == null || newComponents.isEmpty()) {
+                currentComponents.clear();
+            } else {
+                currentComponents.removeIf(rel -> !newComponents.stream()
+                        .anyMatch(newRel -> newRel.getComponentIngredient().getId().equals(rel.getComponentIngredient().getId())));
+
+                for (RelIngredientIngredient newRel : newComponents) {
+                    RelIngredientIngredient existingRel = currentComponents.stream()
+                            .filter(rel -> rel.getComponentIngredient().getId().equals(newRel.getComponentIngredient().getId()))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (existingRel != null) {
+                        existingRel.setQuantity(newRel.getQuantity());
+                        existingRel.setUnit(newRel.getUnit());
+                    } else {
+                        newRel.setParentIngredient(ingredient);
+                        RelIngredientIngredientId relId = new RelIngredientIngredientId(ingredient.getId(), newRel.getComponentIngredient().getId());
+                        newRel.setId(relId);
+                        currentComponents.add(newRel);
+                    }
+                }
             }
+        } else {
+            ingredient.getRelIngredientIngredients().clear();
         }
+
         validateIngredient(ingredient);
         calculateCompositeCost(ingredient);
+
         return ingredientRepository.save(ingredient);
     }
 
