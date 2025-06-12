@@ -184,14 +184,16 @@ CREATE TABLE rel_ingredients_attributes
 -- ### Productos
 CREATE TABLE products
 (
-    id          SERIAL PRIMARY KEY,
-    name        VARCHAR(255)                        NOT NULL,
-    total_cost  DECIMAL(10, 2)                      NOT NULL CHECK (total_cost >= 0),
-    available   BOOLEAN   DEFAULT TRUE,
-    is_kitchen  BOOLEAN   DEFAULT TRUE,
-    category_id INT                                 NOT NULL,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    id            SERIAL PRIMARY KEY,
+    name          VARCHAR(255)                        NOT NULL,
+    restaurant_id INT                                 NOT NULL,
+    total_cost    DECIMAL(10, 2)                      NOT NULL CHECK (total_cost >= 0),
+    available     BOOLEAN   DEFAULT TRUE,
+    is_kitchen    BOOLEAN   DEFAULT TRUE,
+    category_id   INT                                 NOT NULL,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES mt_categories (id) ON DELETE CASCADE
 );
 

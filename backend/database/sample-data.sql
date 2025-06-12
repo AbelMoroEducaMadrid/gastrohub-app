@@ -147,16 +147,16 @@ VALUES (1, 1),  -- Harina: Gluten
 -- Vino Tinto: Sulfitos
 
 -- Productos
-INSERT INTO products (name, total_cost, available, is_kitchen, category_id)
-VALUES ('Bruschetta', 3.00, TRUE, TRUE, 1),
-       ('Pizza Margarita', 7.00, TRUE, TRUE, 2),
-       ('Pizza Pepperoni', 8.00, TRUE, TRUE, 2),
-       ('Spaghetti Carbonara', 6.00, TRUE, TRUE, 2),
-       ('Lasagna', 9.00, TRUE, TRUE, 2),
-       ('Tiramisú', 4.00, TRUE, TRUE, 4),
-       ('Gelato', 3.00, TRUE, TRUE, 4),
-       ('Agua Mineral', 0.50, TRUE, FALSE, 5),
-       ('Vino Tinto', 10.00, TRUE, FALSE, 5);
+INSERT INTO products (name, restaurant_id, total_cost, available, is_kitchen, category_id)
+VALUES ('Bruschetta', 1, 3.00, TRUE, TRUE, 1),
+       ('Pizza Margarita', 1, 7.00, TRUE, TRUE, 2),
+       ('Pizza Pepperoni', 1, 8.00, TRUE, TRUE, 2),
+       ('Spaghetti Carbonara', 1, 6.00, TRUE, TRUE, 2),
+       ('Lasagna', 1, 9.00, TRUE, TRUE, 2),
+       ('Tiramisú', 1, 4.00, TRUE, TRUE, 4),
+       ('Gelato', 1, 3.00, TRUE, TRUE, 4),
+       ('Agua Mineral', 1, 0.50, TRUE, FALSE, 5),
+       ('Vino Tinto', 1, 10.00, TRUE, FALSE, 5);
 
 -- Relación Productos-Ingredientes
 INSERT INTO rel_products_ingredients (product_id, ingredient_id, quantity)
