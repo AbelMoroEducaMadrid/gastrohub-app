@@ -11,7 +11,6 @@ import java.io.Serial;
 import java.util.Objects;
 
 @Getter
-@Setter
 @Embeddable
 public class RelIngredientIngredientId implements java.io.Serializable {
     @Serial
@@ -23,6 +22,14 @@ public class RelIngredientIngredientId implements java.io.Serializable {
     @NotNull
     @Column(name = "component_ingredient_id", nullable = false)
     private Integer componentIngredientId;
+
+    public RelIngredientIngredientId() {
+    }
+
+    public RelIngredientIngredientId(Integer parentIngredientId, Integer componentIngredientId) {
+        this.parentIngredientId = parentIngredientId;
+        this.componentIngredientId = componentIngredientId;
+    }
 
     @Override
     public boolean equals(Object o) {

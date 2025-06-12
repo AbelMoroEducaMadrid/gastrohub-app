@@ -171,6 +171,12 @@ public class IngredientController {
                     .collect(Collectors.toSet());
             ingredient.setRelIngredientIngredients(components);
         }
+
+        System.out.println("Ingrediente padre: " + ingredient.getName());
+        for (RelIngredientIngredient rel : ingredient.getRelIngredientIngredients()) {
+            System.out.println("Componente ID: " + rel.getComponentIngredient().getId() + ", Cantidad: " + rel.getQuantity());
+        }
+
         return ingredient;
     }
 

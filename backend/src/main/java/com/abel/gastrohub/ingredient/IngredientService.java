@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Service
 public class IngredientService {
@@ -48,12 +49,26 @@ public class IngredientService {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(restaurantId);
         ingredient.setRestaurant(restaurant);
-        if (ingredient.getIsComposite() && ingredient.getCostPerUnit() != null && ingredient.getCostPerUnit().compareTo(BigDecimal.ZERO) != 0) {
-            throw new IllegalArgumentException("El costPerUnit no debe proporcionarse para ingredientes compuestos");
+
+        Set<RelIngredientIngredient> components = ingredient.getRelIngredientIngredients();
+        ingredient.setRelIngredientIngredients(null);
+        Ingredient savedIngredient = ingredientRepository.save(ingredient);
+        System.out.println("Después de guardar el ingrediente, ID: " + savedIngredient.getId());
+
+        if (ingredient.getIsComposite() && components != null && !components.isEmpty()) {
+            for (RelIngredientIngredient rel : components) {
+                rel.setParentIngredient(savedIngredient);
+                RelIngredientIngredientId id = new RelIngredientIngredientId(savedIngredient.getId(), rel.getComponentIngredient().getId());
+                rel.setId(id);
+                relIngredientIngredientRepository.save(rel);
+            }
+
+            savedIngredient.setRelIngredientIngredients(components);
         }
-        validateIngredient(ingredient);
-        calculateCompositeCost(ingredient);
-        return ingredientRepository.save(ingredient);
+
+        validateIngredient(savedIngredient);
+        calculateCompositeCost(savedIngredient);
+        return savedIngredient;
     }
 
     public Ingredient updateIngredient(Integer id, Ingredient ingredientDetails) {
@@ -118,9 +133,7 @@ public class IngredientService {
 
     public void deleteComponent(Integer parentId, Integer componentId) {
         Ingredient parent = getIngredientById(parentId);
-        RelIngredientIngredientId id = new RelIngredientIngredientId();
-        id.setParentIngredientId(parentId);
-        id.setComponentIngredientId(componentId);
+        RelIngredientIngredientId id = new RelIngredientIngredientId(parentId, componentId);
         RelIngredientIngredient component = relIngredientIngredientRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Componente no encontrado"));
         relIngredientIngredientRepository.delete(component);
