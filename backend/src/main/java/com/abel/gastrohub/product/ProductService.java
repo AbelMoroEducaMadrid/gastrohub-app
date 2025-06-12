@@ -2,7 +2,6 @@ package com.abel.gastrohub.product;
 
 import com.abel.gastrohub.ingredient.Ingredient;
 import com.abel.gastrohub.ingredient.IngredientRepository;
-import com.abel.gastrohub.masterdata.MtCategory;
 import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.security.CustomUserDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -77,8 +76,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public List<RelProductsIngredient> getIngredients(Integer productId) {
-        Product product = getProductById(productId);
+    public List<RelProductsIngredient> getIngredients(Integer productId) {        
         return relProductsIngredientRepository.findByProductId(productId);
     }
 

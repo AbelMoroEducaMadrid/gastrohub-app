@@ -2,7 +2,10 @@ package com.abel.gastrohub.product;
 
 import com.abel.gastrohub.ingredient.Ingredient;
 import com.abel.gastrohub.masterdata.MtCategory;
-import com.abel.gastrohub.product.dto.*;
+import com.abel.gastrohub.product.dto.IngredientAdditionDTO;
+import com.abel.gastrohub.product.dto.ProductCreateDTO;
+import com.abel.gastrohub.product.dto.ProductListDTO;
+import com.abel.gastrohub.product.dto.ProductResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
