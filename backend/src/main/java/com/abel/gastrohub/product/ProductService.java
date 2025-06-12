@@ -51,34 +51,29 @@ public class ProductService {
 
     @Transactional
     public Product createProduct(Product product) {
+        System.out.println("Iniciando createProduct");
         Integer restaurantId = getCurrentRestaurantId();
+        System.out.println("Restaurant ID: " + restaurantId);
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + restaurantId));
         product.setRestaurant(restaurant);
+        System.out.println("Restaurante establecido");
 
-        // Guardar el producto sin relaciones primero
-        Product savedProduct = productRepository.save(product);
-
-        Set<RelProductsIngredient> rels = product.getRelProductsIngredients();
-        if (rels != null && !rels.isEmpty()) {
-            for (RelProductsIngredient rel : rels) {
-                RelProductsIngredient newRel = new RelProductsIngredient();
-
-                newRel.setProduct(savedProduct);
-
+        if (product.getRelProductsIngredients() != null && !product.getRelProductsIngredients().isEmpty()) {
+            for (RelProductsIngredient rel : product.getRelProductsIngredients()) {
                 Ingredient ingredient = ingredientRepository.findById(rel.getIngredient().getId())
                         .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + rel.getIngredient().getId()));
-                newRel.setIngredient(ingredient);
-
-                newRel.setQuantity(rel.getQuantity());
-                
-                relProductsIngredientRepository.save(newRel);
+                rel.setIngredient(ingredient);
+                rel.setProduct(product);
+                rel.setId(new RelProductsIngredientId(null, ingredient.getId()));
             }
-
-            savedProduct = productRepository.findById(savedProduct.getId()).orElse(savedProduct);
         }
 
+        Product savedProduct = productRepository.save(product);
+        System.out.println("Producto guardado con ID: " + savedProduct.getId());
+
         validateProduct(savedProduct);
+        System.out.println("Producto validado");
         return savedProduct;
     }
 

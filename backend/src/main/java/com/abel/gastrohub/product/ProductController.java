@@ -147,13 +147,12 @@ public class ProductController {
                                 .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + ingDTO.getIngredientId()));
                         rel.setIngredient(ingredient);
                         rel.setQuantity(ingDTO.getQuantity());
-
+                        rel.setProduct(product); // Establecer la relación bidireccional
                         return rel;
                     })
                     .collect(Collectors.toSet());
             product.setRelProductsIngredients(rels);
         }
-
         return product;
     }
 
