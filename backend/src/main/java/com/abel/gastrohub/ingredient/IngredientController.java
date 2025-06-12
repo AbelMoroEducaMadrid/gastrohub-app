@@ -5,12 +5,14 @@ import com.abel.gastrohub.ingredient.dto.IngredientCreateDTO;
 import com.abel.gastrohub.ingredient.dto.IngredientListDTO;
 import com.abel.gastrohub.ingredient.dto.IngredientResponseDTO;
 import com.abel.gastrohub.masterdata.MtUnit;
+import com.abel.gastrohub.masterdata.MtUnitRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,9 +21,15 @@ import java.util.stream.Collectors;
 public class IngredientController {
 
     private final IngredientService ingredientService;
+    private final MtUnitRepository mtUnitRepository;
+    private final IngredientRepository ingredientRepository;
 
-    public IngredientController(IngredientService ingredientService) {
+    public IngredientController(IngredientService ingredientService,
+                                MtUnitRepository mtUnitRepository,
+                                IngredientRepository ingredientRepository) {
         this.ingredientService = ingredientService;
+        this.mtUnitRepository = mtUnitRepository;
+        this.ingredientRepository = ingredientRepository;
     }
 
     @GetMapping
@@ -131,25 +139,33 @@ public class IngredientController {
     private Ingredient toEntity(IngredientCreateDTO dto) {
         Ingredient ingredient = new Ingredient();
         ingredient.setName(dto.getName());
-        MtUnit unit = new MtUnit();
-        unit.setId(dto.getUnitId());
+
+        MtUnit unit = mtUnitRepository.findById(dto.getUnitId())
+                .orElseThrow(() -> new NoSuchElementException("Unidad no encontrada con ID: " + dto.getUnitId()));
         ingredient.setUnit(unit);
+
         ingredient.setStock(dto.getStock());
         ingredient.setCostPerUnit(dto.getCostPerUnit());
         ingredient.setMinStock(dto.getMinStock());
         ingredient.setIsComposite(dto.getIsComposite());
+
         if (dto.getIsComposite() && dto.getComponents() != null) {
             Set<RelIngredientIngredient> components = dto.getComponents().stream()
                     .map(componentDTO -> {
                         RelIngredientIngredient rel = new RelIngredientIngredient();
-                        Ingredient componentIngredient = new Ingredient();
-                        componentIngredient.setId(componentDTO.getComponentIngredientId());
+
+                        Ingredient componentIngredient = ingredientRepository.findById(componentDTO.getComponentIngredientId())
+                                .orElseThrow(() -> new NoSuchElementException("Ingrediente componente no encontrado con ID: " + componentDTO.getComponentIngredientId()));
                         rel.setComponentIngredient(componentIngredient);
+
                         rel.setQuantity(componentDTO.getQuantity());
-                        MtUnit componentUnit = new MtUnit();
-                        componentUnit.setId(componentDTO.getUnitId());
+
+                        MtUnit componentUnit = mtUnitRepository.findById(componentDTO.getUnitId())
+                                .orElseThrow(() -> new NoSuchElementException("Unidad no encontrada con ID: " + componentDTO.getUnitId()));
                         rel.setUnit(componentUnit);
+
                         rel.setParentIngredient(ingredient);
+
                         return rel;
                     })
                     .collect(Collectors.toSet());
