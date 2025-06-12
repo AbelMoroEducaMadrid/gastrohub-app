@@ -87,6 +87,16 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}/ingredients/{ingredientId}")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER','MANAGER')")
+    public ResponseEntity<ProductResponseDTO.IngredientResponseDTO> updateIngredient(
+            @PathVariable Integer id,
+            @PathVariable Integer ingredientId,
+            @RequestBody IngredientAdditionDTO ingredientDTO) {
+        RelProductsIngredient updatedRel = productService.updateIngredient(id, ingredientId, ingredientDTO);
+        return ResponseEntity.ok(toIngredientResponseDTO(updatedRel));
+    }
+
     private ProductListDTO toListDTO(Product product) {
         ProductListDTO dto = new ProductListDTO();
         dto.setId(product.getId());

@@ -2,6 +2,7 @@ package com.abel.gastrohub.product;
 
 import com.abel.gastrohub.ingredient.Ingredient;
 import com.abel.gastrohub.ingredient.IngredientRepository;
+import com.abel.gastrohub.product.dto.IngredientAdditionDTO;
 import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.security.CustomUserDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,6 +47,15 @@ public class ProductService {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(restaurantId);
         product.setRestaurant(restaurant);
+
+        if (product.getRelProductsIngredients() != null) {
+            for (RelProductsIngredient rel : product.getRelProductsIngredients()) {
+                RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), rel.getIngredient().getId());
+                rel.setId(relId);
+                rel.setProduct(product);
+            }
+        }
+
         validateProduct(product);
         calculateTotalCost(product);
         return productRepository.save(product);
@@ -58,13 +68,17 @@ public class ProductService {
         product.setCategory(productDetails.getCategory());
         product.setAvailable(productDetails.getAvailable());
         product.setIsKitchen(productDetails.getIsKitchen());
+
         if (productDetails.getRelProductsIngredients() != null) {
             product.getRelProductsIngredients().clear();
-            product.getRelProductsIngredients().addAll(productDetails.getRelProductsIngredients());
-            for (RelProductsIngredient rel : product.getRelProductsIngredients()) {
-                rel.setProduct(product);
+            for (RelProductsIngredient newRel : productDetails.getRelProductsIngredients()) {
+                RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), newRel.getIngredient().getId());
+                newRel.setId(relId);
+                newRel.setProduct(product);
+                product.getRelProductsIngredients().add(newRel);
             }
         }
+
         validateProduct(product);
         calculateTotalCost(product);
         return productRepository.save(product);
@@ -76,7 +90,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public List<RelProductsIngredient> getIngredients(Integer productId) {        
+    public List<RelProductsIngredient> getIngredients(Integer productId) {
         return relProductsIngredientRepository.findByProductId(productId);
     }
 
@@ -88,25 +102,51 @@ public class ProductService {
         if (!ingredient.getRestaurant().getId().equals(product.getRestaurant().getId())) {
             throw new IllegalArgumentException("El ingrediente no pertenece al mismo restaurante que el producto");
         }
+
         rel.setProduct(product);
         rel.setIngredient(ingredient);
+
+        RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), ingredient.getId());
+        rel.setId(relId);
+
         RelProductsIngredient savedRel = relProductsIngredientRepository.save(rel);
+
+        product.getRelProductsIngredients().add(savedRel);
+
         calculateTotalCost(product);
         productRepository.save(product);
+
         return savedRel;
     }
 
     @Transactional
     public void removeIngredient(Integer productId, Integer ingredientId) {
         Product product = getProductById(productId);
-        RelProductsIngredientId id = new RelProductsIngredientId();
-        id.setProductId(productId);
-        id.setIngredientId(ingredientId);
+        RelProductsIngredientId id = new RelProductsIngredientId(productId, ingredientId);
         RelProductsIngredient rel = relProductsIngredientRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Relación no encontrada"));
-        relProductsIngredientRepository.delete(rel);
+
+        product.getRelProductsIngredients().remove(rel);
+
         calculateTotalCost(product);
         productRepository.save(product);
+    }
+
+    @Transactional
+    public RelProductsIngredient updateIngredient(Integer productId, Integer ingredientId, IngredientAdditionDTO dto) {
+        Product product = getProductById(productId);
+        RelProductsIngredientId relId = new RelProductsIngredientId(productId, ingredientId);
+        RelProductsIngredient rel = relProductsIngredientRepository.findById(relId)
+                .orElseThrow(() -> new NoSuchElementException("Relación no encontrada"));
+
+        rel.setQuantity(dto.getQuantity());
+
+        RelProductsIngredient updatedRel = relProductsIngredientRepository.save(rel);
+
+        calculateTotalCost(product);
+        productRepository.save(product);
+
+        return updatedRel;
     }
 
     private void validateProduct(Product product) {

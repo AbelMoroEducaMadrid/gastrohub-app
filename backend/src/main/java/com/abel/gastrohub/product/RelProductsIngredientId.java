@@ -4,13 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import java.util.Objects;
 
 @Getter
-@Setter
 @Embeddable
 public class RelProductsIngredientId implements java.io.Serializable {
     private static final long serialVersionUID = -4885004031831072310L;
@@ -21,6 +19,14 @@ public class RelProductsIngredientId implements java.io.Serializable {
     @NotNull
     @Column(name = "ingredient_id", nullable = false)
     private Integer ingredientId;
+
+    public RelProductsIngredientId() {
+    }
+
+    public RelProductsIngredientId(Integer productId, Integer ingredientId) {
+        this.productId = productId;
+        this.ingredientId = ingredientId;
+    }
 
     @Override
     public boolean equals(Object o) {
