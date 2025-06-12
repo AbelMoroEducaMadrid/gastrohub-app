@@ -69,7 +69,7 @@ public class Ingredient {
 
     @ManyToMany
     @JoinTable(
-            name = "rel_ingredient_attributes",
+            name = "rel_ingredients_attributes",
             joinColumns = @JoinColumn(name = "ingredient_id"),
             inverseJoinColumns = @JoinColumn(name = "attribute_id")
     )
