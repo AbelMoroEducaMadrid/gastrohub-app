@@ -3,8 +3,10 @@ package com.abel.gastrohub.ingredient;
 import com.abel.gastrohub.masterdata.MtUnit;
 import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.security.CustomUserDetails;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,11 +16,14 @@ import java.util.Set;
 @Service
 public class IngredientService {
 
+    private EntityManager entityManager;
     private final IngredientRepository ingredientRepository;
     private final RelIngredientIngredientRepository relIngredientIngredientRepository;
 
-    public IngredientService(IngredientRepository ingredientRepository,
+    public IngredientService(EntityManager entityManager,
+                             IngredientRepository ingredientRepository,
                              RelIngredientIngredientRepository relIngredientIngredientRepository) {
+        this.entityManager = entityManager;
         this.ingredientRepository = ingredientRepository;
         this.relIngredientIngredientRepository = relIngredientIngredientRepository;
     }
@@ -146,20 +151,36 @@ public class IngredientService {
         if (!child.getUnit().getId().equals(component.getUnit().getId())) {
             throw new IllegalArgumentException("La unidad del componente debe coincidir con la registrada: " + child.getUnit().getId());
         }
+
+        RelIngredientIngredientId relId = new RelIngredientIngredientId(parent.getId(), child.getId());
+        if (relIngredientIngredientRepository.existsById(relId)) {
+            throw new IllegalArgumentException("El componente ya está asociado al ingrediente compuesto");
+        }
+
         component.setParentIngredient(parent);
         component.setComponentIngredient(child);
+        component.setId(relId);
+
         RelIngredientIngredient savedComponent = relIngredientIngredientRepository.save(component);
+
+        parent.getRelIngredientIngredients().add(savedComponent);
         calculateCompositeCost(parent);
         ingredientRepository.save(parent);
+
         return savedComponent;
     }
 
+    @Transactional
     public void deleteComponent(Integer parentId, Integer componentId) {
         Ingredient parent = getIngredientById(parentId);
         RelIngredientIngredientId id = new RelIngredientIngredientId(parentId, componentId);
         RelIngredientIngredient component = relIngredientIngredientRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Componente no encontrado"));
-        relIngredientIngredientRepository.delete(component);
+
+        parent.getRelIngredientIngredients().remove(component);
+
+        entityManager.flush();
+
         calculateCompositeCost(parent);
         ingredientRepository.save(parent);
     }
