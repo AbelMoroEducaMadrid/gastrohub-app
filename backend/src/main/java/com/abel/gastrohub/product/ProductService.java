@@ -82,18 +82,35 @@ public class ProductService {
         product.setIsKitchen(productDetails.getIsKitchen());
         product.setPrice(productDetails.getPrice());
 
-        relProductsIngredientRepository.deleteAll(product.getRelProductsIngredients());
-        product.getRelProductsIngredients().clear();
+        Set<RelProductsIngredient> existingRels = product.getRelProductsIngredients();
 
-        if (productDetails.getRelProductsIngredients() != null) {
-            for (RelProductsIngredient newRel : productDetails.getRelProductsIngredients()) {
-                Ingredient ingredient = ingredientRepository.findById(newRel.getIngredient().getId())
-                        .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + newRel.getIngredient().getId()));
-                RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), ingredient.getId());
-                newRel.setId(relId);
-                newRel.setProduct(product);
-                newRel.setIngredient(ingredient);
-                product.getRelProductsIngredients().add(newRel);
+        Set<RelProductsIngredient> newRels = productDetails.getRelProductsIngredients() != null
+                ? productDetails.getRelProductsIngredients()
+                : Set.of();
+
+        existingRels.removeIf(rel -> newRels.stream()
+                .noneMatch(newRel -> newRel.getIngredient().getId().equals(rel.getIngredient().getId())));
+
+        for (RelProductsIngredient newRel : newRels) {
+            Integer ingredientId = newRel.getIngredient().getId();
+            Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                    .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + ingredientId));
+
+            RelProductsIngredient existingRel = existingRels.stream()
+                    .filter(rel -> rel.getIngredient().getId().equals(ingredientId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (existingRel != null) {
+                existingRel.setQuantity(newRel.getQuantity());
+            } else {
+                RelProductsIngredientId relId = new RelProductsIngredientId(product.getId(), ingredientId);
+                RelProductsIngredient rel = new RelProductsIngredient();
+                rel.setId(relId);
+                rel.setProduct(product);
+                rel.setIngredient(ingredient);
+                rel.setQuantity(newRel.getQuantity());
+                existingRels.add(rel);
             }
         }
 
