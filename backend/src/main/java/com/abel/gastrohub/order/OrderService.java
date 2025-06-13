@@ -1,9 +1,6 @@
 package com.abel.gastrohub.order;
 
-import com.abel.gastrohub.order.dto.OrderCreateDTO;
-import com.abel.gastrohub.order.dto.OrderItemResponseDTO;
-import com.abel.gastrohub.order.dto.OrderResponseDTO;
-import com.abel.gastrohub.order.dto.OrderUpdateDTO;
+import com.abel.gastrohub.order.dto.*;
 import com.abel.gastrohub.product.Product;
 import com.abel.gastrohub.product.ProductService;
 import com.abel.gastrohub.restaurant.Restaurant;
@@ -131,5 +128,80 @@ public class OrderService {
                 .collect(Collectors.toList());
         responseDTO.setItems(items);
         return responseDTO;
+    }
+
+    public RelOrdersProduct addItemToOrder(Integer orderId, OrderItemDTO itemDTO) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException("Comanda no encontrada con ID: " + orderId));
+        if (!order.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
+            throw new SecurityException("No autorizado para modificar esta comanda");
+        }
+        if (order.getState() != OrderState.pendiente) {
+            throw new IllegalStateException("No se puede añadir ítems a una comanda que no está pendiente");
+        }
+
+        Product product = productService.getProductById(itemDTO.getProductId());
+        RelOrdersProduct item = new RelOrdersProduct();
+        item.setOrder(order);
+        item.setProduct(product);
+        item.setPrice(itemDTO.getPrice());
+        item.setNotes(itemDTO.getNotes());
+
+        return relOrdersProductRepository.save(item);
+    }
+
+    public RelOrdersProduct updateOrderItem(Integer orderId, Integer itemId, OrderItemDTO itemDTO) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException("Comanda no encontrada con ID: " + orderId));
+        if (!order.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
+            throw new SecurityException("No autorizado para modificar esta comanda");
+        }
+
+        RelOrdersProduct item = relOrdersProductRepository.findById(itemId)
+                .orElseThrow(() -> new NoSuchElementException("Ítem no encontrado con ID: " + itemId));
+        if (!item.getOrder().getId().equals(orderId)) {
+            throw new IllegalArgumentException("El ítem no pertenece a esta comanda");
+        }
+
+        if (itemDTO.getPrice() != null) item.setPrice(itemDTO.getPrice());
+        if (itemDTO.getNotes() != null) item.setNotes(itemDTO.getNotes());
+
+        return relOrdersProductRepository.save(item);
+    }
+
+    public void deleteOrderItem(Integer orderId, Integer itemId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException("Comanda no encontrada con ID: " + orderId));
+        if (!order.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
+            throw new SecurityException("No autorizado para modificar esta comanda");
+        }
+
+        RelOrdersProduct item = relOrdersProductRepository.findById(itemId)
+                .orElseThrow(() -> new NoSuchElementException("Ítem no encontrado con ID: " + itemId));
+        if (!item.getOrder().getId().equals(orderId)) {
+            throw new IllegalArgumentException("El ítem no pertenece a esta comanda");
+        }
+        if (item.getState() != OrderItemState.pendiente) {
+            throw new IllegalStateException("No se puede eliminar un ítem que no está en estado 'pendiente'");
+        }
+
+        relOrdersProductRepository.delete(item);
+    }
+
+    public RelOrdersProduct changeOrderItemState(Integer orderId, Integer itemId, OrderItemState newState) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException("Comanda no encontrada con ID: " + orderId));
+        if (!order.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
+            throw new SecurityException("No autorizado para modificar esta comanda");
+        }
+
+        RelOrdersProduct item = relOrdersProductRepository.findById(itemId)
+                .orElseThrow(() -> new NoSuchElementException("Ítem no encontrado con ID: " + itemId));
+        if (!item.getOrder().getId().equals(orderId)) {
+            throw new IllegalArgumentException("El ítem no pertenece a esta comanda");
+        }
+
+        item.setState(newState);
+        return relOrdersProductRepository.save(item);
     }
 }

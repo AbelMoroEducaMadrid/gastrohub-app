@@ -1,8 +1,6 @@
 package com.abel.gastrohub.order;
 
-import com.abel.gastrohub.order.dto.OrderCreateDTO;
-import com.abel.gastrohub.order.dto.OrderResponseDTO;
-import com.abel.gastrohub.order.dto.OrderUpdateDTO;
+import com.abel.gastrohub.order.dto.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,5 +51,36 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Integer id) {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{orderId}/items")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
+    public ResponseEntity<OrderItemResponseDTO> addItemToOrder(@PathVariable Integer orderId, @Valid @RequestBody OrderItemDTO itemDTO) {
+        RelOrdersProduct item = orderService.addItemToOrder(orderId, itemDTO);
+        OrderItemResponseDTO responseDTO = new OrderItemResponseDTO(item);
+        return ResponseEntity.status(201).body(responseDTO);
+    }
+
+    @PutMapping("/{orderId}/items/{itemId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
+    public ResponseEntity<OrderItemResponseDTO> updateOrderItem(@PathVariable Integer orderId, @PathVariable Integer itemId, @RequestBody OrderItemDTO itemDTO) {
+        RelOrdersProduct item = orderService.updateOrderItem(orderId, itemId, itemDTO);
+        OrderItemResponseDTO responseDTO = new OrderItemResponseDTO(item);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @DeleteMapping("/{orderId}/items/{itemId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER')")
+    public ResponseEntity<Void> deleteOrderItem(@PathVariable Integer orderId, @PathVariable Integer itemId) {
+        orderService.deleteOrderItem(orderId, itemId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{orderId}/items/{itemId}/state")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
+    public ResponseEntity<OrderItemResponseDTO> changeOrderItemState(@PathVariable Integer orderId, @PathVariable Integer itemId, @RequestBody OrderItemState newState) {
+        RelOrdersProduct item = orderService.changeOrderItemState(orderId, itemId, newState);
+        OrderItemResponseDTO responseDTO = new OrderItemResponseDTO(item);
+        return ResponseEntity.ok(responseDTO);
     }
 }
