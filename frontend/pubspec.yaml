@@ -39,6 +39,7 @@ flutter:
     - assets/images/google_logo.svg
     - assets/images/background_00.png
     - assets/images/background_01.png
+    - assets/images/allergens/
     - .env
     - .env.local
   fonts:
