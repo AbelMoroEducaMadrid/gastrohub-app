@@ -92,8 +92,11 @@ public class OrderController {
 
     @PatchMapping("/{orderId}/items/{itemId}/state")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
-    public ResponseEntity<OrderItemResponseDTO> changeOrderItemState(@PathVariable Integer orderId, @PathVariable Integer itemId, @RequestBody OrderItemState newState) {
-        RelOrdersProduct item = orderService.changeOrderItemState(orderId, itemId, newState);
+    public ResponseEntity<OrderItemResponseDTO> changeOrderItemState(
+            @PathVariable Integer orderId,
+            @PathVariable Integer itemId,
+            @RequestBody UpdateOrderItemStateDTO stateDTO) {
+        RelOrdersProduct item = orderService.changeOrderItemState(orderId, itemId, stateDTO.getNewState());
         OrderItemResponseDTO responseDTO = new OrderItemResponseDTO(item);
         return ResponseEntity.ok(responseDTO);
     }
