@@ -20,7 +20,6 @@ public class OrderResponseDTO {
     private OrderState state;
     private PaymentState paymentState;
     private PaymentMethod paymentMethod;
-    private List<OrderItemResponseDTO> items;
 
     public OrderResponseDTO(Order order) {
         this.id = order.getId();

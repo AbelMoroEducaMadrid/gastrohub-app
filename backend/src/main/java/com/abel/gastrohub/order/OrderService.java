@@ -143,12 +143,7 @@ public class OrderService {
     }
 
     private OrderResponseDTO mapToResponseDTO(Order order) {
-        OrderResponseDTO responseDTO = new OrderResponseDTO(order);
-        List<OrderItemResponseDTO> items = relOrdersProductRepository.findByOrderId(order.getId()).stream()
-                .map(OrderItemResponseDTO::new)
-                .collect(Collectors.toList());
-        responseDTO.setItems(items);
-        return responseDTO;
+        return new OrderResponseDTO(order);
     }
 
     public RelOrdersProduct addItemToOrder(Integer orderId, OrderItemDTO itemDTO) {
