@@ -17,6 +17,8 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _selectedIndex = 0;
   String _role = '';
+  bool _isSpecialScreen = false;
+  Widget? _specialScreen;
 
   @override
   void initState() {
@@ -30,7 +32,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   void _loadInitialData(int restaurantId, String role) {
     ref.read(layoutNotifierProvider(restaurantId).notifier).loadLayouts();
-    // Aquí cargar datos según el rol
   }
 
   List<Widget> _getWidgetOptions(String role, int restaurantId) {
@@ -38,23 +39,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       case 'ROLE_OWNER':
         return [
           WorkTablesScreen(),
-          OrdersTab(),
-          EditMenusScreen(restaurantId: restaurantId),
+          //OrdersTab(),
+          //EditMenusScreen(restaurantId: restaurantId),
         ];
       case 'ROLE_MANAGER':
         return [
           WorkTablesScreen(),
-          OrdersTab(),
-          EditMenusScreen(restaurantId: restaurantId),
+          //OrdersTab(),
+          //EditMenusScreen(restaurantId: restaurantId),
         ];
       case 'ROLE_WAITER':
         return [
           WorkTablesScreen(),
-          OrdersTab(),
-          WorkMenusScreen(restaurantId: restaurantId),
+          //OrdersTab(),
+          //WorkMenusScreen(restaurantId: restaurantId),
         ];
       case 'ROLE_COOK':
-        return [OrdersTab()];
+        //return [OrdersTab()];
       default:
         return [WorkTablesScreen()];
     }
@@ -64,37 +65,29 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     switch (role) {
       case 'ROLE_OWNER':
         return [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.table_chart), label: 'Mesas'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
+          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_MANAGER':
         return [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.table_chart), label: 'Mesas'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
+          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_WAITER':
         return [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.table_chart), label: 'Mesas'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
+          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_COOK':
         return [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt), label: 'Comandas'),
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Comandas'),
         ];
       default:
         return [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Mesas'),
         ];
     }
   }
@@ -102,6 +95,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _isSpecialScreen = false;
       if (index == 0 && _role != 'ROLE_COOK') {
         final restaurantId = ref.read(authProvider).user!.restaurantId!;
         ref.read(layoutNotifierProvider(restaurantId).notifier).loadLayouts();
@@ -135,7 +129,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getTitle(_selectedIndex, user.role)),
+        title: Text(_isSpecialScreen ? 'Alérgenos' : _getTitle(_selectedIndex, user.role)),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -152,44 +146,33 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
       drawer: Drawer(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-              ),
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Gastro & Hub',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineLarge
-                        ?.copyWith(color: Colors.white, fontSize: 50),
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        color: Colors.white, fontSize: 50),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     user.restaurantName!,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22),
                   ),
                   Text(
                     user.name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.white70, fontSize: 14),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
@@ -199,23 +182,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: const Text('Menús'),
               onTap: () {
                 Navigator.pop(context);
-                if (user.role == 'ROLE_OWNER' || user.role == 'ROLE_MANAGER') {
+                /*if (user.role == 'ROLE_OWNER' || user.role == 'ROLE_MANAGER') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          EditMenusScreen(restaurantId: user.restaurantId!),
+                      builder: (context) => EditMenusScreen(restaurantId: user.restaurantId!),
                     ),
                   );
                 } else {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          WorkMenusScreen(restaurantId: user.restaurantId!),
+                      builder: (context) => WorkMenusScreen(restaurantId: user.restaurantId!),
                     ),
                   );
-                }
+                }*/
               },
               enabled: user.role != 'ROLE_COOK',
             ),
@@ -244,8 +225,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          LayoutsScreen(restaurantId: user.restaurantId!),
+                      builder: (context) => LayoutsScreen(restaurantId: user.restaurantId!),
                     ),
                   );
                 },
@@ -263,13 +243,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               leading: const Icon(Icons.info),
               title: const Text('Alérgenos'),
               onTap: () {
+                setState(() {
+                  _isSpecialScreen = true;
+                  _specialScreen = const AllergensScreen();
+                });
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AllergensScreen(),
-                  ),
-                );
               },
             ),
             ListTile(
@@ -283,7 +261,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ],
         ),
       ),
-      body: widgetOptions.elementAt(_selectedIndex),
+      body: _isSpecialScreen ? _specialScreen! : widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: bottomNavItems.length >= 2
           ? BottomNavigationBar(
               items: bottomNavItems,
@@ -308,38 +286,5 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       default:
         return 'Gastro & Hub';
     }
-  }
-}
-
-class OrdersTab extends StatelessWidget {
-  const OrdersTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('Pantalla de Comandas'));
-  }
-}
-
-class EditMenusScreen extends StatelessWidget {
-  final int restaurantId;
-  const EditMenusScreen({super.key, required this.restaurantId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Editar Menús - Restaurante: $restaurantId'),
-    );
-  }
-}
-
-class WorkMenusScreen extends StatelessWidget {
-  final int restaurantId;
-  const WorkMenusScreen({super.key, required this.restaurantId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Menús de Trabajo - Restaurante: $restaurantId'),
-    );
   }
 }

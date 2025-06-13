@@ -20,9 +20,10 @@ class _AllergensScreenState extends ConsumerState<AllergensScreen> {
   @override
   Widget build(BuildContext context) {
     final allergens = ref.watch(allergenNotifierProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Alérgenos')),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: allergens.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -30,16 +31,32 @@ class _AllergensScreenState extends ConsumerState<AllergensScreen> {
               itemBuilder: (context, index) {
                 final allergen = allergens[index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  color: theme.cardColor,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: ListTile(
                     leading: SvgPicture.asset(
                       'assets/images/allergens/${allergen.name}.svg',
                       width: 50,
                       height: 50,
-                      placeholderBuilder: (context) => const Icon(Icons.error),
+                      placeholderBuilder: (context) => Icon(
+                        Icons.error,
+                        color: theme.colorScheme.error,
+                      ),
                     ),
-                    title: Text(allergen.name),
-                    subtitle: Text(allergen.description),
+                    title: Text(
+                      allergen.name,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    subtitle: Text(
+                      allergen.description,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.black87,
+                      ),
+                    ),
                   ),
                 );
               },
