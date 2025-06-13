@@ -24,7 +24,6 @@ class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
     final ingredients = ref.watch(ingredientNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ingredientes')),
       body: ingredients.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
