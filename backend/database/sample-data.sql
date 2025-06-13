@@ -37,15 +37,7 @@ VALUES ('Gluten', 'Contiene cereales como trigo, centeno, cebada o avena'),
        ('Sésamo', 'Contiene granos de sésamo o productos a base de sésamo'),
        ('Sulfitos', 'Contiene dióxido de azufre y sulfitos en concentraciones superiores a 10 mg/kg o 10 mg/l'),
        ('Altramuces', 'Contiene altramuces o productos a base de altramuces'),
-       ('Moluscos', 'Contiene moluscos como mejillones, ostras, calamares, etc.'),
-       ('Sin gluten', 'Producto apto para celíacos'),
-       ('Sin lactosa', 'Producto apto para intolerantes a la lactosa'),
-       ('Picante', 'Contiene ingredientes picantes'),
-       ('Vegetariano', 'Apto para vegetarianos, sin carne ni pescado'),
-       ('Vegano', 'Apto para veganos, sin productos de origen animal'),
-       ('Bajo en calorías', 'Producto con bajo contenido calórico'),
-       ('Orgánico', 'Elaborado con ingredientes orgánicos certificados'),
-       ('Local', 'Elaborado con ingredientes de origen local');
+       ('Moluscos', 'Contiene moluscos como mejillones, ostras, calamares, etc.');
 
 -- Planes de pago
 INSERT INTO payment_plans (name, description, monthly_price, max_users, yearly_discount, features)
@@ -148,7 +140,6 @@ VALUES (1, 'Harina', 1, 50.0, 2.50, 10.0, FALSE),
        (1, 'Masa para pizza', 3, 20.0, 1.50, 5.0, TRUE),
        (1, 'Agua Mineral', 3, 100.0, 0.50, 20.0, FALSE),
        (1, 'Vino Tinto', 3, 50.0, 10.00, 10.0, FALSE),
-
        (1, 'Pasta', 1, 20.0, 2.00, 5.0, FALSE),
        (1, 'Huevo', 3, 100.0, 0.20, 20.0, FALSE),
        (1, 'Pancetta', 1, 10.0, 5.00, 2.0, FALSE),
@@ -168,7 +159,6 @@ VALUES (1, 'Harina', 1, 50.0, 2.50, 10.0, FALSE),
        (1, 'Helado de Vainilla', 2, 5.0, 3.00, 1.0, FALSE),
        (1, 'Cerveza', 3, 50.0, 1.50, 10.0, FALSE),
        (1, 'Refresco', 3, 100.0, 1.00, 20.0, FALSE),
-
        (1, 'Salsa Bolognesa', 2, 10.0, 3.00, 2.0, TRUE);
 
 -- Relación Ingredientes Compuestos
@@ -186,10 +176,7 @@ VALUES (6, 2, 0.5, 1),
 INSERT INTO rel_ingredients_attributes (ingredient_id, attribute_id)
 VALUES (1, 1),
        (3, 7),
-       (5, 18),
-       (6, 18),
        (7, 1),
-       (8, 15),
        (9, 12),
        (10, 1),
        (11, 3),
