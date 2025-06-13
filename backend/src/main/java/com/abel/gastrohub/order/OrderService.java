@@ -136,9 +136,6 @@ public class OrderService {
         if (!order.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para modificar esta comanda");
         }
-        if (order.getState() != OrderState.pendiente) {
-            throw new IllegalStateException("No se puede añadir ítems a una comanda que no está pendiente");
-        }
 
         Product product = productService.getProductById(itemDTO.getProductId());
         RelOrdersProduct item = new RelOrdersProduct();
