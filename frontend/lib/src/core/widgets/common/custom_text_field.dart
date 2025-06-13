@@ -12,6 +12,10 @@ class CustomTextField extends StatefulWidget {
   final IconData? icon;
   final TextInputType? keyboardType;
   final Color? fillColor;
+  final Color? textColor; 
+  final Color? borderColor;
+  final Color? cursorColor; 
+  final Color? placeholderColor;
 
   const CustomTextField({
     super.key,
@@ -26,6 +30,10 @@ class CustomTextField extends StatefulWidget {
     this.icon,
     this.keyboardType,
     this.fillColor,
+    this.textColor,
+    this.borderColor,
+    this.cursorColor,
+    this.placeholderColor,
   });
 
   @override
@@ -44,11 +52,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    
+    final textColor = widget.textColor ?? theme.textTheme.bodyMedium?.color ?? Colors.black;
+    final borderColor = widget.borderColor ?? theme.inputDecorationTheme.enabledBorder?.borderSide.color ?? Colors.grey;
+    final cursorColor = widget.cursorColor ?? theme.textTheme.bodyMedium?.color ?? Colors.black;
+    final placeholderColor = widget.placeholderColor ?? theme.inputDecorationTheme.labelStyle?.color ?? Colors.grey;
 
     final prefixIcon = widget.icon != null
         ? Icon(
             widget.icon,
-            color: theme.textTheme.bodyMedium?.color,
+            color: textColor,
           )
         : null;
 
@@ -59,7 +72,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ? IconButton(
               icon: Icon(
                 _obscureText ? Icons.visibility_off : Icons.visibility,
-                color: theme.textTheme.bodyMedium?.color,
+                color: textColor,
               ),
               onPressed: () {
                 setState(() {
@@ -68,16 +81,22 @@ class _CustomTextFieldState extends State<CustomTextField> {
               },
             )
           : null,
-      border: widget.isTextArea
-          ? const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-            )
-          : const OutlineInputBorder(),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(color: borderColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: borderColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: borderColor, width: 2.0),
+      ),
       contentPadding: widget.isTextArea
           ? const EdgeInsets.all(12)
           : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       filled: widget.fillColor != null,
       fillColor: widget.fillColor ?? theme.inputDecorationTheme.fillColor,
+      labelStyle: TextStyle(color: placeholderColor),
+      hintStyle: TextStyle(color: placeholderColor),
     );
 
     return Padding(
@@ -85,8 +104,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
       child: TextFormField(
         controller: widget.controller,
         obscureText: _obscureText,
-        cursorColor: theme.textTheme.bodyMedium?.color,
-        style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+        cursorColor: cursorColor,
+        style: TextStyle(color: textColor),
         validator: widget.validator,
         onChanged: widget.onChanged,
         minLines: widget.isTextArea ? (widget.minLines ?? 3) : 1,

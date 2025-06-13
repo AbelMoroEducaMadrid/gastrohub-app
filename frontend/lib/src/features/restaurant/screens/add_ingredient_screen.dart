@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/widgets/common/component_selector.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_dropdown_field.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/ingredient_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/unit_provider.dart';
-import 'package:gastrohub_app/src/features/restaurant/models/ingredient.dart';
 
 class AddIngredientScreen extends ConsumerStatefulWidget {
   const AddIngredientScreen({super.key});
@@ -36,10 +38,10 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor, // Fondo del tema
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Añadir Ingrediente',
+          'Añadir ingrediente'
         ),
       ),
       body: Form(
@@ -47,65 +49,65 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            TextFormField(
+            CustomTextField(
+              label: 'Nombre',
               controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Nombre',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
-              style: TextStyle(color: Colors.black),
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+              fillColor: Colors.white,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black54,
             ),
-            DropdownButtonFormField<int>(
+            CustomDropdownField<int>(
+              label: 'Unidad',
               value: _selectedUnitId,
-              decoration: InputDecoration(
-                labelText: 'Unidad',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
               items: units.map((unit) {
                 return DropdownMenuItem<int>(
                   value: unit.id,
-                  child: Text(
-                    unit.name,
-                    style: TextStyle(color: Colors.black),
-                  ),
+                  child: Text(unit.name),
                 );
               }).toList(),
               onChanged: (value) => setState(() => _selectedUnitId = value),
               validator: (value) => value == null ? 'Requerido' : null,
+              textColor: Colors.black,
+              borderColor: Colors.black,
             ),
-            TextFormField(
+            CustomTextField(
+              label: 'Stock',
               controller: _stockController,
-              decoration: InputDecoration(
-                labelText: 'Stock',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
-              style: TextStyle(color: Colors.black),
               keyboardType: TextInputType.number,
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+              fillColor: Colors.white,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black54,
             ),
-            TextFormField(
+            CustomTextField(
+              label: 'Coste por unidad',
               controller: _costPerUnitController,
-              decoration: InputDecoration(
-                labelText: 'Coste por unidad',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
-              style: TextStyle(color: Colors.black),
               keyboardType: TextInputType.number,
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+              fillColor: Colors.white,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black54,
             ),
-            TextFormField(
+            CustomTextField(
+              label: 'Stock mínimo',
               controller: _minStockController,
-              decoration: InputDecoration(
-                labelText: 'Stock mínimo',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
-              style: TextStyle(color: Colors.black),
               keyboardType: TextInputType.number,
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+              fillColor: Colors.white,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black54,
             ),
             SwitchListTile(
-              title: Text(
+              title: const Text(
                 'Es compuesto',
                 style: TextStyle(color: Colors.black),
               ),
@@ -113,126 +115,27 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
               onChanged: (value) => setState(() => _isComposite = value),
             ),
             if (_isComposite)
-              Column(
-                children: [
-                  Text(
-                    'Componentes:',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  ..._components.map((component) {
-                    return ListTile(
-                      title: Text(
-                        component['name'],
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      subtitle: Text(
-                        'Cantidad: ${component['quantity']}',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.black),
-                        onPressed: () {
-                          setState(() {
-                            _components.remove(component);
-                          });
-                        },
-                      ),
-                    );
-                  }).toList(),
-                  ElevatedButton(
-                    onPressed: () => _addComponent(nonCompositeIngredients),
-                    child: Text(
-                      'Añadir componente',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ],
+              ComponentSelector(
+                components: _components,
+                nonCompositeIngredients: nonCompositeIngredients,
+                onAddComponent: (component) {
+                  setState(() {
+                    _components.add(component);
+                  });
+                },
+                onRemoveComponent: (index) {
+                  setState(() {
+                    _components.removeAt(index);
+                  });
+                },
               ),
             ElevatedButton(
               onPressed: _submit,
-              child: Text(
-                'Guardar',
-              ),
+              child: const Text('Guardar'),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  void _addComponent(List<Ingredient> nonCompositeIngredients) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        Ingredient? selectedIngredient;
-        final quantityController = TextEditingController();
-
-        return AlertDialog(
-          title: Text(
-            'Añadir componente',
-            style: TextStyle(color: Colors.black),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<Ingredient>(
-                decoration: InputDecoration(
-                  labelText: 'Ingrediente',
-                  labelStyle: TextStyle(color: Colors.black),
-                ),
-                items: nonCompositeIngredients.map((ingredient) {
-                  return DropdownMenuItem<Ingredient>(
-                    value: ingredient,
-                    child: Text(
-                      ingredient.name,
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) => selectedIngredient = value,
-              ),
-              TextFormField(
-                controller: quantityController,
-                decoration: InputDecoration(
-                  labelText: 'Cantidad',
-                  labelStyle: TextStyle(color: Colors.black),
-                ),
-                style: TextStyle(color: Colors.black),
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancelar',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                if (selectedIngredient != null &&
-                    quantityController.text.isNotEmpty) {
-                  setState(() {
-                    _components.add({
-                      'componentIngredientId': selectedIngredient!.id,
-                      'name': selectedIngredient!.name,
-                      'quantity': double.parse(quantityController.text),
-                      'unitId': selectedIngredient!.unitId,
-                    });
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: Text(
-                'Añadir',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 
