@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/payment_plan.dart';
-import 'package:gastrohub_app/src/features/dashboard/dashboard_screen.dart';
+import 'package:gastrohub_app/src/features/dashboard/screens/dashboard_screen.dart';
 import 'package:gastrohub_app/src/features/auth/screens/login_screen.dart';
 import 'package:gastrohub_app/src/features/auth/screens/onboarding_screen.dart';
 import 'package:gastrohub_app/src/features/auth/screens/registration_screen.dart';

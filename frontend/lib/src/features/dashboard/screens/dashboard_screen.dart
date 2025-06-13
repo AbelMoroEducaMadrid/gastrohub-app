@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/allergens_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
 
@@ -170,8 +171,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .headlineLarge
-                        ?.copyWith(color: Colors.white,
-                        fontSize: 50),
+                        ?.copyWith(color: Colors.white, fontSize: 50),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -179,7 +179,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .bodyLarge
-                        ?.copyWith(color: Colors.white70,
+                        ?.copyWith(
+                            color: Colors.white70,
                             fontWeight: FontWeight.bold,
                             fontSize: 22),
                   ),
@@ -188,8 +189,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(color: Colors.white70,
-                            fontSize: 14),
+                        ?.copyWith(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
@@ -260,6 +260,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 },
               ),
             ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('Alérgenos'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AllergensScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Cerrar sesión'),
               onTap: () {
@@ -298,7 +311,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
-// Pantallas placeholder existentes
 class OrdersTab extends StatelessWidget {
   const OrdersTab({super.key});
 
