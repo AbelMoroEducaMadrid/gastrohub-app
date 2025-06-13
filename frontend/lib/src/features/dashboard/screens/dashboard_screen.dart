@@ -6,6 +6,7 @@ import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.d
 import 'package:gastrohub_app/src/features/restaurant/screens/allergens_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/ingredients_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -129,7 +130,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isSpecialScreen ? 'Alérgenos' : _getTitle(_selectedIndex, user.role)),
+        title: Text(_isSpecialScreen ? _specialScreenTitle() : _getTitle(_selectedIndex, user.role)),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -233,10 +234,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             if (user.role == 'ROLE_OWNER' || user.role == 'ROLE_MANAGER')
               ListTile(
                 leading: const Icon(Icons.inventory),
-                title: const Text('Inventario'),
+                title: const Text('Ingredientes'),
                 onTap: () {
+                  setState(() {
+                    _isSpecialScreen = true;
+                    _specialScreen = const IngredientsScreen();
+                  });
                   Navigator.pop(context);
-                  // Navegar a Inventario
                 },
               ),
             ListTile(
@@ -286,5 +290,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       default:
         return 'Gastro & Hub';
     }
+  }
+
+  String _specialScreenTitle() {
+    if (_specialScreen is AllergensScreen) return 'Alérgenos';
+    if (_specialScreen is IngredientsScreen) return 'Ingredientes';
+    return 'Gastro & Hub';
   }
 }
