@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/ingredient_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/unit_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/models/ingredient.dart';
 
 class AddIngredientScreen extends ConsumerStatefulWidget {
   const AddIngredientScreen({super.key});
 
   @override
-  ConsumerState<AddIngredientScreen> createState() => _AddIngredientScreenState();
+  ConsumerState<AddIngredientScreen> createState() =>
+      _AddIngredientScreenState();
 }
 
 class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
@@ -18,10 +20,19 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
   final _minStockController = TextEditingController();
   int? _selectedUnitId;
   bool _isComposite = false;
+  List<Map<String, dynamic>> _components = [];
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(ingredientNotifierProvider.notifier).loadNonCompositeIngredients();
+    ref.read(unitNotifierProvider.notifier).loadUnits();
+  }
 
   @override
   Widget build(BuildContext context) {
     final units = ref.watch(unitNotifierProvider);
+    final nonCompositeIngredients = ref.watch(nonCompositeIngredientsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Añadir Ingrediente')),
@@ -71,7 +82,29 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
               onChanged: (value) => setState(() => _isComposite = value),
             ),
             if (_isComposite)
-              const Text('Selector de componentes (pendiente)'),
+              Column(
+                children: [
+                  const Text('Componentes:'),
+                  ..._components.map((component) {
+                    return ListTile(
+                      title: Text(component['name']),
+                      subtitle: Text('Cantidad: ${component['quantity']}'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          setState(() {
+                            _components.remove(component);
+                          });
+                        },
+                      ),
+                    );
+                  }).toList(),
+                  ElevatedButton(
+                    onPressed: () => _addComponent(nonCompositeIngredients),
+                    child: const Text('Añadir componente'),
+                  ),
+                ],
+              ),
             ElevatedButton(
               onPressed: _submit,
               child: const Text('Guardar'),
@@ -79,6 +112,63 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _addComponent(List<Ingredient> nonCompositeIngredients) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        Ingredient? selectedIngredient;
+        final quantityController = TextEditingController();
+
+        return AlertDialog(
+          title: const Text('Añadir componente'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<Ingredient>(
+                decoration: const InputDecoration(labelText: 'Ingrediente'),
+                items: nonCompositeIngredients.map((ingredient) {
+                  return DropdownMenuItem<Ingredient>(
+                    value: ingredient,
+                    child: Text(ingredient.name),
+                  );
+                }).toList(),
+                onChanged: (value) => selectedIngredient = value,
+              ),
+              TextFormField(
+                controller: quantityController,
+                decoration: const InputDecoration(labelText: 'Cantidad'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (selectedIngredient != null &&
+                    quantityController.text.isNotEmpty) {
+                  setState(() {
+                    _components.add({
+                      'componentIngredientId': selectedIngredient!.id,
+                      'name': selectedIngredient!.name,
+                      'quantity': double.parse(quantityController.text),
+                      'unitId': selectedIngredient!.unitId,
+                    });
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Añadir'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -91,8 +181,18 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
         'costPerUnit': double.parse(_costPerUnitController.text),
         'minStock': double.parse(_minStockController.text),
         'isComposite': _isComposite,
-        'components': [],
       };
+
+      if (_isComposite) {
+        body['components'] = _components
+            .map((c) => {
+                  'componentIngredientId': c['componentIngredientId'],
+                  'quantity': c['quantity'],
+                  'unitId': c['unitId'],
+                })
+            .toList();
+      }
+
       ref.read(ingredientNotifierProvider.notifier).addIngredient(body);
       Navigator.pop(context);
     }

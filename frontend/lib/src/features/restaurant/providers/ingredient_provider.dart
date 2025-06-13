@@ -8,6 +8,7 @@ import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 class IngredientNotifier extends StateNotifier<List<Ingredient>> {
   final IngredientService _ingredientService;
   final String _token;
+  List<Ingredient> _nonCompositeIngredients = [];
 
   IngredientNotifier(this._ingredientService, this._token) : super([]);
 
@@ -18,6 +19,16 @@ class IngredientNotifier extends StateNotifier<List<Ingredient>> {
       AppLogger.error('Failed to load ingredients: $e');
     }
   }
+
+  Future<void> loadNonCompositeIngredients() async {
+    try {
+      _nonCompositeIngredients = await _ingredientService.getNonCompositeIngredients(_token);
+    } catch (e) {
+      AppLogger.error('Failed to load non-composite ingredients: $e');
+    }
+  }
+
+  List<Ingredient> get nonCompositeIngredients => _nonCompositeIngredients;
 
   Future<void> addIngredient(Map<String, dynamic> body) async {
     try {
@@ -40,4 +51,9 @@ final ingredientNotifierProvider =
 final ingredientServiceProvider = Provider<IngredientService>((ref) {
   final baseUrl = dotenv.env['API_URL'] ?? 'http://localhost:8080';
   return IngredientService(baseUrl: baseUrl);
+});
+
+final nonCompositeIngredientsProvider = Provider<List<Ingredient>>((ref) {
+  final ingredientNotifier = ref.watch(ingredientNotifierProvider.notifier);
+  return ingredientNotifier.nonCompositeIngredients;
 });

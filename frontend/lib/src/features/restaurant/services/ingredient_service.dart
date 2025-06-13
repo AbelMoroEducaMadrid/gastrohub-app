@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:gastrohub_app/src/exceptions/api_error_handler.dart';
 import 'package:gastrohub_app/src/exceptions/api_exception.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/ingredient.dart';
-import 'package:gastrohub_app/src/features/restaurant/models/unit.dart';
 
 class IngredientService {
   final String baseUrl;
@@ -49,8 +48,8 @@ class IngredientService {
     }
   }
 
-  Future<List<Unit>> getAllUnits(String token) async {
-    final url = Uri.parse('$baseUrl/api/units');
+  Future<List<Ingredient>> getNonCompositeIngredients(String token) async {
+    final url = Uri.parse('$baseUrl/api/ingredients/non-composite');
     final response = await http.get(
       url,
       headers: {
@@ -61,7 +60,7 @@ class IngredientService {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Unit.fromJson(json)).toList();
+      return data.map((json) => Ingredient.fromJson(json)).toList();
     } else {
       final error = ApiErrorHandler.handleErrorResponse(response);
       throw ApiException(error['title']!, error['message']!);

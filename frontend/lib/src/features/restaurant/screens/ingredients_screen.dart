@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/ingredient_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/add_ingredient_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/unit_provider.dart';
 
 class IngredientsScreen extends ConsumerStatefulWidget {
   const IngredientsScreen({super.key});
