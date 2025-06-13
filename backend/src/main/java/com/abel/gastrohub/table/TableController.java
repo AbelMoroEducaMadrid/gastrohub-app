@@ -30,8 +30,8 @@ public class TableController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
     public ResponseEntity<TableResponseDTO> getTableById(@PathVariable Integer id) {
-        TableResponseDTO table = tableService.getTableById(id);
-        return ResponseEntity.ok(table);
+        Table table = tableService.getTableById(id);
+        return ResponseEntity.ok(new TableResponseDTO(table));
     }
 
     @PostMapping

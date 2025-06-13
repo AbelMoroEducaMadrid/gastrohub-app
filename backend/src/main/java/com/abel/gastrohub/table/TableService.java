@@ -37,13 +37,13 @@ public class TableService {
                 .collect(Collectors.toList());
     }
 
-    public TableResponseDTO getTableById(Integer id) {
+    public Table getTableById(Integer id) {
         Table table = tableRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Mesa no encontrada con ID: " + id));
         if (!table.getLayout().getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
             throw new SecurityException("No autorizado para acceder a esta mesa");
         }
-        return new TableResponseDTO(table);
+        return table;
     }
 
     public TableResponseDTO createTable(TableCreateDTO tableDTO) {
