@@ -36,14 +36,35 @@ public class OrderService {
 
     private Integer getCurrentUserRestaurantId() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ((CustomUserDetails) userDetails).getRestaurantId();
+        Integer restaurantId = ((CustomUserDetails) userDetails).getRestaurantId();
+        if (restaurantId == null) {
+            throw new SecurityException("El usuario no está asociado a ningún restaurante");
+        }
+        return restaurantId;
     }
 
-    public List<OrderResponseDTO> getAllOrdersByRestaurant(Integer restaurantId) {
-        if (!restaurantId.equals(getCurrentUserRestaurantId())) {
-            throw new SecurityException("No autorizado para acceder a las comandas de este restaurante");
-        }
+    public List<OrderResponseDTO> getAllOrdersByRestaurant() {
+        Integer restaurantId = getCurrentUserRestaurantId();
         return orderRepository.findByRestaurantId(restaurantId).stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderResponseDTO> getOrdersByTableId(Integer tableId) {
+        Integer restaurantId = getCurrentUserRestaurantId();
+        List<Order> orders = orderRepository.findByTableId(tableId);
+        orders = orders.stream()
+                .filter(order -> order.getRestaurant().getId().equals(restaurantId))
+                .collect(Collectors.toList());
+        return orders.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderResponseDTO> getOrdersWithoutTable() {
+        Integer restaurantId = getCurrentUserRestaurantId();
+        List<Order> orders = orderRepository.findByRestaurantIdAndTableIsNull(restaurantId);
+        return orders.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
