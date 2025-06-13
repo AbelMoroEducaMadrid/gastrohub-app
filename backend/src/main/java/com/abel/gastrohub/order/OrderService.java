@@ -43,29 +43,29 @@ public class OrderService {
         return restaurantId;
     }
 
-    public List<OrderResponseDTO> getAllOrdersByRestaurant() {
+    public List<OrderListDTO> getAllOrdersByRestaurant() {
         Integer restaurantId = getCurrentUserRestaurantId();
         return orderRepository.findByRestaurantId(restaurantId).stream()
-                .map(this::mapToResponseDTO)
+                .map(this::mapToListDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<OrderResponseDTO> getOrdersByTableId(Integer tableId) {
+    public List<OrderListDTO> getOrdersByTableId(Integer tableId) {
         Integer restaurantId = getCurrentUserRestaurantId();
         List<Order> orders = orderRepository.findByTableId(tableId);
         orders = orders.stream()
                 .filter(order -> order.getRestaurant().getId().equals(restaurantId))
                 .collect(Collectors.toList());
         return orders.stream()
-                .map(this::mapToResponseDTO)
+                .map(this::mapToListDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<OrderResponseDTO> getOrdersWithoutTable() {
+    public List<OrderListDTO> getOrdersWithoutTable() {
         Integer restaurantId = getCurrentUserRestaurantId();
         List<Order> orders = orderRepository.findByRestaurantIdAndTableIsNull(restaurantId);
         return orders.stream()
-                .map(this::mapToResponseDTO)
+                .map(this::mapToListDTO)
                 .collect(Collectors.toList());
     }
 
@@ -142,10 +142,6 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    private OrderResponseDTO mapToResponseDTO(Order order) {
-        return new OrderResponseDTO(order);
-    }
-
     public RelOrdersProduct addItemToOrder(Integer orderId, OrderItemDTO itemDTO) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NoSuchElementException("Comanda no encontrada con ID: " + orderId));
@@ -216,5 +212,18 @@ public class OrderService {
 
         item.setState(newState);
         return relOrdersProductRepository.save(item);
+    }
+
+    private OrderResponseDTO mapToResponseDTO(Order order) {
+        OrderResponseDTO responseDTO = new OrderResponseDTO(order);
+        List<OrderItemResponseDTO> items = relOrdersProductRepository.findByOrderId(order.getId()).stream()
+                .map(OrderItemResponseDTO::new)
+                .collect(Collectors.toList());
+        responseDTO.setItems(items);
+        return responseDTO;
+    }
+
+    private OrderListDTO mapToListDTO(Order order) {
+        return new OrderListDTO(order);
     }
 }

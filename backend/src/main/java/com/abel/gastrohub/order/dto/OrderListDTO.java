@@ -7,11 +7,9 @@ import com.abel.gastrohub.order.PaymentState;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-public class OrderResponseDTO {
+public class OrderListDTO {
 
     private Integer id;
     private Integer tableId;
@@ -20,9 +18,8 @@ public class OrderResponseDTO {
     private OrderState state;
     private PaymentState paymentState;
     private PaymentMethod paymentMethod;
-    private List<OrderItemResponseDTO> items;
 
-    public OrderResponseDTO(Order order) {
+    public OrderListDTO(Order order) {
         this.id = order.getId();
         this.tableId = order.getTable() != null ? order.getTable().getId() : null;
         this.notes = order.getNotes();
