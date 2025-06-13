@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/ingredient_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/add_ingredient_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/unit_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/models/unit.dart';
 
 class IngredientsScreen extends ConsumerStatefulWidget {
   const IngredientsScreen({super.key});
@@ -22,6 +23,7 @@ class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
   @override
   Widget build(BuildContext context) {
     final ingredients = ref.watch(ingredientNotifierProvider);
+    final units = ref.watch(unitNotifierProvider);
 
     return Scaffold(
       body: ingredients.isEmpty
@@ -30,9 +32,15 @@ class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
               itemCount: ingredients.length,
               itemBuilder: (context, index) {
                 final ingredient = ingredients[index];
+                final unit = units.firstWhere(
+                  (unit) => unit.id == ingredient.unitId,
+                  orElse: () => Unit(id: 0, name: 'Desconocido', symbol: '?'),
+                );
                 return ListTile(
                   title: Text(ingredient.name),
-                  subtitle: Text(ingredient.isComposite ? 'Compuesto' : 'Simple'),
+                  subtitle: Text(
+                    '${ingredient.stock.toStringAsFixed(2)} ${unit.symbol}',
+                  ),
                 );
               },
             ),

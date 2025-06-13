@@ -33,9 +33,15 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
   Widget build(BuildContext context) {
     final units = ref.watch(unitNotifierProvider);
     final nonCompositeIngredients = ref.watch(nonCompositeIngredientsProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Añadir Ingrediente')),
+      backgroundColor: theme.scaffoldBackgroundColor, // Fondo del tema
+      appBar: AppBar(
+        title: Text(
+          'Añadir Ingrediente',
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -43,16 +49,26 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Nombre'),
+              decoration: InputDecoration(
+                labelText: 'Nombre',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
+              style: TextStyle(color: Colors.black),
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
             ),
             DropdownButtonFormField<int>(
               value: _selectedUnitId,
-              decoration: const InputDecoration(labelText: 'Unidad'),
+              decoration: InputDecoration(
+                labelText: 'Unidad',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
               items: units.map((unit) {
                 return DropdownMenuItem<int>(
                   value: unit.id,
-                  child: Text(unit.name),
+                  child: Text(
+                    unit.name,
+                    style: TextStyle(color: Colors.black),
+                  ),
                 );
               }).toList(),
               onChanged: (value) => setState(() => _selectedUnitId = value),
@@ -60,37 +76,61 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
             ),
             TextFormField(
               controller: _stockController,
-              decoration: const InputDecoration(labelText: 'Stock'),
+              decoration: InputDecoration(
+                labelText: 'Stock',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
+              style: TextStyle(color: Colors.black),
               keyboardType: TextInputType.number,
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
             ),
             TextFormField(
               controller: _costPerUnitController,
-              decoration: const InputDecoration(labelText: 'Coste por unidad'),
+              decoration: InputDecoration(
+                labelText: 'Coste por unidad',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
+              style: TextStyle(color: Colors.black),
               keyboardType: TextInputType.number,
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
             ),
             TextFormField(
               controller: _minStockController,
-              decoration: const InputDecoration(labelText: 'Stock mínimo'),
+              decoration: InputDecoration(
+                labelText: 'Stock mínimo',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
+              style: TextStyle(color: Colors.black),
               keyboardType: TextInputType.number,
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
             ),
             SwitchListTile(
-              title: const Text('Es compuesto'),
+              title: Text(
+                'Es compuesto',
+                style: TextStyle(color: Colors.black),
+              ),
               value: _isComposite,
               onChanged: (value) => setState(() => _isComposite = value),
             ),
             if (_isComposite)
               Column(
                 children: [
-                  const Text('Componentes:'),
+                  Text(
+                    'Componentes:',
+                    style: TextStyle(color: Colors.black),
+                  ),
                   ..._components.map((component) {
                     return ListTile(
-                      title: Text(component['name']),
-                      subtitle: Text('Cantidad: ${component['quantity']}'),
+                      title: Text(
+                        component['name'],
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      subtitle: Text(
+                        'Cantidad: ${component['quantity']}',
+                        style: TextStyle(color: Colors.black),
+                      ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete),
+                        icon: const Icon(Icons.delete, color: Colors.black),
                         onPressed: () {
                           setState(() {
                             _components.remove(component);
@@ -101,13 +141,18 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
                   }).toList(),
                   ElevatedButton(
                     onPressed: () => _addComponent(nonCompositeIngredients),
-                    child: const Text('Añadir componente'),
+                    child: Text(
+                      'Añadir componente',
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
                 ],
               ),
             ElevatedButton(
               onPressed: _submit,
-              child: const Text('Guardar'),
+              child: Text(
+                'Guardar',
+              ),
             ),
           ],
         ),
@@ -123,23 +168,36 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
         final quantityController = TextEditingController();
 
         return AlertDialog(
-          title: const Text('Añadir componente'),
+          title: Text(
+            'Añadir componente',
+            style: TextStyle(color: Colors.black),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<Ingredient>(
-                decoration: const InputDecoration(labelText: 'Ingrediente'),
+                decoration: InputDecoration(
+                  labelText: 'Ingrediente',
+                  labelStyle: TextStyle(color: Colors.black),
+                ),
                 items: nonCompositeIngredients.map((ingredient) {
                   return DropdownMenuItem<Ingredient>(
                     value: ingredient,
-                    child: Text(ingredient.name),
+                    child: Text(
+                      ingredient.name,
+                      style: TextStyle(color: Colors.black),
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) => selectedIngredient = value,
               ),
               TextFormField(
                 controller: quantityController,
-                decoration: const InputDecoration(labelText: 'Cantidad'),
+                decoration: InputDecoration(
+                  labelText: 'Cantidad',
+                  labelStyle: TextStyle(color: Colors.black),
+                ),
+                style: TextStyle(color: Colors.black),
                 keyboardType: TextInputType.number,
               ),
             ],
@@ -147,7 +205,10 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -164,7 +225,10 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
                   Navigator.pop(context);
                 }
               },
-              child: const Text('Añadir'),
+              child: Text(
+                'Añadir',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
           ],
         );
