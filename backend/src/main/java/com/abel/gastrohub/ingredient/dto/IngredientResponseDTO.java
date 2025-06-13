@@ -16,7 +16,7 @@ public class IngredientResponseDTO {
     private BigDecimal costPerUnit;
     private BigDecimal minStock;
     private Boolean isComposite;
-    private List<ComponentResponseDTO> components; // Opcional, solo si isComposite es true
+    private List<ComponentResponseDTO> components;
 
     @Setter
     @Getter

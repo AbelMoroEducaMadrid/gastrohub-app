@@ -2,7 +2,6 @@ package com.abel.gastrohub.ingredient;
 
 import com.abel.gastrohub.ingredient.dto.ComponentAdditionDTO;
 import com.abel.gastrohub.ingredient.dto.IngredientCreateDTO;
-import com.abel.gastrohub.ingredient.dto.IngredientListDTO;
 import com.abel.gastrohub.ingredient.dto.IngredientResponseDTO;
 import com.abel.gastrohub.masterdata.MtUnit;
 import com.abel.gastrohub.masterdata.MtUnitRepository;
@@ -34,25 +33,25 @@ public class IngredientController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','OWNER','MANAGER')")
-    public List<IngredientListDTO> getAllIngredients() {
+    public List<IngredientResponseDTO> getAllIngredients() {
         return ingredientService.getAllIngredients().stream()
-                .map(this::toListDTO)
+                .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/non-composite")
     @PreAuthorize("hasAnyRole('ADMIN','OWNER','MANAGER')")
-    public List<IngredientListDTO> getNonCompositeIngredients() {
+    public List<IngredientResponseDTO> getNonCompositeIngredients() {
         return ingredientService.getNonCompositeIngredients().stream()
-                .map(this::toListDTO)
+                .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/composite")
     @PreAuthorize("hasAnyRole('ADMIN','OWNER','MANAGER')")
-    public List<IngredientListDTO> getCompositeIngredients() {
+    public List<IngredientResponseDTO> getCompositeIngredients() {
         return ingredientService.getCompositeIngredients().stream()
-                .map(this::toListDTO)
+                .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -108,15 +107,6 @@ public class IngredientController {
     public ResponseEntity<Void> deleteComponent(@PathVariable Integer id, @PathVariable Integer componentId) {
         ingredientService.deleteComponent(id, componentId);
         return ResponseEntity.noContent().build();
-    }
-
-    // Métodos auxiliares para conversiones
-    private IngredientListDTO toListDTO(Ingredient ingredient) {
-        IngredientListDTO dto = new IngredientListDTO();
-        dto.setId(ingredient.getId());
-        dto.setName(ingredient.getName());
-        dto.setIsComposite(ingredient.getIsComposite());
-        return dto;
     }
 
     private IngredientResponseDTO toResponseDTO(Ingredient ingredient) {
