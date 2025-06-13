@@ -56,6 +56,21 @@ class IngredientNotifier extends StateNotifier<AsyncValue<List<Ingredient>>> {
       AppLogger.error('Failed to add ingredient: $e');
     }
   }
+
+  Future<void> updateIngredient(int id, Map<String, dynamic> body) async {
+    try {
+      final updatedIngredient =
+          await _ingredientService.updateIngredient(_token, id, body);
+      state = AsyncValue.data(
+        state.value
+                ?.map((ing) => ing.id == id ? updatedIngredient : ing)
+                .toList() ??
+            [updatedIngredient],
+      );
+    } catch (e) {
+      AppLogger.error('Failed to update ingredient: $e');
+    }
+  }
 }
 
 final ingredientNotifierProvider =

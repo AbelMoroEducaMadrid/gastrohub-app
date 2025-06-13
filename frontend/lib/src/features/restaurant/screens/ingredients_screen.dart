@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/ingredient_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/add_ingredient_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/edit_ingredient_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/unit_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/unit.dart';
 
@@ -16,8 +17,10 @@ class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(ingredientNotifierProvider.notifier).loadIngredients();
-    ref.read(unitNotifierProvider.notifier).loadUnits();
+    Future.microtask(() {
+      ref.read(ingredientNotifierProvider.notifier).loadIngredients();
+      ref.read(unitNotifierProvider.notifier).loadUnits();
+    });
   }
 
   @override
@@ -37,10 +40,42 @@ class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
                     (unit) => unit.id == ingredient.unitId,
                     orElse: () => Unit(id: 0, name: 'Desconocido', symbol: '?'),
                   );
-                  return ListTile(
-                    title: Text(ingredient.name),
-                    subtitle: Text(
-                      '${ingredient.stock.toStringAsFixed(2)} ${unit.symbol}',
+                  return Card(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                ingredient.name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, color: Colors.black),
+                              ),
+                              Text(
+                                'Stock: ${ingredient.stock.toStringAsFixed(2)} ${unit.symbol}',
+                                style: const TextStyle(color: Colors.black54),
+                              ),                           
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditIngredientScreen(
+                                      ingredient: ingredient),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
