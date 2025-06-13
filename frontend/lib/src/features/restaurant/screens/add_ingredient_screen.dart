@@ -22,28 +22,26 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
   final _minStockController = TextEditingController();
   int? _selectedUnitId;
   bool _isComposite = false;
-  List<Map<String, dynamic>> _components = [];
+  final List<Map<String, dynamic>> _components = [];
 
   @override
   void initState() {
     super.initState();
-    ref.read(ingredientNotifierProvider.notifier).loadNonCompositeIngredients();
-    ref.read(unitNotifierProvider.notifier).loadUnits();
+    Future.microtask(() {
+      ref
+          .read(ingredientNotifierProvider.notifier)
+          .loadNonCompositeIngredients();
+      ref.read(unitNotifierProvider.notifier).loadUnits();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final units = ref.watch(unitNotifierProvider);
-    final nonCompositeIngredients = ref.watch(nonCompositeIngredientsProvider);
-    final theme = Theme.of(context);
+    final nonCompositeAsync = ref.watch(nonCompositeIngredientsProvider);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(
-          'Añadir ingrediente'
-        ),
-      ),
+      appBar: AppBar(title: const Text('Añadir ingrediente')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -107,27 +105,28 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
               placeholderColor: Colors.black54,
             ),
             SwitchListTile(
-              title: const Text(
-                'Es compuesto',
-                style: TextStyle(color: Colors.black),
-              ),
+              title: const Text('Es compuesto'),
               value: _isComposite,
               onChanged: (value) => setState(() => _isComposite = value),
             ),
             if (_isComposite)
-              ComponentSelector(
-                components: _components,
-                nonCompositeIngredients: nonCompositeIngredients,
-                onAddComponent: (component) {
-                  setState(() {
-                    _components.add(component);
-                  });
-                },
-                onRemoveComponent: (index) {
-                  setState(() {
-                    _components.removeAt(index);
-                  });
-                },
+              nonCompositeAsync.when(
+                data: (nonCompositeIngredients) =>
+                    nonCompositeIngredients.isEmpty
+                        ? const Text(
+                            'No hay ingredientes no compuestos disponibles')
+                        : ComponentSelector(
+                            components: _components,
+                            nonCompositeIngredients: nonCompositeIngredients,
+                            onAddComponent: (component) {
+                              setState(() => _components.add(component));
+                            },
+                            onRemoveComponent: (index) {
+                              setState(() => _components.removeAt(index));
+                            },
+                          ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, _) => Text('Error: $error'),
               ),
             ElevatedButton(
               onPressed: _submit,

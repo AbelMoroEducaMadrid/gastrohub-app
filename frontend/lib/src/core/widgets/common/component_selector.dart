@@ -43,7 +43,7 @@ class _ComponentSelectorState extends State<ComponentSelector> {
               onPressed: () => widget.onRemoveComponent(index),
             ),
           );
-        }).toList(),
+        }),
         ElevatedButton(
           onPressed: _showAddComponentDialog,
           child: const Text('Añadir componente'),
@@ -60,38 +60,34 @@ class _ComponentSelectorState extends State<ComponentSelector> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Añadir componente',
-              style: TextStyle(color: Colors.black)),
+          title: const Text('Añadir componente'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              DropdownButtonFormField<Ingredient>(
-                decoration: const InputDecoration(labelText: 'Ingrediente'),
-                items: widget.nonCompositeIngredients.map((ingredient) {
-                  return DropdownMenuItem<Ingredient>(
-                    value: ingredient,
-                    child: Text(ingredient.name,
-                        style: const TextStyle(color: Colors.black)),
-                  );
-                }).toList(),
-                onChanged: (value) => selectedIngredient = value,
-              ),
+              widget.nonCompositeIngredients.isEmpty
+                  ? const Text('No hay ingredientes disponibles')
+                  : DropdownButtonFormField<Ingredient>(
+                      decoration:
+                          const InputDecoration(labelText: 'Ingrediente'),
+                      items: widget.nonCompositeIngredients.map((ingredient) {
+                        return DropdownMenuItem<Ingredient>(
+                          value: ingredient,
+                          child: Text(ingredient.name),
+                        );
+                      }).toList(),
+                      onChanged: (value) => selectedIngredient = value,
+                    ),
               CustomTextField(
                 label: 'Cantidad',
                 controller: quantityController,
                 keyboardType: TextInputType.number,
-                textColor: Colors.black,
-                borderColor: Colors.black,
-                cursorColor: Colors.black,
-                placeholderColor: Colors.black54,
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child:
-                  const Text('Cancelar', style: TextStyle(color: Colors.black)),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
@@ -106,8 +102,7 @@ class _ComponentSelectorState extends State<ComponentSelector> {
                   Navigator.pop(context);
                 }
               },
-              child:
-                  const Text('Añadir', style: TextStyle(color: Colors.black)),
+              child: const Text('Añadir'),
             ),
           ],
         );

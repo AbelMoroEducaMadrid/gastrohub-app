@@ -22,28 +22,32 @@ class _IngredientsScreenState extends ConsumerState<IngredientsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ingredients = ref.watch(ingredientNotifierProvider);
+    final ingredientsAsync = ref.watch(ingredientNotifierProvider);
     final units = ref.watch(unitNotifierProvider);
 
     return Scaffold(
-      body: ingredients.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: ingredients.length,
-              itemBuilder: (context, index) {
-                final ingredient = ingredients[index];
-                final unit = units.firstWhere(
-                  (unit) => unit.id == ingredient.unitId,
-                  orElse: () => Unit(id: 0, name: 'Desconocido', symbol: '?'),
-                );
-                return ListTile(
-                  title: Text(ingredient.name),
-                  subtitle: Text(
-                    '${ingredient.stock.toStringAsFixed(2)} ${unit.symbol}',
-                  ),
-                );
-              },
-            ),
+      body: ingredientsAsync.when(
+        data: (ingredients) => ingredients.isEmpty
+            ? const Center(child: Text('No hay ingredientes disponibles'))
+            : ListView.builder(
+                itemCount: ingredients.length,
+                itemBuilder: (context, index) {
+                  final ingredient = ingredients[index];
+                  final unit = units.firstWhere(
+                    (unit) => unit.id == ingredient.unitId,
+                    orElse: () => Unit(id: 0, name: 'Desconocido', symbol: '?'),
+                  );
+                  return ListTile(
+                    title: Text(ingredient.name),
+                    subtitle: Text(
+                      '${ingredient.stock.toStringAsFixed(2)} ${unit.symbol}',
+                    ),
+                  );
+                },
+              ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addIngredient(context),
         child: const Icon(Icons.add),
