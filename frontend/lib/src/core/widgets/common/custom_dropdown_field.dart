@@ -6,7 +6,7 @@ class CustomDropdownField<T> extends StatelessWidget {
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?> onChanged;
   final FormFieldValidator<T>? validator;
-  final Color? textColor; 
+  final Color? textColor;
   final Color? borderColor;
 
   const CustomDropdownField({
@@ -22,9 +22,12 @@ class CustomDropdownField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);   
-    final textColor = this.textColor ?? theme.textTheme.bodyMedium?.color ?? Colors.black;
-    final borderColor = this.borderColor ?? theme.inputDecorationTheme.enabledBorder?.borderSide.color ?? Colors.grey;
+    final theme = Theme.of(context);
+    final textColor =
+        this.textColor ?? theme.textTheme.bodyMedium?.color ?? Colors.black;
+    final borderColor = this.borderColor ??
+        theme.inputDecorationTheme.enabledBorder?.borderSide.color ??
+        Colors.grey;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -44,10 +47,11 @@ class CustomDropdownField<T> extends StatelessWidget {
           labelStyle: TextStyle(color: textColor),
         ),
         items: items.map((item) {
+          final textWidget = item.child as Text;
           return DropdownMenuItem<T>(
             value: item.value,
             child: Text(
-              item.child.toString(),
+              textWidget.data ?? '',
               style: TextStyle(color: textColor),
             ),
           );
