@@ -101,9 +101,9 @@ VALUES (1, 1, 'disponible', 4),
 -- Comandas
 INSERT INTO orders (restaurant_id, table_id, state, notes, urgent, payment_state, payment_method)
 VALUES (1, 1, 'pendiente', 'Sin cebolla', FALSE, 'pendiente', 'efectivo'),
-       (1, 6, 'en progreso', 'Extra queso', TRUE, 'pendiente', 'tarjeta'),
-       (1, 4, 'servida', 'Para llevar', FALSE, 'completado', 'móvil'),
-       (1, 8, 'cancelada', 'Cliente se fue', FALSE, 'cancelado', 'vale'),
+       (1, 6, 'preparando', 'Extra queso', TRUE, 'pendiente', 'tarjeta'),
+       (1, 4, 'servida', 'Para llevar', FALSE, 'completado', 'tarjeta'),
+       (1, 8, 'cancelada', 'Cliente se fue', FALSE, 'cancelado', 'tarjeta'),
        (1, NULL, 'pendiente', 'Pedido en barra', FALSE, 'pendiente', 'efectivo'),
        (1, 2, 'servida', 'Evento privado', FALSE, 'completado', 'efectivo');
 
