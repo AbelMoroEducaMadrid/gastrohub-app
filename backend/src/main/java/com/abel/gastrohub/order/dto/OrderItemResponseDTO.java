@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public class OrderItemResponseDTO {
 
     private Integer id;
+    private Integer productId;
     private String product;
     private BigDecimal price;
     private String notes;
@@ -19,6 +20,7 @@ public class OrderItemResponseDTO {
 
     public OrderItemResponseDTO(RelOrdersProduct item) {
         this.id = item.getId();
+        this.productId = item.getProduct().getId();
         this.product = item.getProduct().getName();
         this.price = item.getPrice();
         this.notes = item.getNotes();
