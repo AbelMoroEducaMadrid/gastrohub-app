@@ -6,7 +6,6 @@ import com.abel.gastrohub.masterdata.MtCategory;
 import com.abel.gastrohub.masterdata.MtCategoryRepository;
 import com.abel.gastrohub.product.dto.IngredientAdditionDTO;
 import com.abel.gastrohub.product.dto.ProductCreateDTO;
-import com.abel.gastrohub.product.dto.ProductListDTO;
 import com.abel.gastrohub.product.dto.ProductResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +35,9 @@ public class ProductController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','OWNER','MANAGER','WAITER')")
-    public List<ProductListDTO> getAllProducts() {
+    public List<ProductResponseDTO> getAllProducts() {
         return productService.getAllProducts().stream()
-                .map(this::toListDTO)
+                .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -104,13 +103,6 @@ public class ProductController {
             @RequestBody IngredientAdditionDTO ingredientDTO) {
         RelProductsIngredient updatedRel = productService.updateIngredient(id, ingredientId, ingredientDTO);
         return ResponseEntity.ok(toIngredientResponseDTO(updatedRel));
-    }
-
-    private ProductListDTO toListDTO(Product product) {
-        ProductListDTO dto = new ProductListDTO();
-        dto.setId(product.getId());
-        dto.setName(product.getName());
-        return dto;
     }
 
     private ProductResponseDTO toResponseDTO(Product product) {
