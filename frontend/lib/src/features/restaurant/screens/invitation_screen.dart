@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qr_flutter/qr_flutter.dart'; // Importa el paquete qr_flutter
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter/services.dart'; // Para copiar al portapapeles
 import 'package:gastrohub_app/src/features/restaurant/providers/invitation_provider.dart';
 
 class InvitationScreen extends ConsumerStatefulWidget {
@@ -33,26 +34,46 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                 'Código de Invitación',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 16),
-              Text(
-                code,
-                style: const TextStyle(
-                    fontSize: 32, letterSpacing: 2, color: Colors.black),
+              const SizedBox(height: 16),              
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SelectableText(
+                    code,
+                    style: const TextStyle(
+                        fontSize: 32, letterSpacing: 6, color: Colors.black,fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.copy),
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: code));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Código copiado al portapapeles')),
+                      );
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(height: 32),
-              QrImageView(
-                data: code,
-                version: QrVersions.auto,
-                size: 200.0,
-                gapless: true,
-                errorStateBuilder: (cxt, err) {
-                  return const Center(
-                    child: Text(
-                      'Error al generar el QR',
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                },
+              const SizedBox(height: 32),              
+              Card(
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: QrImageView(
+                    data: code,
+                    version: QrVersions.auto,
+                    size: 300.0,
+                    gapless: true,
+                    errorStateBuilder: (cxt, err) {
+                      return const Center(
+                        child: Text(
+                          'Error al generar el QR',
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ],
           ),
