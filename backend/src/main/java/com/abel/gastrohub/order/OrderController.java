@@ -20,22 +20,22 @@ public class OrderController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
-    public ResponseEntity<List<OrderListDTO>> getAllOrdersForCurrentRestaurant() {
-        List<OrderListDTO> orders = orderService.getAllOrdersByRestaurant();
+    public ResponseEntity<List<OrderResponseDTO>> getAllOrdersForCurrentRestaurant() {
+        List<OrderResponseDTO> orders = orderService.getAllOrdersByRestaurant();
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/table/{tableId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
-    public ResponseEntity<List<OrderListDTO>> getOrdersByTableId(@PathVariable Integer tableId) {
-        List<OrderListDTO> orders = orderService.getOrdersByTableId(tableId);
+    public ResponseEntity<List<OrderResponseDTO>> getOrdersByTableId(@PathVariable Integer tableId) {
+        List<OrderResponseDTO> orders = orderService.getOrdersByTableId(tableId);
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/bar")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
-    public ResponseEntity<List<OrderListDTO>> getOrdersWithoutTable() {
-        List<OrderListDTO> orders = orderService.getOrdersWithoutTable();
+    public ResponseEntity<List<OrderResponseDTO>> getOrdersWithoutTable() {
+        List<OrderResponseDTO> orders = orderService.getOrdersWithoutTable();
         return ResponseEntity.ok(orders);
     }
 

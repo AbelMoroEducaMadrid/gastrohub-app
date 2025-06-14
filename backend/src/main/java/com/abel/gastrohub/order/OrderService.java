@@ -43,29 +43,29 @@ public class OrderService {
         return restaurantId;
     }
 
-    public List<OrderListDTO> getAllOrdersByRestaurant() {
+    public List<OrderResponseDTO> getAllOrdersByRestaurant() {
         Integer restaurantId = getCurrentUserRestaurantId();
         return orderRepository.findByRestaurantId(restaurantId).stream()
-                .map(this::mapToListDTO)
+                .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<OrderListDTO> getOrdersByTableId(Integer tableId) {
+    public List<OrderResponseDTO> getOrdersByTableId(Integer tableId) {
         Integer restaurantId = getCurrentUserRestaurantId();
         List<Order> orders = orderRepository.findByTableId(tableId);
         orders = orders.stream()
                 .filter(order -> order.getRestaurant().getId().equals(restaurantId))
-                .collect(Collectors.toList());
+                .toList();
         return orders.stream()
-                .map(this::mapToListDTO)
+                .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<OrderListDTO> getOrdersWithoutTable() {
+    public List<OrderResponseDTO> getOrdersWithoutTable() {
         Integer restaurantId = getCurrentUserRestaurantId();
         List<Order> orders = orderRepository.findByRestaurantIdAndTableIsNull(restaurantId);
         return orders.stream()
-                .map(this::mapToListDTO)
+                .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -221,9 +221,5 @@ public class OrderService {
                 .collect(Collectors.toList());
         responseDTO.setItems(items);
         return responseDTO;
-    }
-
-    private OrderListDTO mapToListDTO(Order order) {
-        return new OrderListDTO(order);
     }
 }
