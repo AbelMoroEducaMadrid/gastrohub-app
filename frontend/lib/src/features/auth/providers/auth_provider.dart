@@ -151,6 +151,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void resetRegistration() {
     state = AuthState();
   }
+
+  void updateUser(User updatedUser) {
+    state = AuthState(user: updatedUser, token: state.token);
+  }
 }
 
 // Provider para AuthService

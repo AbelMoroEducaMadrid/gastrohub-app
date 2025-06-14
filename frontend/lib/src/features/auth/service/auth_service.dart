@@ -86,4 +86,42 @@ class AuthService {
       throw ApiException(error['title']!, error['message']!);
     }
   }
+
+  Future<void> updateProfile(
+      String token, String name, String email, String phone) async {
+    final url = Uri.parse('$baseUrl/api/users/profile');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'phone': phone,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
+    }
+  }
+
+  Future<void> leaveRestaurant(String token) async {
+    final url = Uri.parse('$baseUrl/api/users/leave-restaurant');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
+    }
+  }
 }
