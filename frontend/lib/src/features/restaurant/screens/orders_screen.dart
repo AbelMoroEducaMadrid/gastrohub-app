@@ -4,6 +4,7 @@ import 'package:gastrohub_app/src/features/auth/models/order.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/order_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/add_order_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/edit_order_screen.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
@@ -58,9 +59,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                     ),
                     Text(
                       '(${layoutOrders.length})',
-                      style: const TextStyle(
-                        color: Colors.black54,
-                      ),
+                      style: const TextStyle(color: Colors.black54),
                     ),
                   ],
                 ),
@@ -86,55 +85,33 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.info_outline,
-                                  size: 16, color: Colors.black54),
-                              const SizedBox(width: 4),
-                              Text(order.state.toUpperCase(),
-                                  style:
-                                      const TextStyle(color: Colors.black54)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.list_alt_outlined,
-                                  size: 16, color: Colors.black54),
-                              const SizedBox(width: 4),
-                              Text('Items - ${order.items.length}',
-                                  style:
-                                      const TextStyle(color: Colors.black54)),
-                            ],
-                          ),
+                          Text('Estado: ${order.state.toUpperCase()}',
+                              style: const TextStyle(color: Colors.black54)),
+                          Text('Pago: ${order.paymentState}',
+                              style: const TextStyle(color: Colors.black54)),
+                          Text('Total: ${order.total.toStringAsFixed(2)} €',
+                              style: const TextStyle(color: Colors.black54)),
+                          Text('Items: ${order.items.length}',
+                              style: const TextStyle(color: Colors.black54)),
                           if (order.notes != null)
-                            Row(
-                              children: [
-                                const Icon(Icons.note_outlined,
-                                    size: 16, color: Colors.black54),
-                                const SizedBox(width: 4),
-                                Text('${order.notes}',
-                                    style:
-                                        const TextStyle(color: Colors.black54)),
-                              ],
-                            ),
+                            Text('Notas: ${order.notes}',
+                                style: const TextStyle(color: Colors.black54)),
                         ],
                       ),
                       trailing: canEdit
                           ? IconButton(
                               icon: const Icon(Icons.edit, color: Colors.black),
                               onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => EditOrderScreen(order: order),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        EditOrderScreen(order: order),
+                                  ),
+                                );
                               },
                             )
                           : null,
-                      onTap: () {
-                        // Aquí podrías añadir un diálogo o pantalla para ver más detalles
-                      },
                     ),
                   );
                 }).toList(),
@@ -144,9 +121,8 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('Error: $error',
-              style: const TextStyle(color: Colors.black)),
-        ),
+            child: Text('Error: $error',
+                style: const TextStyle(color: Colors.black))),
       ),
       floatingActionButton: canEdit
           ? FloatingActionButton(

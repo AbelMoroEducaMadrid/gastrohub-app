@@ -9,6 +9,7 @@ class Order {
   final String paymentState;
   final String paymentMethod;
   final List<OrderItem> items;
+  final double total;
 
   Order({
     required this.id,
@@ -21,6 +22,7 @@ class Order {
     required this.paymentState,
     required this.paymentMethod,
     required this.items,
+    required this.total,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -37,14 +39,15 @@ class Order {
       items: (json['items'] as List)
           .map((item) => OrderItem.fromJson(item))
           .toList(),
+      total: (json['total'] as num).toDouble(),
     );
   }
 }
 
 class OrderItem {
   final int? id;
-  final int? productId;
-  final String? productName;
+  final int productId;
+  final String productName;
   final double price;
   final String? notes;
   final String? state;
@@ -52,8 +55,8 @@ class OrderItem {
 
   OrderItem({
     this.id,
-    this.productId,
-    this.productName,
+    required this.productId,
+    required this.productName,
     required this.price,
     this.notes,
     this.state,
@@ -63,10 +66,12 @@ class OrderItem {
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     return OrderItem(
       id: json['id'] as int?,
-      productName: json['product'] as String?,
+      productId: json['productId'] as int,
+      productName: json['product'] as String,
       price: (json['price'] as num).toDouble(),
       notes: json['notes'] as String?,
       state: json['state'] as String?,
+      quantity: json['quantity'] as int? ?? 1,
     );
   }
 }

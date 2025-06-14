@@ -1,33 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
-import 'package:gastrohub_app/src/features/restaurant/models/product.dart';
+import 'package:gastrohub_app/src/features/auth/models/order.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/order_provider.dart';
-import 'package:gastrohub_app/src/features/restaurant/providers/product_provider.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/select_product_screen.dart';
 
-class AddOrderScreen extends ConsumerStatefulWidget {
-  const AddOrderScreen({super.key});
+class EditOrderScreen extends ConsumerStatefulWidget {
+  final Order order;
+
+  const EditOrderScreen({super.key, required this.order});
 
   @override
-  ConsumerState<AddOrderScreen> createState() => _AddOrderScreenState();
+  ConsumerState<EditOrderScreen> createState() => _EditOrderScreenState();
 }
 
-class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
+class _EditOrderScreenState extends ConsumerState<EditOrderScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _notesController = TextEditingController();
-  bool _urgent = false;
-  final List<Map<String, dynamic>> _items = [];
+  late TextEditingController _notesController;
+  late bool _urgent;
+  late List<Map<String, dynamic>> _items;
+
+  @override
+  void initState() {
+    super.initState();
+    _notesController = TextEditingController(text: widget.order.notes);
+    _urgent = widget.order.urgent;
+    _items = widget.order.items.map((item) {
+      return {
+        'productId': item.productId,
+        'productName': item.productName,
+        'quantity': item.quantity,
+        'notes': item.notes,
+      };
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final productsAsync = ref.watch(productNotifierProvider);
-
     return Scaffold(
       appBar: AppBar(
         title:
-            const Text('Añadir Comanda', style: TextStyle(color: Colors.black)),
+            const Text('Editar Comanda', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
       ),
       body: Form(
@@ -61,7 +75,7 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
               ),
-              child: const Text('Añadir'),
+              child: const Text('Guardar'),
             ),
           ],
         ),
@@ -75,14 +89,14 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
       if (_items.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('No se puede crear una comanda sin productos')),
+              content: Text('No se puede guardar una comanda sin productos')),
         );
         return;
       }
       final restaurantId = ref.read(authProvider).user!.restaurantId!;
       final body = {
         'restaurantId': restaurantId,
-        'tableId': null,
+        'tableId': widget.order.tableId,
         'notes': _notesController.text,
         'urgent': _urgent,
         'items': _items
@@ -93,7 +107,9 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
                 })
             .toList(),
       };
-      ref.read(orderNotifierProvider.notifier).addOrder(body);
+      ref
+          .read(orderNotifierProvider.notifier)
+          .updateOrder(widget.order.id, body);
       Navigator.pop(context);
     }
   }
