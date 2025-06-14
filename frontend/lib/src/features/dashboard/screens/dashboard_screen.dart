@@ -5,6 +5,8 @@ import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/allergens_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/manage_products_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/menu_view_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/ingredients_screen.dart';
 
@@ -56,7 +58,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           //WorkMenusScreen(restaurantId: restaurantId),
         ];
       case 'ROLE_COOK':
-        //return [OrdersTab()];
+      //return [OrdersTab()];
       default:
         return [WorkTablesScreen()];
     }
@@ -66,29 +68,37 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     switch (role) {
       case 'ROLE_OWNER':
         return [
-          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Mesas'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Comandas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_MANAGER':
         return [
-          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Mesas'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Comandas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_WAITER':
         return [
-          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Mesas'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Comandas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: 'Comandas'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Menús'),
         ];
       case 'ROLE_COOK':
         return [
-          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Comandas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt), label: 'Comandas'),
         ];
       default:
         return [
-          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Mesas'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart), label: 'Mesas'),
         ];
     }
   }
@@ -130,7 +140,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isSpecialScreen ? _specialScreenTitle() : _getTitle(_selectedIndex, user.role)),
+        title: Text(_isSpecialScreen
+            ? _specialScreenTitle()
+            : _getTitle(_selectedIndex, user.role)),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -159,8 +171,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 children: [
                   Text(
                     'Gastro & Hub',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        color: Colors.white, fontSize: 50),
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineLarge
+                        ?.copyWith(color: Colors.white, fontSize: 50),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -172,34 +186,37 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                   Text(
                     user.name,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white70, fontSize: 14),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
             ),
             ListTile(
               leading: const Icon(Icons.menu_book),
-              title: const Text('Menús'),
+              title: const Text('Productos'),
               onTap: () {
                 Navigator.pop(context);
-                /*if (user.role == 'ROLE_OWNER' || user.role == 'ROLE_MANAGER') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditMenusScreen(restaurantId: user.restaurantId!),
-                    ),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WorkMenusScreen(restaurantId: user.restaurantId!),
-                    ),
-                  );
-                }*/
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ManageProductsScreen()),
+                );
               },
-              enabled: user.role != 'ROLE_COOK',
+            ),
+            ListTile(
+              leading: const Icon(Icons.menu),
+              title: const Text('Menú'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MenuViewScreen()),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.table_chart),
@@ -226,7 +243,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => LayoutsScreen(restaurantId: user.restaurantId!),
+                      builder: (context) =>
+                          LayoutsScreen(restaurantId: user.restaurantId!),
                     ),
                   );
                 },
@@ -265,7 +283,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ],
         ),
       ),
-      body: _isSpecialScreen ? _specialScreen! : widgetOptions.elementAt(_selectedIndex),
+      body: _isSpecialScreen
+          ? _specialScreen!
+          : widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: bottomNavItems.length >= 2
           ? BottomNavigationBar(
               items: bottomNavItems,
