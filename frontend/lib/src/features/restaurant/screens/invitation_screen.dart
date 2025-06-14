@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qr_flutter/qr_flutter.dart'; // Importa el paquete qr_flutter
 import 'package:gastrohub_app/src/features/restaurant/providers/invitation_provider.dart';
 
 class InvitationScreen extends ConsumerStatefulWidget {
@@ -36,7 +37,22 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
               Text(
                 code,
                 style: const TextStyle(
-                    fontSize: 32, letterSpacing: 2, color: Colors.black87),
+                    fontSize: 32, letterSpacing: 2, color: Colors.black),
+              ),
+              const SizedBox(height: 32),
+              QrImageView(
+                data: code,
+                version: QrVersions.auto,
+                size: 200.0,
+                gapless: true,
+                errorStateBuilder: (cxt, err) {
+                  return const Center(
+                    child: Text(
+                      'Error al generar el QR',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                },
               ),
             ],
           ),

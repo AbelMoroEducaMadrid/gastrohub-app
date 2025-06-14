@@ -22,6 +22,7 @@ dependencies:
   wave: ^0.2.2
   logger: ^2.5.0
   flex_color_scheme: ^8.2.0
+  qr_flutter: ^4.0.0
 
 dev_dependencies:
   flutter_test:
