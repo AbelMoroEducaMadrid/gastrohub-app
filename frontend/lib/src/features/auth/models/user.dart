@@ -6,7 +6,7 @@ class User {
   final String role;
   final int? restaurantId;
   final String? restaurantName;
-  final String lastLogin;
+  final String? lastLogin; // Ahora es nullable
 
   User({
     required this.id,
@@ -14,9 +14,9 @@ class User {
     required this.email,
     required this.phone,
     required this.role,
-    required this.restaurantId,
-    required this.restaurantName,
-    required this.lastLogin,
+    this.restaurantId,
+    this.restaurantName,
+    this.lastLogin,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {

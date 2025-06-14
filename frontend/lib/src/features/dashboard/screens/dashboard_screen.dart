@@ -9,6 +9,7 @@ import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dar
 import 'package:gastrohub_app/src/features/restaurant/screens/products_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/ingredients_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/employees_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -260,6 +261,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Navigator.pop(context);
                 },
               ),
+            if (user.role == 'ROLE_OWNER')
+              ListTile(
+                leading: const Icon(Icons.group),
+                title: const Text('Empleados'),
+                onTap: () {
+                  setState(() {
+                    _isSpecialScreen = true;
+                    _specialScreen = const EmployeesScreen();
+                  });
+                  Navigator.pop(context);
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.info),
               title: const Text('Alérgenos'),
@@ -317,6 +330,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (_specialScreen is ProfileScreen) return 'Perfil';
     if (_specialScreen is ProductsScreen) return 'Productos';
     if (_specialScreen is LayoutsScreen) return 'Zonas';
+    if (_specialScreen is EmployeesScreen) return 'Empleados';
     return 'Gastro & Hub';
   }
 }
