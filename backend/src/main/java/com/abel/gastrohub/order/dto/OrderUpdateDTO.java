@@ -6,6 +6,8 @@ import com.abel.gastrohub.order.PaymentState;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class OrderUpdateDTO {
@@ -19,4 +21,6 @@ public class OrderUpdateDTO {
     private PaymentState paymentState;
 
     private PaymentMethod paymentMethod;
+
+    private List<OrderItemDTO> items;
 }

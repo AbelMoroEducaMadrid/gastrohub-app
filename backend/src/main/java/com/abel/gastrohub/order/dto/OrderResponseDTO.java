@@ -7,6 +7,7 @@ import com.abel.gastrohub.order.PaymentState;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -23,13 +24,14 @@ public class OrderResponseDTO {
     private PaymentState paymentState;
     private PaymentMethod paymentMethod;
     private List<OrderItemResponseDTO> items;
+    private BigDecimal total;
 
     public OrderResponseDTO(Order order) {
         this.id = order.getId();
-        if(order.getTable() != null) {
+        if (order.getTable() != null) {
             this.tableId = order.getTable().getId();
             this.tableNumber = order.getTable().getNumber();
-            this.layout =order.getTable().getLayout().getName();
+            this.layout = order.getTable().getLayout().getName();
         }
         this.notes = order.getNotes();
         this.urgent = order.getUrgent();

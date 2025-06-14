@@ -9,4 +9,6 @@ import java.util.List;
 public interface RelOrdersProductRepository extends JpaRepository<RelOrdersProduct, Integer> {
 
     List<RelOrdersProduct> findByOrderId(Integer orderId);
+
+    void deleteByOrderId(Integer id);
 }

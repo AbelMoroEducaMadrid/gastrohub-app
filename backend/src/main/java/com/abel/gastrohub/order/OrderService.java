@@ -11,7 +11,10 @@ import com.abel.gastrohub.table.TableService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -98,21 +101,24 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        List<RelOrdersProduct> items = orderDTO.getItems().stream().map(itemDTO -> {
+        List<RelOrdersProduct> items = new ArrayList<>();
+        for (OrderItemDTO itemDTO : orderDTO.getItems()) {
             Product product = productService.getProductById(itemDTO.getProductId());
-            RelOrdersProduct item = new RelOrdersProduct();
-            item.setOrder(savedOrder);
-            item.setProduct(product);
-            item.setPrice(itemDTO.getPrice());
-            item.setNotes(itemDTO.getNotes());
-            return item;
-        }).collect(Collectors.toList());
-
+            for (int i = 0; i < itemDTO.getQuantity(); i++) {
+                RelOrdersProduct item = new RelOrdersProduct();
+                item.setOrder(savedOrder);
+                item.setProduct(product);
+                item.setPrice(product.getPrice());
+                item.setNotes(itemDTO.getNotes());
+                items.add(item);
+            }
+        }
         relOrdersProductRepository.saveAll(items);
 
         return mapToResponseDTO(savedOrder);
     }
 
+    @Transactional
     public OrderResponseDTO updateOrder(Integer id, OrderUpdateDTO orderDTO) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Comanda no encontrada con ID: " + id));
@@ -125,6 +131,23 @@ public class OrderService {
         if (orderDTO.getState() != null) order.setState(orderDTO.getState());
         if (orderDTO.getPaymentState() != null) order.setPaymentState(orderDTO.getPaymentState());
         if (orderDTO.getPaymentMethod() != null) order.setPaymentMethod(orderDTO.getPaymentMethod());
+
+        if (orderDTO.getItems() != null) {
+            relOrdersProductRepository.deleteByOrderId(order.getId());
+            List<RelOrdersProduct> newItems = new ArrayList<>();
+            for (OrderItemDTO itemDTO : orderDTO.getItems()) {
+                Product product = productService.getProductById(itemDTO.getProductId());
+                for (int i = 0; i < itemDTO.getQuantity(); i++) {
+                    RelOrdersProduct item = new RelOrdersProduct();
+                    item.setOrder(order);
+                    item.setProduct(product);
+                    item.setPrice(product.getPrice());
+                    item.setNotes(itemDTO.getNotes());
+                    newItems.add(item);
+                }
+            }
+            relOrdersProductRepository.saveAll(newItems);
+        }
 
         Order updatedOrder = orderRepository.save(order);
         return mapToResponseDTO(updatedOrder);
@@ -153,7 +176,7 @@ public class OrderService {
         RelOrdersProduct item = new RelOrdersProduct();
         item.setOrder(order);
         item.setProduct(product);
-        item.setPrice(itemDTO.getPrice());
+        item.setPrice(product.getPrice());
         item.setNotes(itemDTO.getNotes());
 
         return relOrdersProductRepository.save(item);
@@ -172,7 +195,6 @@ public class OrderService {
             throw new IllegalArgumentException("El ítem no pertenece a esta comanda");
         }
 
-        if (itemDTO.getPrice() != null) item.setPrice(itemDTO.getPrice());
         if (itemDTO.getNotes() != null) item.setNotes(itemDTO.getNotes());
 
         return relOrdersProductRepository.save(item);
@@ -220,6 +242,12 @@ public class OrderService {
                 .map(OrderItemResponseDTO::new)
                 .collect(Collectors.toList());
         responseDTO.setItems(items);
+
+        BigDecimal total = items.stream()
+                .map(OrderItemResponseDTO::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        responseDTO.setTotal(total);
+
         return responseDTO;
     }
 }
