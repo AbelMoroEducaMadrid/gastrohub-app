@@ -67,7 +67,7 @@ public class Ingredient {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "rel_ingredients_attributes",
             joinColumns = @JoinColumn(name = "ingredient_id"),

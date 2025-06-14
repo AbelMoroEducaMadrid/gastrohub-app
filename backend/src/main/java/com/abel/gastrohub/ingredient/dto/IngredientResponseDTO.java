@@ -17,6 +17,7 @@ public class IngredientResponseDTO {
     private BigDecimal minStock;
     private Boolean isComposite;
     private List<ComponentResponseDTO> components;
+    private List<String> attributes;
 
     @Setter
     @Getter

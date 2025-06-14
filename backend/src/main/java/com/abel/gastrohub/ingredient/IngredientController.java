@@ -3,6 +3,7 @@ package com.abel.gastrohub.ingredient;
 import com.abel.gastrohub.ingredient.dto.ComponentAdditionDTO;
 import com.abel.gastrohub.ingredient.dto.IngredientCreateDTO;
 import com.abel.gastrohub.ingredient.dto.IngredientResponseDTO;
+import com.abel.gastrohub.masterdata.MtAttribute;
 import com.abel.gastrohub.masterdata.MtUnit;
 import com.abel.gastrohub.masterdata.MtUnitRepository;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -118,11 +120,23 @@ public class IngredientController {
         dto.setCostPerUnit(ingredient.getCostPerUnit());
         dto.setMinStock(ingredient.getMinStock());
         dto.setIsComposite(ingredient.getIsComposite());
+
+        Set<String> attributeNames = ingredient.getAttributes().stream()
+                .map(MtAttribute::getName).collect(Collectors.toSet());
+
         if (ingredient.getIsComposite()) {
             dto.setComponents(ingredient.getRelIngredientIngredients().stream()
                     .map(this::toComponentResponseDTO)
                     .collect(Collectors.toList()));
+
+            for (RelIngredientIngredient rel : ingredient.getRelIngredientIngredients()) {
+                attributeNames.addAll(rel.getComponentIngredient().getAttributes().stream()
+                        .map(MtAttribute::getName)
+                        .collect(Collectors.toSet()));
+            }
         }
+
+        dto.setAttributes(attributeNames.stream().sorted().collect(Collectors.toList()));
         return dto;
     }
 
