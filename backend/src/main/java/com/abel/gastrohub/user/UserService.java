@@ -5,6 +5,7 @@ import com.abel.gastrohub.masterdata.MtRole;
 import com.abel.gastrohub.masterdata.MtRoleRepository;
 import com.abel.gastrohub.restaurant.Restaurant;
 import com.abel.gastrohub.restaurant.RestaurantRepository;
+import com.abel.gastrohub.user.dto.UserProfileUpdateDTO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -121,5 +122,54 @@ public class UserService {
     public MtRole getRoleByName(String name) {
         return roleRepository.findByName(name)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + name));
+    }
+
+    public void leaveRestaurant(Integer userId) {
+        User user = getUserById(userId);
+        if (user.getRestaurant() != null) {
+            user.setRestaurant(null);
+            MtRole userRole = getRoleByName("ROLE_USER");
+            user.setRole(userRole);
+            userRepository.save(user);
+        }
+    }
+
+    public void kickUser(Integer userIdToKick, Integer ownerId) {
+        User owner = getUserById(ownerId);
+        if (!owner.getRole().getName().equals("ROLE_OWNER")) {
+            throw new IllegalStateException("Solo el propietario puede expulsar usuarios");
+        }
+        User userToKick = getUserById(userIdToKick);
+        if (userToKick.getRestaurant() == null || owner.getRestaurant() == null ||
+                !userToKick.getRestaurant().getId().equals(owner.getRestaurant().getId())) {
+            throw new IllegalStateException("El usuario no pertenece al restaurante del propietario");
+        }
+        if (userToKick.getId().equals(owner.getId())) {
+            throw new IllegalStateException("El propietario no puede expulsarse a sí mismo");
+        }
+        userToKick.setRestaurant(null);
+        MtRole userRole = getRoleByName("ROLE_USER");
+        userToKick.setRole(userRole);
+        userRepository.save(userToKick);
+    }
+
+    public User updateProfile(Integer userId, UserProfileUpdateDTO dto) {
+        User user = getUserById(userId);
+        if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())) {
+            if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+                throw new IllegalArgumentException("El email ya está en uso");
+            }
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getPhone() != null && !dto.getPhone().equals(user.getPhone())) {
+            if (userRepository.findByPhone(dto.getPhone()).isPresent()) {
+                throw new PhoneAlreadyInUseException("El número de teléfono ya está en uso");
+            }
+            user.setPhone(dto.getPhone());
+        }
+        if (dto.getName() != null) {
+            user.setName(dto.getName());
+        }
+        return userRepository.save(user);
     }
 }

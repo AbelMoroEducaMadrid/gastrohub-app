@@ -4,6 +4,7 @@ import com.abel.gastrohub.security.CustomUserDetails;
 import com.abel.gastrohub.user.dto.UserChangePasswordDTO;
 import com.abel.gastrohub.user.dto.UserJoinRestaurantDTO;
 import com.abel.gastrohub.user.dto.UserJoinRestaurantResponseDTO;
+import com.abel.gastrohub.user.dto.UserProfileUpdateDTO;
 import com.abel.gastrohub.user.dto.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,5 +90,35 @@ public class UserController {
         Integer userId = userDetails.getId();
         User user = userService.joinRestaurant(userId, joinDTO.getInvitationCode());
         return ResponseEntity.ok(new UserJoinRestaurantResponseDTO(user));
+    }
+
+    @PostMapping("/leave-restaurant")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> leaveRestaurant() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getId();
+        userService.leaveRestaurant(userId);
+        return ResponseEntity.ok("Has dejado el restaurante exitosamente");
+    }
+
+    @PostMapping("/{id}/kick")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<String> kickUser(@PathVariable Integer id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer ownerId = userDetails.getId();
+        userService.kickUser(id, ownerId);
+        return ResponseEntity.ok("Usuario expulsado exitosamente");
+    }
+
+    @PutMapping("/profile")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponseDTO> updateProfile(@Valid @RequestBody UserProfileUpdateDTO updateDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getId();
+        User updatedUser = userService.updateProfile(userId, updateDTO);
+        return ResponseEntity.ok(new UserResponseDTO(updatedUser));
     }
 }
