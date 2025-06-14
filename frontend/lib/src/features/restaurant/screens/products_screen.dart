@@ -64,11 +64,18 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                     style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                   backgroundColor: Colors.grey[100],
                   collapsedBackgroundColor: Colors.grey[200],
                   children: categoryProducts.map((product) {
+                    String ingredientsText = '';
+                    if (product.ingredients != null &&
+                        product.ingredients!.length > 1) {
+                      ingredientsText =
+                          'ING: ${product.ingredients!.map((i) => i.ingredientName.toLowerCase()).join(', ')}';
+                    }
                     return Card(
                       color: Colors.white,
                       margin: const EdgeInsets.symmetric(
@@ -79,20 +86,32 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                           product.name,
                           style: const TextStyle(color: Colors.black),
                         ),
-                        subtitle: Row(
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '${product.price.toStringAsFixed(2)} €',
-                              style: const TextStyle(color: Colors.black54),
-                            ),
-                            if (!product.available)
-                              const Padding(
-                                padding: EdgeInsets.only(left: 8.0),
-                                child: Text(
-                                  'No disponible',
-                                  style: TextStyle(color: Colors.red),
-                                ),
+                            if (ingredientsText.isNotEmpty)
+                              Text(
+                                ingredientsText,
+                                style: const TextStyle(
+                                    color: Colors.black87, fontSize: 14),
                               ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Text(
+                                  '${product.price.toStringAsFixed(2)} €',
+                                  style: const TextStyle(color: Colors.black54),
+                                ),
+                                if (!product.available)
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 18.0),
+                                    child: Text(
+                                      'AGOTADO',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ],
                         ),
                         trailing: canEdit
