@@ -138,7 +138,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
             text: 'Elige tu plan',
             onPressed: _createRestaurant,
             iconData: Icons.layers_outlined,
-            iconPosition: IconPosition.left,
+            iconPosition: IconPosition.right,
           ),
           const SizedBox(height: 32),
           Row(
@@ -213,7 +213,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                         text: 'Escanear QR',
                         onPressed: _scanQRCode,
                         iconData: Icons.qr_code,
-                        iconPosition: IconPosition.left,
+                        iconPosition: IconPosition.right,
                         backgroundColor: AppTheme.primaryColor,
                       ),
                     ),
@@ -224,7 +224,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                           ? null
                           : _joinRestaurant,
                       iconData: Icons.group_add_outlined,
-                      iconPosition: IconPosition.left,
+                      iconPosition: IconPosition.right,
                     ),
                   ],
                 ),
