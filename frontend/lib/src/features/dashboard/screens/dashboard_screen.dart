@@ -212,12 +212,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               leading: const Icon(Icons.menu_book),
               title: const Text('Productos'),
               onTap: () {
+                setState(() {
+                  _isSpecialScreen = true;
+                  _specialScreen = const ProductsScreen();
+                });
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ProductsScreen()),
-                );
               },
             ),
             ListTile(
@@ -241,14 +240,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 leading: const Icon(Icons.map),
                 title: const Text('Zonas y mesas'),
                 onTap: () {
+                  setState(() {
+                    _isSpecialScreen = true;
+                    _specialScreen =
+                        LayoutsScreen(restaurantId: user.restaurantId!);
+                  });
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          LayoutsScreen(restaurantId: user.restaurantId!),
-                    ),
-                  );
                 },
               ),
             if (user.role == 'ROLE_OWNER' || user.role == 'ROLE_MANAGER')
@@ -318,6 +315,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (_specialScreen is AllergensScreen) return 'Alérgenos';
     if (_specialScreen is IngredientsScreen) return 'Ingredientes';
     if (_specialScreen is ProfileScreen) return 'Perfil';
+    if (_specialScreen is ProductsScreen) return 'Productos';
+    if (_specialScreen is LayoutsScreen) return 'Zonas';
     return 'Gastro & Hub';
   }
 }

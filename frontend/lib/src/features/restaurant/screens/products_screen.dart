@@ -41,14 +41,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
     final productsAsync = ref.watch(productNotifierProvider);
     final categoriesAsync = ref.watch(categoryNotifierProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Productos',
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.white,
-      ),
+    return Scaffold(      
       body: productsAsync.when(
         data: (products) => categoriesAsync.when(
           data: (categories) {

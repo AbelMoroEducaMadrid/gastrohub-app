@@ -52,8 +52,7 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
   Widget build(BuildContext context) {
     final layouts = ref.watch(layoutNotifierProvider(widget.restaurantId));
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Zonas')),
+    return Scaffold(      
       body: ListView.builder(
         itemCount: layouts.length,
         itemBuilder: (context, index) {
