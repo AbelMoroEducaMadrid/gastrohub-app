@@ -48,13 +48,6 @@ public class RestaurantService {
     public void deleteRestaurant(Integer id) {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + id));
-//        if (orderRepository.existsByRestaurantIdAndStateNot(id, OrderState.SERVIDA, OrderState.CANCELADA)) {
-//            throw new IllegalStateException("No se puede eliminar: hay comandas activas");
-//        }
-//        if (reservationRepository.existsByRestaurantIdAndState(id, ReservationState.PENDIENTE)) {
-//            throw new IllegalStateException("No se puede eliminar: hay reservas pendientes");
-//        }
-// TODO Terminar de implementar esta parte
         restaurantRepository.delete(restaurant);
     }
 
@@ -63,6 +56,14 @@ public class RestaurantService {
         restaurant.setInvitationCode(generateInvitationCode());
         restaurant.setInvitationExpiresAt(LocalDateTime.now().plusHours(12));
         return restaurantRepository.save(restaurant);
+    }
+
+    public String getValidInvitationCode(Integer restaurantId) {
+        Restaurant restaurant = getRestaurantById(restaurantId);
+        if (restaurant.getInvitationExpiresAt() == null || restaurant.getInvitationExpiresAt().isBefore(LocalDateTime.now())) {
+            restaurant = regenerateInvitationCode(restaurantId);
+        }
+        return restaurant.getInvitationCode();
     }
 
     private String generateInvitationCode() {

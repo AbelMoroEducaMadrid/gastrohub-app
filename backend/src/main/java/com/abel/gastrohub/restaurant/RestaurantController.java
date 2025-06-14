@@ -101,11 +101,34 @@ public class RestaurantController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/regenerate-invitation")
+    @PostMapping("/regenerate-invitation")
     @PreAuthorize("hasAnyRole('ADMIN','SYSTEM', 'OWNER')")
-    public ResponseEntity<String> regenerateInvitationCode(@PathVariable Integer id) {
-        Restaurant updatedRestaurant = restaurantService.regenerateInvitationCode(id);
+    public ResponseEntity<String> regenerateInvitationCode() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getId();
+        User user = userService.getUserById(userId);
+        Restaurant restaurant = user.getRestaurant();
+        if (restaurant == null) {
+            throw new IllegalStateException("El usuario no está asociado a ningún restaurante");
+        }
+        Restaurant updatedRestaurant = restaurantService.regenerateInvitationCode(restaurant.getId());
         return ResponseEntity.ok(updatedRestaurant.getInvitationCode());
+    }
+
+    @GetMapping("/invitation-code")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM', 'OWNER')")
+    public ResponseEntity<String> getInvitationCode() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getId();
+        User user = userService.getUserById(userId);
+        Restaurant restaurant = user.getRestaurant();
+        if (restaurant == null) {
+            throw new IllegalStateException("El usuario no está asociado a ningún restaurante");
+        }
+        String invitationCode = restaurantService.getValidInvitationCode(restaurant.getId());
+        return ResponseEntity.ok(invitationCode);
     }
 
     @PutMapping("/{id}/change-plan")
