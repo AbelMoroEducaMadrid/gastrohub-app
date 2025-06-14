@@ -1,6 +1,8 @@
 class Order {
   final int id;
   final int? tableId;
+  final int? tableNumber;
+  final String? layout;
   final String? notes;
   final bool urgent;
   final String state;
@@ -11,6 +13,8 @@ class Order {
   Order({
     required this.id,
     this.tableId,
+    this.tableNumber,
+    this.layout,
     this.notes,
     required this.urgent,
     required this.state,
@@ -23,6 +27,8 @@ class Order {
     return Order(
       id: json['id'] as int,
       tableId: json['tableId'] as int?,
+      tableNumber: json['tableNumber'] as int?,
+      layout: json['layout'] as String?,
       notes: json['notes'] as String?,
       urgent: json['urgent'] as bool,
       state: json['state'] as String,
@@ -62,14 +68,5 @@ class OrderItem {
       notes: json['notes'] as String?,
       state: json['state'] as String?,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'productId': productId,
-      'quantity': quantity,
-      'price': price,
-      'notes': notes,
-    };
   }
 }

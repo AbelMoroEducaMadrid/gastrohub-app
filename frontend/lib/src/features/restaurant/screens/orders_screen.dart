@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/features/auth/models/order.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/order_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/add_order_screen.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
@@ -36,47 +38,110 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
     return Scaffold(
       body: ordersAsync.when(
-        data: (orders) => ListView.builder(
-          itemCount: orders.length,
-          itemBuilder: (context, index) {
-            final order = orders[index];
-            return Card(
-              color: Colors.white,
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              elevation: 2,
-              child: ListTile(
-                title: Text(
-                  'Comanda #${order.id} - ${order.tableId != null ? 'Mesa ${order.tableId}' : 'Barra'}',
-                  style: const TextStyle(color: Colors.black),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        data: (orders) {
+          final groupedOrders = _groupOrdersByLayout(orders);
+          return ListView.builder(
+            itemCount: groupedOrders.length,
+            itemBuilder: (context, index) {
+              final layout = groupedOrders.keys.elementAt(index);
+              final layoutOrders = groupedOrders[layout]!;
+              return ExpansionTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Estado: ${order.state}',
-                        style: const TextStyle(color: Colors.black54)),
-                    Text('Pago: ${order.paymentState}',
-                        style: const TextStyle(color: Colors.black54)),
-                    Text('Items: ${order.items.length}',
-                        style: const TextStyle(color: Colors.black54)),
+                    Text(
+                      layout ?? 'Barra',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '(${layoutOrders.length})',
+                      style: const TextStyle(
+                        color: Colors.black54,
+                      ),
+                    ),
                   ],
                 ),
-                trailing: canEdit
-                    ? IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.black),
-                        onPressed: () {
-                          /*Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditOrderScreen(order: order),
+                children: layoutOrders.map((order) {
+                  return Card(
+                    color: Colors.white,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    elevation: 2,
+                    child: ListTile(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Comanda #${order.id} - ${order.tableNumber != null ? 'Mesa ${order.tableNumber}' : 'Barra'}',
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                          if (order.urgent)
+                            const Icon(Icons.notification_important,
+                                color: Colors.red),
+                        ],
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.info_outline,
+                                  size: 16, color: Colors.black54),
+                              const SizedBox(width: 4),
+                              Text(order.state.toUpperCase(),
+                                  style:
+                                      const TextStyle(color: Colors.black54)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Icon(Icons.list_alt_outlined,
+                                  size: 16, color: Colors.black54),
+                              const SizedBox(width: 4),
+                              Text('Items - ${order.items.length}',
+                                  style:
+                                      const TextStyle(color: Colors.black54)),
+                            ],
+                          ),
+                          if (order.notes != null)
+                            Row(
+                              children: [
+                                const Icon(Icons.note_outlined,
+                                    size: 16, color: Colors.black54),
+                                const SizedBox(width: 4),
+                                Text('${order.notes}',
+                                    style:
+                                        const TextStyle(color: Colors.black54)),
+                              ],
                             ),
-                          );*/
-                        },
-                      )
-                    : null,
-              ),
-            );
-          },
-        ),
+                        ],
+                      ),
+                      trailing: canEdit
+                          ? IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.black),
+                              onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => EditOrderScreen(order: order),
+                                //   ),
+                                // );
+                              },
+                            )
+                          : null,
+                      onTap: () {
+                        // Aquí podrías añadir un diálogo o pantalla para ver más detalles
+                      },
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+          );
+        },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Text('Error: $error',
@@ -92,10 +157,23 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
     );
   }
 
+  Map<String?, List<Order>> _groupOrdersByLayout(List<Order> orders) {
+    final Map<String?, List<Order>> grouped = {};
+    for (var order in orders) {
+      final layout = order.layout;
+      if (grouped.containsKey(layout)) {
+        grouped[layout]!.add(order);
+      } else {
+        grouped[layout] = [order];
+      }
+    }
+    return grouped;
+  }
+
   void _addOrder(BuildContext context) {
-    /*Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddOrderScreen()),
-    );*/
+    );
   }
 }
