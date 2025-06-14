@@ -153,10 +153,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
+              setState(() {
+                _isSpecialScreen = true;
+                _specialScreen = const ProfileScreen();
+              });
             },
           ),
         ],
@@ -201,12 +201,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               leading: const Icon(Icons.person),
               title: const Text('Perfil'),
               onTap: () {
+                setState(() {
+                  _isSpecialScreen = true;
+                  _specialScreen = const ProfileScreen();
+                });
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ProfileScreen()),
-                );
               },
             ),
             ListTile(
@@ -318,6 +317,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   String _specialScreenTitle() {
     if (_specialScreen is AllergensScreen) return 'Alérgenos';
     if (_specialScreen is IngredientsScreen) return 'Ingredientes';
+    if (_specialScreen is ProfileScreen) return 'Perfil';
     return 'Gastro & Hub';
   }
 }

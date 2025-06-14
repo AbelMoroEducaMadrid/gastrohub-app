@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/core/utils/logger.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/exceptions/api_exception.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 
@@ -16,6 +18,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
+  late TextEditingController _roleController;
+  late TextEditingController _restaurantController;
   bool _isEditing = false;
 
   @override
@@ -25,6 +29,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _nameController = TextEditingController(text: user.name);
     _emailController = TextEditingController(text: user.email);
     _phoneController = TextEditingController(text: user.phone);
+    _roleController = TextEditingController(text: user.role);
+    _restaurantController =
+        TextEditingController(text: user.restaurantName ?? 'No asignado');
   }
 
   @override
@@ -35,16 +42,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Perfil'),
-        actions: [
-          IconButton(
-            icon: Icon(_isEditing ? Icons.close : Icons.edit),
-            onPressed: () {
-              setState(() {
-                _isEditing = !_isEditing;
-              });
-            },
-          ),
-        ],
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -52,46 +51,92 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
+              CustomTextField(
+                label: 'Nombre',
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nombre'),
                 enabled: _isEditing,
                 validator: (value) =>
                     value?.isEmpty ?? true ? 'Requerido' : null,
+                fillColor: Colors.white,
+                textColor: Colors.black,
+                borderColor: Colors.black,
+                cursorColor: Colors.black,
+                placeholderColor: Colors.black54,
               ),
-              TextFormField(
+              CustomTextField(
+                label: 'Email',
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
                 enabled: _isEditing,
                 validator: (value) =>
                     value?.isEmpty ?? true ? 'Requerido' : null,
+                fillColor: Colors.white,
+                textColor: Colors.black,
+                borderColor: Colors.black,
+                cursorColor: Colors.black,
+                placeholderColor: Colors.black54,
               ),
-              TextFormField(
+              CustomTextField(
+                label: 'Teléfono',
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Teléfono'),
                 enabled: _isEditing,
                 validator: (value) =>
                     value?.isEmpty ?? true ? 'Requerido' : null,
+                fillColor: Colors.white,
+                textColor: Colors.black,
+                borderColor: Colors.black,
+                cursorColor: Colors.black,
+                placeholderColor: Colors.black54,
+              ),
+              ..._isEditing
+                  ? [
+                      const SizedBox(height: 16),
+                      CustomButton(
+                        onPressed: _updateProfile,
+                        text: 'Guardar cambios',
+                        iconData: Icons.save_outlined,
+                        iconPosition: IconPosition.right,
+                      ),
+                      const SizedBox(height: 16),
+                    ]
+                  : [],
+              CustomTextField(
+                label: 'Rol',
+                controller: _roleController,
+                enabled: false,
+                fillColor: Colors.white,
+                textColor: Colors.black,
+                borderColor: Colors.black,
+                cursorColor: Colors.black,
+                placeholderColor: Colors.black54,
+              ),
+              CustomTextField(
+                label: 'Restaurante',
+                controller: _restaurantController,
+                enabled: false,
+                fillColor: Colors.white,
+                textColor: Colors.black,
+                borderColor: Colors.black,
+                cursorColor: Colors.black,
+                placeholderColor: Colors.black54,
               ),
               const SizedBox(height: 16),
-              Text('Rol: ${user.role}', style: const TextStyle(fontSize: 16)),
-              Text('Restaurante: ${user.restaurantName ?? 'No asignado'}',
-                  style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 16),
-              if (_isEditing)
-                ElevatedButton(
-                  onPressed: _updateProfile,
-                  child: const Text('Guardar cambios'),
-                ),
-              const SizedBox(height: 16),
-              ElevatedButton(
+              CustomButton(
                 onPressed: _leaveRestaurant,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Abandonar restaurante'),
+                text: 'Abandonar restaurante',
+                iconData: Icons.exit_to_app_outlined,
+                iconPosition: IconPosition.right,
               ),
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _isEditing = !_isEditing;
+          });
+        },
+        child: Icon(_isEditing ? Icons.close : Icons.edit),
       ),
     );
   }

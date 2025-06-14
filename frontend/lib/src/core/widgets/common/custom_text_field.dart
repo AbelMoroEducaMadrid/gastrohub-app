@@ -12,10 +12,11 @@ class CustomTextField extends StatefulWidget {
   final IconData? icon;
   final TextInputType? keyboardType;
   final Color? fillColor;
-  final Color? textColor; 
+  final Color? textColor;
   final Color? borderColor;
-  final Color? cursorColor; 
+  final Color? cursorColor;
   final Color? placeholderColor;
+  final bool? enabled;
 
   const CustomTextField({
     super.key,
@@ -34,6 +35,7 @@ class CustomTextField extends StatefulWidget {
     this.borderColor,
     this.cursorColor,
     this.placeholderColor,
+    this.enabled = true,
   });
 
   @override
@@ -52,11 +54,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    final textColor = widget.textColor ?? theme.textTheme.bodyMedium?.color ?? Colors.black;
-    final borderColor = widget.borderColor ?? theme.inputDecorationTheme.enabledBorder?.borderSide.color ?? Colors.grey;
-    final cursorColor = widget.cursorColor ?? theme.textTheme.bodyMedium?.color ?? Colors.black;
-    final placeholderColor = widget.placeholderColor ?? theme.inputDecorationTheme.labelStyle?.color ?? Colors.grey;
+
+    final textColor =
+        widget.textColor ?? theme.textTheme.bodyMedium?.color ?? Colors.black;
+    final borderColor = widget.borderColor ??
+        theme.inputDecorationTheme.enabledBorder?.borderSide.color ??
+        Colors.grey;
+    final cursorColor =
+        widget.cursorColor ?? theme.textTheme.bodyMedium?.color ?? Colors.black;
+    final placeholderColor = widget.placeholderColor ??
+        theme.inputDecorationTheme.labelStyle?.color ??
+        Colors.grey;
 
     final prefixIcon = widget.icon != null
         ? Icon(
@@ -90,6 +98,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: borderColor, width: 2.0),
       ),
+      disabledBorder: OutlineInputBorder(
+        borderSide:
+            BorderSide(color: borderColor.withAlpha((255 * 0.1).toInt())),
+      ),
       contentPadding: widget.isTextArea
           ? const EdgeInsets.all(12)
           : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -113,6 +125,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         decoration: inputDecoration,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         keyboardType: widget.keyboardType,
+        enabled: widget.enabled,
       ),
     );
   }
