@@ -7,6 +7,7 @@ import 'package:gastrohub_app/src/features/restaurant/screens/allergens_screen.d
 import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/manage_products_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/menu_view_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/products_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/ingredients_screen.dart';
 
@@ -202,19 +203,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ManageProductsScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.menu),
-              title: const Text('Menú'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MenuViewScreen()),
+                      builder: (context) => const ProductsScreen()),
                 );
               },
             ),

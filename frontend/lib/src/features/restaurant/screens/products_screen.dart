@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/category.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/product.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/product_provider.dart';
@@ -7,15 +8,20 @@ import 'package:gastrohub_app/src/features/restaurant/providers/category_provide
 import 'package:gastrohub_app/src/features/restaurant/screens/add_product_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/edit_product_screen.dart';
 
-class ManageProductsScreen extends ConsumerStatefulWidget {
-  const ManageProductsScreen({super.key});
+class ProductsScreen extends ConsumerStatefulWidget {
+  const ProductsScreen({super.key});
 
   @override
-  ConsumerState<ManageProductsScreen> createState() =>
-      _ManageProductsScreenState();
+  ConsumerState<ProductsScreen> createState() => _ProductsScreenState();
 }
 
-class _ManageProductsScreenState extends ConsumerState<ManageProductsScreen> {
+class _ProductsScreenState extends ConsumerState<ProductsScreen> {
+  final List<String> _allowedRoles = [
+    'ROLE_ADMIN',
+    'ROLE_OWNER',
+    'ROLE_MANAGER'
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -27,13 +33,17 @@ class _ManageProductsScreenState extends ConsumerState<ManageProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final userRole = authState.user?.role ?? '';
+    final canEdit = _allowedRoles.contains(userRole);
+
     final productsAsync = ref.watch(productNotifierProvider);
     final categoriesAsync = ref.watch(categoryNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Gestionar Productos',
+          'Productos',
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -51,26 +61,55 @@ class _ManageProductsScreenState extends ConsumerState<ManageProductsScreen> {
                 return ExpansionTile(
                   title: Text(
                     category.name,
-                    style: const TextStyle(color: Colors.black),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  backgroundColor: Colors.white,
+                  backgroundColor: Colors.grey[100],
+                  collapsedBackgroundColor: Colors.grey[200],
                   children: categoryProducts.map((product) {
-                    return ListTile(
-                      title: Text(
-                        product.name,
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.black),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  EditProductScreen(product: product),
+                    return Card(
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      elevation: 2,
+                      child: ListTile(
+                        title: Text(
+                          product.name,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                        subtitle: Row(
+                          children: [
+                            Text(
+                              '${product.price.toStringAsFixed(2)} €',
+                              style: const TextStyle(color: Colors.black54),
                             ),
-                          );
-                        },
+                            if (!product.available)
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                  'No disponible',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                          ],
+                        ),
+                        trailing: canEdit
+                            ? IconButton(
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.black),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditProductScreen(product: product),
+                                    ),
+                                  );
+                                },
+                              )
+                            : null,
                       ),
                     );
                   }).toList(),
@@ -94,12 +133,12 @@ class _ManageProductsScreenState extends ConsumerState<ManageProductsScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _addProduct(context),
-        backgroundColor: Colors.white,
-        child: const Icon(Icons.add, color: Colors.black),
-      ),
-      backgroundColor: Colors.white,
+      floatingActionButton: canEdit
+          ? FloatingActionButton(
+              onPressed: () => _addProduct(context),
+              child: const Icon(Icons.add, color: Colors.black),
+            )
+          : null,
     );
   }
 
