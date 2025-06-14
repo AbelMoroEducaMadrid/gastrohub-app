@@ -165,9 +165,12 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
       List<Product> products, List<Category> categories) {
     final Map<Category, List<Product>> categorized = {};
     for (var category in categories) {
-      categorized[category] = products
+      final categoryProducts = products
           .where((product) => product.categoryId == category.id)
           .toList();
+      if (categoryProducts.isNotEmpty) {
+        categorized[category] = categoryProducts;
+      }
     }
     return categorized;
   }
