@@ -70,7 +70,8 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
               items: _layouts.map((layout) {
                 return DropdownMenuItem<int>(
                   value: layout.id,
-                  child: Text(layout.name),
+                  child: Text(layout.name,
+                      style: const TextStyle(color: Colors.black)),
                 );
               }).toList(),
               onChanged: (value) {
@@ -90,7 +91,8 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
                 items: _tables.map((table) {
                   return DropdownMenuItem<int>(
                     value: table.id,
-                    child: Text('Mesa ${table.number}'),
+                    child: Text('Mesa ${table.number}',
+                        style: const TextStyle(color: Colors.black)),
                   );
                 }).toList(),
                 onChanged: (value) {
