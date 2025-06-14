@@ -15,6 +15,8 @@ public class OrderResponseDTO {
 
     private Integer id;
     private Integer tableId;
+    private Integer tableNumber;
+    private String layout;
     private String notes;
     private Boolean urgent;
     private OrderState state;
@@ -24,7 +26,11 @@ public class OrderResponseDTO {
 
     public OrderResponseDTO(Order order) {
         this.id = order.getId();
-        this.tableId = order.getTable() != null ? order.getTable().getId() : null;
+        if(order.getTable() != null) {
+            this.tableId = order.getTable().getId();
+            this.tableNumber = order.getTable().getNumber();
+            this.layout =order.getTable().getLayout().getName();
+        }
         this.notes = order.getNotes();
         this.urgent = order.getUrgent();
         this.state = order.getState();
