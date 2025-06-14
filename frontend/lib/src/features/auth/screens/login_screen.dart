@@ -115,7 +115,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // TODO: Add password recovery logic
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content:
+                              Text('Funcionalidad de recuperación no implementada')),
+                    );
                   },
                   child: Text(
                     'Recuperar',
@@ -155,7 +159,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               backgroundColor: theme.colorScheme.surface,
               foregroundColor: Colors.blueGrey,
               onPressed: () {
-                // TODO: Add Google sign-in logic
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('LogIn con Google no implementado aún')),
+                );
               },
             ),
             const SizedBox(height: 24),
