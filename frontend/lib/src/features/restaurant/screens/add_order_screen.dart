@@ -19,6 +19,7 @@ class AddOrderScreen extends ConsumerStatefulWidget {
 class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
   final _formKey = GlobalKey<FormState>();
   final _notesController = TextEditingController();
+  bool _isBar = true; // Por defecto, es para la barra
   bool _urgent = false;
   final List<Map<String, dynamic>> _items = [];
   int? _selectedLayoutId;
@@ -65,42 +66,71 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            DropdownButtonFormField<int>(
-              decoration: const InputDecoration(labelText: 'Layout'),
-              items: _layouts.map((layout) {
-                return DropdownMenuItem<int>(
-                  value: layout.id,
-                  child: Text(layout.name,
-                      style: const TextStyle(color: Colors.black)),
-                );
-              }).toList(),
+            SwitchListTile(
+              title:
+                  const Text('Urgente', style: TextStyle(color: Colors.black)),
+              value: _urgent,
+              onChanged: (value) => setState(() => _urgent = value),
+            ),
+            SwitchListTile(
+              title:
+                  const Text('Es Barra', style: TextStyle(color: Colors.black)),
+              value: _isBar,
               onChanged: (value) {
                 setState(() {
-                  _selectedLayoutId = value;
-                  _selectedTableId = null;
-                  _tables = [];
-                  if (value != null) {
-                    _loadTables(value);
+                  _isBar = value;
+                  if (value) {
+                    _selectedLayoutId = null;
+                    _selectedTableId = null;
+                    _tables = [];
                   }
                 });
               },
             ),
-            if (_selectedLayoutId != null)
+            if (!_isBar) ...[
               DropdownButtonFormField<int>(
-                decoration: const InputDecoration(labelText: 'Mesa'),
-                items: _tables.map((table) {
+                decoration: const InputDecoration(labelText: 'Layout'),
+                hint: const Text('Seleccione un layout',
+                    style: TextStyle(color: Colors.black54)),
+                value: _selectedLayoutId,
+                items: _layouts.map((layout) {
                   return DropdownMenuItem<int>(
-                    value: table.id,
-                    child: Text('Mesa ${table.number}',
+                    value: layout.id,
+                    child: Text(layout.name,
                         style: const TextStyle(color: Colors.black)),
                   );
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
-                    _selectedTableId = value;
+                    _selectedLayoutId = value;
+                    _selectedTableId = null;
+                    _tables = [];
+                    if (value != null) {
+                      _loadTables(value);
+                    }
                   });
                 },
               ),
+              if (_selectedLayoutId != null)
+                DropdownButtonFormField<int>(
+                  decoration: const InputDecoration(labelText: 'Mesa'),
+                  hint: const Text('Seleccione una mesa',
+                      style: TextStyle(color: Colors.black54)),
+                  value: _selectedTableId,
+                  items: _tables.map((table) {
+                    return DropdownMenuItem<int>(
+                      value: table.id,
+                      child: Text('Mesa ${table.number}',
+                          style: const TextStyle(color: Colors.black)),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedTableId = value;
+                    });
+                  },
+                ),
+            ],
             CustomTextField(
               label: 'Notas',
               controller: _notesController,
@@ -109,12 +139,6 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
               borderColor: Colors.black,
               cursorColor: Colors.black,
               placeholderColor: Colors.black54,
-            ),
-            SwitchListTile(
-              title:
-                  const Text('Urgente', style: TextStyle(color: Colors.black)),
-              value: _urgent,
-              onChanged: (value) => setState(() => _urgent = value),
             ),
             OrderItemSelector(
               items: _items,
@@ -148,7 +172,7 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
       final restaurantId = ref.read(authProvider).user!.restaurantId!;
       final body = {
         'restaurantId': restaurantId,
-        'tableId': _selectedTableId,
+        'tableId': _isBar ? null : _selectedTableId,
         'notes': _notesController.text,
         'urgent': _urgent,
         'items': _items
