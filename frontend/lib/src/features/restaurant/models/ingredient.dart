@@ -7,6 +7,7 @@ class Ingredient {
   final double minStock;
   final bool isComposite;
   final List<Component>? components;
+  final List<String> attributes;
 
   Ingredient({
     required this.id,
@@ -17,6 +18,7 @@ class Ingredient {
     required this.minStock,
     required this.isComposite,
     this.components,
+    this.attributes = const [],
   });
 
   factory Ingredient.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,9 @@ class Ingredient {
               .map((component) => Component.fromJson(component))
               .toList()
           : null,
+      attributes: json['attributes'] != null
+          ? (json['attributes'] as List).map((attr) => attr as String).toList()
+          : [],
     );
   }
 
@@ -45,6 +50,7 @@ class Ingredient {
       'minStock': minStock,
       'isComposite': isComposite,
       'components': components?.map((c) => c.toJson()).toList(),
+      'attributes': attributes,
     };
   }
 }
