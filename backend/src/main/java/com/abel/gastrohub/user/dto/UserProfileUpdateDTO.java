@@ -3,7 +3,11 @@ package com.abel.gastrohub.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class UserProfileUpdateDTO {
 
     @NotBlank(message = "El nombre no puede estar vacío")
@@ -15,27 +19,4 @@ public class UserProfileUpdateDTO {
     @Pattern(regexp = "\\d{9}", message = "El teléfono debe tener 9 dígitos")
     private String phone;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 }
