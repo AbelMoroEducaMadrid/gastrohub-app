@@ -1,0 +1,75 @@
+class Order {
+  final int id;
+  final int? tableId;
+  final String? notes;
+  final bool urgent;
+  final String state;
+  final String paymentState;
+  final String paymentMethod;
+  final List<OrderItem> items;
+
+  Order({
+    required this.id,
+    this.tableId,
+    this.notes,
+    required this.urgent,
+    required this.state,
+    required this.paymentState,
+    required this.paymentMethod,
+    required this.items,
+  });
+
+  factory Order.fromJson(Map<String, dynamic> json) {
+    return Order(
+      id: json['id'] as int,
+      tableId: json['tableId'] as int?,
+      notes: json['notes'] as String?,
+      urgent: json['urgent'] as bool,
+      state: json['state'] as String,
+      paymentState: json['paymentState'] as String,
+      paymentMethod: json['paymentMethod'] as String,
+      items: (json['items'] as List)
+          .map((item) => OrderItem.fromJson(item))
+          .toList(),
+    );
+  }
+}
+
+class OrderItem {
+  final int? id;
+  final int? productId;
+  final String? productName;
+  final double price;
+  final String? notes;
+  final String? state;
+  final int quantity;
+
+  OrderItem({
+    this.id,
+    this.productId,
+    this.productName,
+    required this.price,
+    this.notes,
+    this.state,
+    this.quantity = 1,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    return OrderItem(
+      id: json['id'] as int?,
+      productName: json['product'] as String?,
+      price: (json['price'] as num).toDouble(),
+      notes: json['notes'] as String?,
+      state: json['state'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'productId': productId,
+      'quantity': quantity,
+      'price': price,
+      'notes': notes,
+    };
+  }
+}

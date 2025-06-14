@@ -7,6 +7,7 @@ import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.d
 import 'package:gastrohub_app/src/features/restaurant/screens/allergens_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/invitation_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/orders_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/products_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/ingredients_screen.dart';
@@ -233,7 +234,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               leading: const Icon(Icons.shopping_cart),
               title: const Text('Comandas'),
               onTap: () {
-                _onItemTapped(1);
+                setState(() {
+                  _isSpecialScreen = true;
+                  _specialScreen = const OrdersScreen();
+                });
                 Navigator.pop(context);
               },
             ),
@@ -338,6 +342,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   String _specialScreenTitle() {
+    if (_specialScreen is OrdersScreen) return 'Comandas';
     if (_specialScreen is AllergensScreen) return 'Alérgenos';
     if (_specialScreen is IngredientsScreen) return 'Ingredientes';
     if (_specialScreen is ProfileScreen) return 'Perfil';
