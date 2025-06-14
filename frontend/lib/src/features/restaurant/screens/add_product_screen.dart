@@ -21,7 +21,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   int? _selectedCategoryId;
   bool _available = true;
   bool _isKitchen = true;
-  List<Map<String, Object>> _ingredients = [];
+  final List<Map<String, Object>> _ingredients = [];
 
   @override
   void initState() {
@@ -94,8 +94,9 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
               keyboardType: TextInputType.number,
               validator: (value) {
                 if (value?.isEmpty ?? true) return 'Requerido';
-                if (double.tryParse(value!) == null)
+                if (double.tryParse(value!) == null) {
                   return 'Debe ser un número';
+                }
                 return null;
               },
               fillColor: Colors.white,

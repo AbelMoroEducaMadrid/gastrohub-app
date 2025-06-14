@@ -8,6 +8,7 @@ import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 class ProductNotifier extends StateNotifier<AsyncValue<List<Product>>> {
   final ProductService _productService;
   final String _token;
+  // ignore: unused_field
   final Ref _ref;
 
   ProductNotifier(this._productService, this._token, this._ref)

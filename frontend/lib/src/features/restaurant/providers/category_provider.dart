@@ -8,6 +8,7 @@ import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 class CategoryNotifier extends StateNotifier<AsyncValue<List<Category>>> {
   final CategoryService _categoryService;
   final String _token;
+  // ignore: unused_field
   final Ref _ref;
 
   CategoryNotifier(this._categoryService, this._token, this._ref)

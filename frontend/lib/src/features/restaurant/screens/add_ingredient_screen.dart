@@ -5,6 +5,7 @@ import 'package:gastrohub_app/src/core/widgets/common/custom_dropdown_field.dart
 import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/ingredient_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/unit_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/allergen_provider.dart';
 
 class AddIngredientScreen extends ConsumerStatefulWidget {
   const AddIngredientScreen({super.key});
@@ -23,6 +24,7 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
   int? _selectedUnitId;
   bool _isComposite = false;
   final List<Map<String, dynamic>> _components = [];
+  final List<String> _selectedAttributes = [];
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
           .read(ingredientNotifierProvider.notifier)
           .loadNonCompositeIngredients();
       ref.read(unitNotifierProvider.notifier).loadUnits();
+      ref.read(allergenNotifierProvider.notifier).loadAllergens();
     });
   }
 
@@ -39,6 +42,7 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
   Widget build(BuildContext context) {
     final units = ref.watch(unitNotifierProvider);
     final nonCompositeAsync = ref.watch(nonCompositeIngredientsProvider);
+    final allergens = ref.watch(allergenNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Añadir ingrediente')),
@@ -128,6 +132,26 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => Text('Error: $error'),
               ),
+            const SizedBox(height: 16),
+            const Text('Alérgenos:'),
+            Wrap(
+              spacing: 8.0,
+              children: allergens.map((allergen) {
+                return FilterChip(
+                  label: Text(allergen.name),
+                  selected: _selectedAttributes.contains(allergen.name),
+                  onSelected: (selected) {
+                    setState(() {
+                      if (selected) {
+                        _selectedAttributes.add(allergen.name);
+                      } else {
+                        _selectedAttributes.remove(allergen.name);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+            ),
             ElevatedButton(
               onPressed: _submit,
               child: const Text('Guardar'),
@@ -147,6 +171,7 @@ class _AddIngredientScreenState extends ConsumerState<AddIngredientScreen> {
         'costPerUnit': double.parse(_costPerUnitController.text),
         'minStock': double.parse(_minStockController.text),
         'isComposite': _isComposite,
+        'attributes': _selectedAttributes,
       };
 
       if (_isComposite) {

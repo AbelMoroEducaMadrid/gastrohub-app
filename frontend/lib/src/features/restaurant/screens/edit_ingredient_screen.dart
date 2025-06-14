@@ -6,6 +6,7 @@ import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/ingredient.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/ingredient_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/unit_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/allergen_provider.dart';
 
 class EditIngredientScreen extends ConsumerStatefulWidget {
   final Ingredient ingredient;
@@ -26,6 +27,7 @@ class _EditIngredientScreenState extends ConsumerState<EditIngredientScreen> {
   int? _selectedUnitId;
   bool _isComposite = false;
   List<Map<String, Object>> _components = [];
+  List<String> _selectedAttributes = [];
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _EditIngredientScreenState extends ConsumerState<EditIngredientScreen> {
         TextEditingController(text: widget.ingredient.minStock.toString());
     _selectedUnitId = widget.ingredient.unitId;
     _isComposite = widget.ingredient.isComposite;
+    _selectedAttributes = List.from(widget.ingredient.attributes);
     if (_isComposite) {
       _components = widget.ingredient.components
               ?.map((c) => <String, Object>{
@@ -55,6 +58,7 @@ class _EditIngredientScreenState extends ConsumerState<EditIngredientScreen> {
           .read(ingredientNotifierProvider.notifier)
           .loadNonCompositeIngredients();
       ref.read(unitNotifierProvider.notifier).loadUnits();
+      ref.read(allergenNotifierProvider.notifier).loadAllergens();
     });
   }
 
@@ -62,6 +66,7 @@ class _EditIngredientScreenState extends ConsumerState<EditIngredientScreen> {
   Widget build(BuildContext context) {
     final units = ref.watch(unitNotifierProvider);
     final nonCompositeAsync = ref.watch(nonCompositeIngredientsProvider);
+    final allergens = ref.watch(allergenNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Editar ingrediente')),
@@ -151,6 +156,26 @@ class _EditIngredientScreenState extends ConsumerState<EditIngredientScreen> {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => Text('Error: $error'),
               ),
+            const SizedBox(height: 16),
+            const Text('Alérgenos:'),
+            Wrap(
+              spacing: 8.0,
+              children: allergens.map((allergen) {
+                return FilterChip(
+                  label: Text(allergen.name),
+                  selected: _selectedAttributes.contains(allergen.name),
+                  onSelected: (selected) {
+                    setState(() {
+                      if (selected) {
+                        _selectedAttributes.add(allergen.name);
+                      } else {
+                        _selectedAttributes.remove(allergen.name);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+            ),
             ElevatedButton(
               onPressed: _submit,
               child: const Text('Guardar'),
@@ -170,6 +195,7 @@ class _EditIngredientScreenState extends ConsumerState<EditIngredientScreen> {
         'costPerUnit': double.parse(_costPerUnitController.text),
         'minStock': double.parse(_minStockController.text),
         'isComposite': _isComposite,
+        'attributes': _selectedAttributes,
       };
 
       if (_isComposite) {

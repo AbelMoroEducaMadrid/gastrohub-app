@@ -111,8 +111,9 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
               keyboardType: TextInputType.number,
               validator: (value) {
                 if (value?.isEmpty ?? true) return 'Requerido';
-                if (double.tryParse(value!) == null)
+                if (double.tryParse(value!) == null) {
                   return 'Debe ser un número';
+                }
                 return null;
               },
               fillColor: Colors.white,
