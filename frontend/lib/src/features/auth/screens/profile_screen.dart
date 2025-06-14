@@ -39,12 +39,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final authState = ref.watch(authProvider);
     final user = authState.user!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-      ),
+    return Scaffold(      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -62,6 +57,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 borderColor: Colors.black,
                 cursorColor: Colors.black,
                 placeholderColor: Colors.black54,
+                icon: Icons.person_outline,
               ),
               CustomTextField(
                 label: 'Email',
@@ -74,6 +70,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 borderColor: Colors.black,
                 cursorColor: Colors.black,
                 placeholderColor: Colors.black54,
+                icon: Icons.email_outlined,
               ),
               CustomTextField(
                 label: 'Teléfono',
@@ -86,6 +83,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 borderColor: Colors.black,
                 cursorColor: Colors.black,
                 placeholderColor: Colors.black54,
+                icon: Icons.phone_outlined,
               ),
               ..._isEditing
                   ? [
@@ -108,6 +106,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 borderColor: Colors.black,
                 cursorColor: Colors.black,
                 placeholderColor: Colors.black54,
+                icon: Icons.badge_outlined,
               ),
               CustomTextField(
                 label: 'Restaurante',
@@ -118,6 +117,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 borderColor: Colors.black,
                 cursorColor: Colors.black,
                 placeholderColor: Colors.black54,
+                icon: Icons.restaurant_outlined,
               ),
               const SizedBox(height: 16),
               CustomButton(
