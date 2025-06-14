@@ -32,7 +32,9 @@ public class IngredientCreateDTO {
     @NotNull(message = "isComposite es obligatorio")
     private Boolean isComposite;
 
-    private List<ComponentDTO> components; // Opcional, solo si isComposite es true
+    private List<ComponentDTO> components;
+
+    private List<String> attributes;
 
     @Setter
     @Getter

@@ -16,7 +16,7 @@ import java.util.Set;
 @Service
 public class IngredientService {
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
     private final IngredientRepository ingredientRepository;
     private final RelIngredientIngredientRepository relIngredientIngredientRepository;
 
@@ -58,7 +58,6 @@ public class IngredientService {
         Set<RelIngredientIngredient> components = ingredient.getRelIngredientIngredients();
         ingredient.setRelIngredientIngredients(null);
         Ingredient savedIngredient = ingredientRepository.save(ingredient);
-        System.out.println("Después de guardar el ingrediente, ID: " + savedIngredient.getId());
 
         if (ingredient.getIsComposite() && components != null && !components.isEmpty()) {
             for (RelIngredientIngredient rel : components) {
@@ -67,7 +66,6 @@ public class IngredientService {
                 rel.setId(id);
                 relIngredientIngredientRepository.save(rel);
             }
-
             savedIngredient.setRelIngredientIngredients(components);
         }
 
@@ -85,6 +83,7 @@ public class IngredientService {
         ingredient.setCostPerUnit(ingredientDetails.getCostPerUnit());
         ingredient.setMinStock(ingredientDetails.getMinStock());
         ingredient.setIsComposite(ingredientDetails.getIsComposite());
+        ingredient.setAttributes(ingredientDetails.getAttributes()); // Update attributes
 
         if (ingredient.getIsComposite()) {
             Set<RelIngredientIngredient> newComponents = ingredientDetails.getRelIngredientIngredients();
@@ -93,8 +92,8 @@ public class IngredientService {
             if (newComponents == null || newComponents.isEmpty()) {
                 currentComponents.clear();
             } else {
-                currentComponents.removeIf(rel -> !newComponents.stream()
-                        .anyMatch(newRel -> newRel.getComponentIngredient().getId().equals(rel.getComponentIngredient().getId())));
+                currentComponents.removeIf(rel -> newComponents.stream()
+                        .noneMatch(newRel -> newRel.getComponentIngredient().getId().equals(rel.getComponentIngredient().getId())));
 
                 for (RelIngredientIngredient newRel : newComponents) {
                     RelIngredientIngredient existingRel = currentComponents.stream()

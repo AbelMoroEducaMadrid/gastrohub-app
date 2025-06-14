@@ -4,6 +4,7 @@ import com.abel.gastrohub.ingredient.dto.ComponentAdditionDTO;
 import com.abel.gastrohub.ingredient.dto.IngredientCreateDTO;
 import com.abel.gastrohub.ingredient.dto.IngredientResponseDTO;
 import com.abel.gastrohub.masterdata.MtAttribute;
+import com.abel.gastrohub.masterdata.MtAttributeService;
 import com.abel.gastrohub.masterdata.MtUnit;
 import com.abel.gastrohub.masterdata.MtUnitRepository;
 import jakarta.validation.Valid;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -24,13 +24,16 @@ public class IngredientController {
     private final IngredientService ingredientService;
     private final MtUnitRepository mtUnitRepository;
     private final IngredientRepository ingredientRepository;
+    private final MtAttributeService mtAttributeService;
 
     public IngredientController(IngredientService ingredientService,
                                 MtUnitRepository mtUnitRepository,
-                                IngredientRepository ingredientRepository) {
+                                IngredientRepository ingredientRepository,
+                                MtAttributeService mtAttributeService) {
         this.ingredientService = ingredientService;
         this.mtUnitRepository = mtUnitRepository;
         this.ingredientRepository = ingredientRepository;
+        this.mtAttributeService = mtAttributeService;
     }
 
     @GetMapping
@@ -176,9 +179,11 @@ public class IngredientController {
             ingredient.setRelIngredientIngredients(components);
         }
 
-        System.out.println("Ingrediente padre: " + ingredient.getName());
-        for (RelIngredientIngredient rel : ingredient.getRelIngredientIngredients()) {
-            System.out.println("Componente ID: " + rel.getComponentIngredient().getId() + ", Cantidad: " + rel.getQuantity());
+        if (dto.getAttributes() != null && !dto.getAttributes().isEmpty()) {
+            Set<MtAttribute> attributes = dto.getAttributes().stream()
+                    .map(mtAttributeService::getAttributeByName)
+                    .collect(Collectors.toSet());
+            ingredient.setAttributes(attributes);
         }
 
         return ingredient;
