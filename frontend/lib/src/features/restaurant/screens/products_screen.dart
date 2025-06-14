@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/category.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/product.dart';
@@ -82,9 +83,29 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                           horizontal: 16, vertical: 8),
                       elevation: 2,
                       child: ListTile(
-                        title: Text(
-                          product.name,
-                          style: const TextStyle(color: Colors.black),
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                product.name,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                            Row(
+                              children: product.attributes.map((attr) {
+                                final iconPath =
+                                    'assets/images/allergens/$attr.svg';
+                                return Padding(
+                                  padding: const EdgeInsets.only(left: 4.0),
+                                  child: SvgPicture.asset(
+                                    iconPath,
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

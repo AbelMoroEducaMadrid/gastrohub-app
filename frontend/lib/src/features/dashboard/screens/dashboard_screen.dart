@@ -5,8 +5,6 @@ import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/allergens_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dart';
-import 'package:gastrohub_app/src/features/restaurant/screens/manage_products_screen.dart';
-import 'package:gastrohub_app/src/features/restaurant/screens/menu_view_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/products_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/ingredients_screen.dart';

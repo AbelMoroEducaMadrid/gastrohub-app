@@ -6,6 +6,7 @@ class Product {
   final bool isKitchen;
   final int categoryId;
   final List<ProductIngredient>? ingredients;
+  final List<String> attributes;
 
   Product({
     required this.id,
@@ -15,6 +16,7 @@ class Product {
     required this.isKitchen,
     required this.categoryId,
     this.ingredients,
+    this.attributes = const [],
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,9 @@ class Product {
               .map((ingredient) => ProductIngredient.fromJson(ingredient))
               .toList()
           : null,
+      attributes: json['attributes'] != null
+          ? (json['attributes'] as List).map((attr) => attr as String).toList()
+          : [],
     );
   }
 
@@ -41,6 +46,7 @@ class Product {
       'available': available,
       'isKitchen': isKitchen,
       'ingredients': ingredients?.map((i) => i.toJson()).toList(),
+      'attributes': attributes,
     };
   }
 }
