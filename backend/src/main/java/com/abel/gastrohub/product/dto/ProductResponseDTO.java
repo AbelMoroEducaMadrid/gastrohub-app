@@ -16,6 +16,7 @@ public class ProductResponseDTO {
     private Boolean isKitchen;
     private Integer categoryId;
     private List<IngredientResponseDTO> ingredients;
+    private List<String> attributes;
 
     @Setter
     @Getter
@@ -23,7 +24,5 @@ public class ProductResponseDTO {
         private Integer ingredientId;
         private String ingredientName;
         private BigDecimal quantity;
-
     }
-
 }

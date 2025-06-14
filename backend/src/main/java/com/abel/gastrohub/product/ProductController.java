@@ -2,6 +2,7 @@ package com.abel.gastrohub.product;
 
 import com.abel.gastrohub.ingredient.Ingredient;
 import com.abel.gastrohub.ingredient.IngredientRepository;
+import com.abel.gastrohub.masterdata.MtAttribute;
 import com.abel.gastrohub.masterdata.MtCategory;
 import com.abel.gastrohub.masterdata.MtCategoryRepository;
 import com.abel.gastrohub.product.dto.IngredientAdditionDTO;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -116,6 +118,17 @@ public class ProductController {
         dto.setIngredients(product.getRelProductsIngredients().stream()
                 .map(this::toIngredientResponseDTO)
                 .collect(Collectors.toList()));
+
+        // Collect unique attribute names from ingredients
+        Set<String> attributeNames = new HashSet<>();
+        for (RelProductsIngredient rel : product.getRelProductsIngredients()) {
+            Ingredient ingredient = rel.getIngredient();
+            for (MtAttribute attribute : ingredient.getAttributes()) {
+                attributeNames.add(attribute.getName());
+            }
+        }
+        dto.setAttributes(attributeNames.stream().sorted().collect(Collectors.toList()));
+
         return dto;
     }
 
@@ -139,7 +152,7 @@ public class ProductController {
                                 .orElseThrow(() -> new NoSuchElementException("Ingrediente no encontrado con ID: " + ingDTO.getIngredientId()));
                         rel.setIngredient(ingredient);
                         rel.setQuantity(ingDTO.getQuantity());
-                        rel.setProduct(product); // Establecer la relación bidireccional
+                        rel.setProduct(product);
                         return rel;
                     })
                     .collect(Collectors.toSet());
