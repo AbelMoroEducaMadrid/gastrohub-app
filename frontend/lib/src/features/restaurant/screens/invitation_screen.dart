@@ -34,27 +34,31 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                 'Código de Invitación',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 16),              
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SelectableText(
                     code,
                     style: const TextStyle(
-                        fontSize: 32, letterSpacing: 6, color: Colors.black,fontWeight: FontWeight.bold),
+                        fontSize: 32,
+                        letterSpacing: 6,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     icon: const Icon(Icons.copy),
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: code));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Código copiado al portapapeles')),
+                        const SnackBar(
+                            content: Text('Código copiado al portapapeles')),
                       );
                     },
                   ),
                 ],
               ),
-              const SizedBox(height: 32),              
+              const SizedBox(height: 32),
               Card(
                 elevation: 4,
                 child: Padding(
