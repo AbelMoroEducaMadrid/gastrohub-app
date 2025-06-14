@@ -28,7 +28,13 @@ class _MenuViewScreenState extends ConsumerState<MenuViewScreen> {
     final categoriesAsync = ref.watch(categoryNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Menú')),
+      appBar: AppBar(
+        title: const Text(
+          'Menú',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+      ),
       body: productsAsync.when(
         data: (products) => categoriesAsync.when(
           data: (categories) {
@@ -40,12 +46,21 @@ class _MenuViewScreenState extends ConsumerState<MenuViewScreen> {
                 final category = categorizedProducts.keys.elementAt(index);
                 final categoryProducts = categorizedProducts[category]!;
                 return ExpansionTile(
-                  title: Text(category.name),
+                  title: Text(
+                    category.name,
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                  backgroundColor: Colors.white,
                   children: categoryProducts.map((product) {
                     return ListTile(
-                      title: Text(product.name),
-                      subtitle:
-                          Text('Precio: \$${product.price.toStringAsFixed(2)}'),
+                      title: Text(
+                        product.name,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      subtitle: Text(
+                        'Precio: \$${product.price.toStringAsFixed(2)}',
+                        style: const TextStyle(color: Colors.black54),
+                      ),
                     );
                   }).toList(),
                 );
@@ -53,11 +68,22 @@ class _MenuViewScreenState extends ConsumerState<MenuViewScreen> {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
+          error: (error, stack) => Center(
+            child: Text(
+              'Error: $error',
+              style: const TextStyle(color: Colors.black),
+            ),
+          ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => Center(
+          child: Text(
+            'Error: $error',
+            style: const TextStyle(color: Colors.black),
+          ),
+        ),
       ),
+      backgroundColor: Colors.white,
     );
   }
 

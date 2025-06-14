@@ -56,7 +56,13 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     final ingredientsAsync = ref.watch(nonCompositeIngredientsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Editar Producto')),
+      appBar: AppBar(
+        title: const Text(
+          'Editar Producto',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -66,6 +72,11 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
               label: 'Nombre',
               controller: _nameController,
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+              fillColor: Colors.white,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black54,
             ),
             categoriesAsync.when(
               data: (categories) => CustomDropdownField<int>(
@@ -74,29 +85,55 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                 items: categories.map((category) {
                   return DropdownMenuItem<int>(
                     value: category.id,
-                    child: Text(category.name),
+                    child: Text(
+                      category.name,
+                      style: const TextStyle(color: Colors.black),
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) =>
                     setState(() => _selectedCategoryId = value),
                 validator: (value) => value == null ? 'Requerido' : null,
+                textColor: Colors.black,
+                borderColor: Colors.black,
               ),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stack) => Text('Error: $error'),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(
+                child: Text(
+                  'Error: $error',
+                  style: const TextStyle(color: Colors.black),
+                ),
+              ),
             ),
             CustomTextField(
               label: 'Precio',
               controller: _priceController,
               keyboardType: TextInputType.number,
-              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+              validator: (value) {
+                if (value?.isEmpty ?? true) return 'Requerido';
+                if (double.tryParse(value!) == null)
+                  return 'Debe ser un número';
+                return null;
+              },
+              fillColor: Colors.white,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black54,
             ),
             SwitchListTile(
-              title: const Text('Disponible'),
+              title: const Text(
+                'Disponible',
+                style: TextStyle(color: Colors.black),
+              ),
               value: _available,
               onChanged: (value) => setState(() => _available = value),
             ),
             SwitchListTile(
-              title: const Text('Es de cocina'),
+              title: const Text(
+                'Es de cocina',
+                style: TextStyle(color: Colors.black),
+              ),
               value: _isKitchen,
               onChanged: (value) => setState(() => _isKitchen = value),
             ),
@@ -111,16 +148,26 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                   setState(() => _ingredients.removeAt(index));
                 },
               ),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stack) => Text('Error: $error'),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(
+                child: Text(
+                  'Error: $error',
+                  style: const TextStyle(color: Colors.black),
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: _submit,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
               child: const Text('Guardar'),
             ),
           ],
         ),
       ),
+      backgroundColor: Colors.white,
     );
   }
 

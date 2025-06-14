@@ -31,7 +31,13 @@ class _ManageProductsScreenState extends ConsumerState<ManageProductsScreen> {
     final categoriesAsync = ref.watch(categoryNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Gestionar Productos')),
+      appBar: AppBar(
+        title: const Text(
+          'Gestionar Productos',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+      ),
       body: productsAsync.when(
         data: (products) => categoriesAsync.when(
           data: (categories) {
@@ -43,12 +49,19 @@ class _ManageProductsScreenState extends ConsumerState<ManageProductsScreen> {
                 final category = categorizedProducts.keys.elementAt(index);
                 final categoryProducts = categorizedProducts[category]!;
                 return ExpansionTile(
-                  title: Text(category.name),
+                  title: Text(
+                    category.name,
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                  backgroundColor: Colors.white,
                   children: categoryProducts.map((product) {
                     return ListTile(
-                      title: Text(product.name),
+                      title: Text(
+                        product.name,
+                        style: const TextStyle(color: Colors.black),
+                      ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.edit),
+                        icon: const Icon(Icons.edit, color: Colors.black),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -66,15 +79,27 @@ class _ManageProductsScreenState extends ConsumerState<ManageProductsScreen> {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
+          error: (error, stack) => Center(
+            child: Text(
+              'Error: $error',
+              style: const TextStyle(color: Colors.black),
+            ),
+          ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => Center(
+          child: Text(
+            'Error: $error',
+            style: const TextStyle(color: Colors.black),
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addProduct(context),
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.white,
+        child: const Icon(Icons.add, color: Colors.black),
       ),
+      backgroundColor: Colors.white,
     );
   }
 
