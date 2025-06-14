@@ -5,6 +5,7 @@ import 'package:gastrohub_app/src/features/auth/screens/profile_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/allergens_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/invitation_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/layouts_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/products_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/work_tables_screen.dart';
@@ -273,6 +274,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Navigator.pop(context);
                 },
               ),
+            if (user.role == 'ROLE_OWNER')
+              ListTile(
+                leading: const Icon(Icons.qr_code),
+                title: const Text('Código'),
+                onTap: () {
+                  setState(() {
+                    _isSpecialScreen = true;
+                    _specialScreen = const InvitationScreen();
+                  });
+                  Navigator.pop(context);
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.info),
               title: const Text('Alérgenos'),
@@ -331,6 +344,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (_specialScreen is ProductsScreen) return 'Productos';
     if (_specialScreen is LayoutsScreen) return 'Zonas';
     if (_specialScreen is EmployeesScreen) return 'Empleados';
+    if (_specialScreen is InvitationScreen) return 'Código de Invitación';
     return 'Gastro & Hub';
   }
 }
