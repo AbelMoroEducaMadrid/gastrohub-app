@@ -172,4 +172,19 @@ public class UserService {
         }
         return userRepository.save(user);
     }
+
+    public List<User> getUsersByRestaurantId(Integer restaurantId) {
+        return userRepository.findByRestaurantId(restaurantId);
+    }
+
+    public User updateUserRole(Integer userId, String newRoleName, Integer ownerId) {
+        User owner = getUserById(ownerId);
+        User userToUpdate = getUserById(userId);
+        if (userToUpdate.getRestaurant() == null || !userToUpdate.getRestaurant().getId().equals(owner.getRestaurant().getId())) {
+            throw new IllegalStateException("El usuario no pertenece al restaurante del propietario");
+        }
+        MtRole newRole = getRoleByName(newRoleName);
+        userToUpdate.setRole(newRole);
+        return userRepository.save(userToUpdate);
+    }
 }

@@ -1,11 +1,7 @@
 package com.abel.gastrohub.user;
 
 import com.abel.gastrohub.security.CustomUserDetails;
-import com.abel.gastrohub.user.dto.UserChangePasswordDTO;
-import com.abel.gastrohub.user.dto.UserJoinRestaurantDTO;
-import com.abel.gastrohub.user.dto.UserJoinRestaurantResponseDTO;
-import com.abel.gastrohub.user.dto.UserProfileUpdateDTO;
-import com.abel.gastrohub.user.dto.UserResponseDTO;
+import com.abel.gastrohub.user.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -119,6 +115,33 @@ public class UserController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Integer userId = userDetails.getId();
         User updatedUser = userService.updateProfile(userId, updateDTO);
+        return ResponseEntity.ok(new UserResponseDTO(updatedUser));
+    }
+
+    @GetMapping("/my-restaurant-users")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM','OWNER')")
+    public List<UserResponseDTO> getUsersByCurrentRestaurant() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getId();
+        User currentUser = userService.getUserById(userId);
+        Integer restaurantId = currentUser.getRestaurant() != null ? currentUser.getRestaurant().getId() : null;
+        if (restaurantId == null) {
+            throw new IllegalStateException("El usuario no pertenece a ningún restaurante");
+        }
+        return userService.getUsersByRestaurantId(restaurantId).stream()
+                .map(UserResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @PutMapping("/my-restaurant-users/{userId}/role")
+    @PreAuthorize("hasAnyRole('ADMIN','SYSTEM','OWNER')")
+    public ResponseEntity<UserResponseDTO> updateUserRole(@PathVariable Integer userId,
+                                                          @RequestBody UserRoleUpdateDTO roleUpdateDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer ownerId = userDetails.getId();
+        User updatedUser = userService.updateUserRole(userId, roleUpdateDTO.getRoleName(), ownerId);
         return ResponseEntity.ok(new UserResponseDTO(updatedUser));
     }
 }
