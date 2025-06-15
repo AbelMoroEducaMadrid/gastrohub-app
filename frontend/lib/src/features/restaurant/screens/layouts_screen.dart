@@ -26,13 +26,17 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirmar Eliminación'),
-        content:
-            const Text('¿Estás seguro de que quieres eliminar este layout?'),
+        title: const Text('Confirmar Eliminación',
+            style: TextStyle(color: Colors.black)),
+        content: const Text(
+          '¿Estás seguro de que quieres eliminar este layout?',
+          style: TextStyle(color: Colors.black),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child:
+                const Text('Cancelar', style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () {
@@ -41,7 +45,8 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                   .deleteLayout(layoutId);
               Navigator.pop(context);
             },
-            child: const Text('Eliminar'),
+            child:
+                const Text('Eliminar', style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
@@ -84,7 +89,10 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                             alignment: Alignment.centerLeft,
                             child: Text(
                               layout.name,
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(color: Colors.black),
                             ),
                           ),
                         ),
@@ -137,15 +145,21 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Layout'),
+        title:
+            const Text('Agregar Layout', style: TextStyle(color: Colors.black)),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(labelText: 'Name'),
+          decoration: const InputDecoration(
+            labelText: 'Nombre',
+            labelStyle: TextStyle(color: Colors.black),
+          ),
+          style: const TextStyle(color: Colors.black),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child:
+                const Text('Cancelar', style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () {
@@ -154,7 +168,7 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                   .addLayout(nameController.text);
               Navigator.pop(context);
             },
-            child: const Text('Add'),
+            child: const Text('Agregar', style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
@@ -166,15 +180,21 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Layout'),
+        title:
+            const Text('Editar Layout', style: TextStyle(color: Colors.black)),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(labelText: 'Name'),
+          decoration: const InputDecoration(
+            labelText: 'Nombre',
+            labelStyle: TextStyle(color: Colors.black),
+          ),
+          style: const TextStyle(color: Colors.black),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child:
+                const Text('Cancelar', style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () {
@@ -183,7 +203,7 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                   .updateLayout(layout.id, nameController.text);
               Navigator.pop(context);
             },
-            child: const Text('Save'),
+            child: const Text('Guardar', style: TextStyle(color: Colors.black)),
           ),
         ],
       ),

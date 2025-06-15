@@ -27,26 +27,35 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Editar Mesa'),
+        title: const Text('Editar Mesa', style: TextStyle(color: Colors.black)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: numberController,
-              decoration: const InputDecoration(labelText: 'Número'),
+              decoration: const InputDecoration(
+                labelText: 'Número',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
               keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.black),
             ),
             TextField(
               controller: capacityController,
-              decoration: const InputDecoration(labelText: 'Capacidad'),
+              decoration: const InputDecoration(
+                labelText: 'Capacidad',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
               keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.black),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child:
+                const Text('Cancelar', style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () {
@@ -55,8 +64,11 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               if (number <= 0 || capacity <= 0) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content:
-                          Text('Número y capacidad deben ser mayores a 0')),
+                    content: Text(
+                      'Número y capacidad deben ser mayores a 0',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
                 );
                 return;
               }
@@ -74,7 +86,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                   );
               Navigator.pop(context);
             },
-            child: const Text('Guardar'),
+            child: const Text('Guardar', style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
@@ -86,7 +98,8 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
     final tables = ref.watch(tableNotifierProvider(widget.layoutId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mesas')),
+      appBar: AppBar(
+          title: const Text('Mesas', style: TextStyle(color: Colors.black))),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
@@ -108,11 +121,18 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Mesa ${table.number}',
-                                style: Theme.of(context).textTheme.titleMedium),
+                            Text(
+                              'Mesa ${table.number}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(color: Colors.black),
+                            ),
                             const SizedBox(height: 8),
-                            Text('Capacidad: ${table.capacity}'),
-                            Text('Estado: ${table.state}'),
+                            Text('Capacidad: ${table.capacity}',
+                                style: const TextStyle(color: Colors.black)),
+                            Text('Estado: ${table.state}',
+                                style: const TextStyle(color: Colors.black)),
                           ],
                         ),
                       ),
@@ -154,26 +174,36 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Agregar Mesa'),
+        title:
+            const Text('Agregar Mesa', style: TextStyle(color: Colors.black)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: numberController,
-              decoration: const InputDecoration(labelText: 'Número'),
+              decoration: const InputDecoration(
+                labelText: 'Número',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
               keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.black),
             ),
             TextField(
               controller: capacityController,
-              decoration: const InputDecoration(labelText: 'Capacidad'),
+              decoration: const InputDecoration(
+                labelText: 'Capacidad',
+                labelStyle: TextStyle(color: Colors.black),
+              ),
               keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.black),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child:
+                const Text('Cancelar', style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () {
@@ -182,8 +212,11 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               if (number <= 0 || capacity <= 0) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content:
-                          Text('Número y capacidad deben ser mayores a 0')),
+                    content: Text(
+                      'Número y capacidad deben ser mayores a 0',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
                 );
                 return;
               }
@@ -192,7 +225,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                   .addTable(number, capacity);
               Navigator.pop(context);
             },
-            child: const Text('Agregar'),
+            child: const Text('Agregar', style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
