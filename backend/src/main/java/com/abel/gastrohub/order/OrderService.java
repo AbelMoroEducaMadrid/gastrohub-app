@@ -279,6 +279,7 @@ public class OrderService {
         responseDTO.setItems(items);
 
         BigDecimal total = items.stream()
+                .filter(item -> item.getState() != OrderItemState.cancelada)
                 .map(OrderItemResponseDTO::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         responseDTO.setTotal(total);
