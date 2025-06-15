@@ -34,6 +34,12 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           }).toList(),
         );
       });
+
+      if (_currentOrder.state == 'pendiente' &&
+          _currentOrder.items.any((item) => item.state == 'preparando')) {
+        _updateOrderState('preparando');
+      }
+
       ref.read(orderNotifierProvider.notifier).loadOrders();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -47,7 +53,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       final body = {'newState': newState};
       final updatedOrder = await ref
           .read(orderServiceProvider)
-          .updateOrderState(ref.read(authProvider).token ?? '', _currentOrder.id, body);
+          .updateOrderState(
+              ref.read(authProvider).token ?? '', _currentOrder.id, body);
       setState(() {
         _currentOrder = updatedOrder;
       });
@@ -67,7 +74,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       };
       final updatedOrder = await ref
           .read(orderServiceProvider)
-          .updateOrderPayment(ref.read(authProvider).token ?? '', _currentOrder.id, body);
+          .updateOrderPayment(
+              ref.read(authProvider).token ?? '', _currentOrder.id, body);
       setState(() {
         _currentOrder = updatedOrder;
       });
@@ -82,7 +90,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   Future<void> _confirmCancelOrder() async {
     if (_currentOrder.state == 'servida') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se puede cancelar una comanda servida')),
+        const SnackBar(
+            content: Text('No se puede cancelar una comanda servida')),
       );
       return;
     }
@@ -90,7 +99,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirmar cancelación'),
-        content: const Text('¿Estás seguro de que quieres cancelar esta comanda?'),
+        content:
+            const Text('¿Estás seguro de que quieres cancelar esta comanda?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -111,7 +121,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   Future<void> _confirmCancelItem(OrderItem item) async {
     if (item.state == 'listo') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se puede cancelar un ítem que ya está listo')),
+        const SnackBar(
+            content: Text('No se puede cancelar un ítem que ya está listo')),
       );
       return;
     }
@@ -138,7 +149,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   }
 
   bool _canMarkAsServida() {
-    return _currentOrder.items.every((item) => item.state == 'listo' || item.state == 'cancelada');
+    return _currentOrder.items
+        .every((item) => item.state == 'listo' || item.state == 'cancelada');
   }
 
   Color _getOrderCardColor() {
@@ -156,22 +168,29 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   }
 
   Widget? _buildFab() {
-    switch (_currentOrder.state) {
-      case 'pendiente':
-        return FloatingActionButton(
-          onPressed: () => _updateOrderState('preparando'),
-          backgroundColor: Colors.orange,
-          child: const Icon(Icons.play_arrow, color: Colors.white),
-        );
-      case 'preparando':
-        return FloatingActionButton(
-          onPressed: _canMarkAsServida() ? () => _updateOrderState('servida') : null,
-          backgroundColor: Colors.green,
-          child: const Icon(Icons.check, color: Colors.white),
-        );
-      default:
-        return null;
+    final userRole = ref.read(authProvider).user?.role;
+
+    const allowedRoles = [
+      'ROLE_WAITER',
+      'ROLE_MANAGER',
+      'ROLE_OWNER',
+      'ROLE_ADMIN'
+    ];
+
+    if (!allowedRoles.contains(userRole)) {
+      return null;
     }
+
+    if (_currentOrder.state == 'preparando') {
+      final canMarkAsServida = _canMarkAsServida();
+      return FloatingActionButton(
+        onPressed: canMarkAsServida ? () => _updateOrderState('servida') : null,
+        backgroundColor: canMarkAsServida ? Colors.green : Colors.grey,
+        child: const Icon(Icons.check, color: Colors.white),
+      );
+    }
+
+    return null;
   }
 
   List<Widget> _buildItemActionButtons(OrderItem item) {
@@ -273,21 +292,30 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       children: [
                         Text(
                           'Mesa: ${_currentOrder.tableNumber ?? 'Barra'}${_currentOrder.urgent ? ' (Urgente)' : ''}',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black),
                         ),
-                        Text('Estado: ${_currentOrder.state}', style: const TextStyle(color: Colors.black)),
-                        Text('Pago: ${_currentOrder.paymentState} - ${_currentOrder.paymentMethod}', style: const TextStyle(color: Colors.black)),
+                        Text('Estado: ${_currentOrder.state}',
+                            style: const TextStyle(color: Colors.black)),
+                        Text(
+                            'Pago: ${_currentOrder.paymentState} - ${_currentOrder.paymentMethod}',
+                            style: const TextStyle(color: Colors.black)),
                         if (_currentOrder.notes != null)
-                          Text('Notas: ${_currentOrder.notes}', style: const TextStyle(color: Colors.black)),
-                        if (_currentOrder.state == 'servida' && _currentOrder.paymentState != 'completado')
+                          Text('Notas: ${_currentOrder.notes}',
+                              style: const TextStyle(color: Colors.black)),
+                        if (_currentOrder.state == 'servida' &&
+                            _currentOrder.paymentState != 'completado')
                           ElevatedButton(
-                            onPressed: () => _updatePayment('completado', 'efectivo'),
-                            child: const Text('Marcar como Pagado (Efectivo)', style: TextStyle(color: Colors.black)),
+                            onPressed: () =>
+                                _updatePayment('completado', 'efectivo'),
+                            child: const Text('Marcar como Pagado (Efectivo)',
+                                style: TextStyle(color: Colors.black)),
                           ),
                       ],
                     ),
                   ),
-                  if (_currentOrder.state != 'servida' && _currentOrder.state != 'cancelada')
+                  if (_currentOrder.state != 'servida' &&
+                      _currentOrder.state != 'cancelada')
                     IconButton(
                       icon: const Icon(Icons.cancel, color: Colors.red),
                       onPressed: () => _confirmCancelOrder(),
@@ -316,17 +344,23 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       item.productName,
-                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black),
                                     ),
-                                    if (item.notes != null && item.notes!.isNotEmpty)
-                                      Text('${item.notes}', style: const TextStyle(color: Colors.black)),
+                                    if (item.notes != null &&
+                                        item.notes!.isNotEmpty)
+                                      Text('${item.notes}',
+                                          style: const TextStyle(
+                                              color: Colors.black)),
                                   ],
                                 ),
                               ),
