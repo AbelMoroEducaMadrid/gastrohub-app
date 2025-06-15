@@ -25,7 +25,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController =
-      TextEditingController(); // Controlador para descripción
+      TextEditingController();
   final _priceController = TextEditingController();
   int? _selectedCategoryId;
   bool _available = true;
@@ -127,7 +127,60 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
-          children: [
+          children: [            
+            GestureDetector(
+              onTap: _pickImageSource,
+              child: Center(
+                child: _imagePreviewBytes == null
+                    ? Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.grey[200],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.camera_alt,
+                                size: 50, color: Colors.black45),
+                            SizedBox(height: 8),
+                            Text(
+                              'Añadir foto',
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.memory(
+                          _imagePreviewBytes!,
+                          width: 150,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+            
+            if (_imagePreviewBytes != null)
+              Center(
+                child: TextButton.icon(
+                  onPressed: _pickImageSource,
+                  icon: const Icon(Icons.edit, color: Colors.black),
+                  label: const Text(
+                    'Cambiar foto',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 16),
+
             CustomTextField(
               label: 'Nombre',
               controller: _nameController,
@@ -227,25 +280,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _pickImageSource,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-              ),
-              child: const Text('Seleccionar Imagen'),
-            ),
-            const SizedBox(height: 16),
-            if (_imagePreviewBytes != null)
-              Center(
-                child: Image.memory(
-                  _imagePreviewBytes!,
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            const SizedBox(height: 16),
+
             ElevatedButton(
               onPressed: _submit,
               style: ElevatedButton.styleFrom(
