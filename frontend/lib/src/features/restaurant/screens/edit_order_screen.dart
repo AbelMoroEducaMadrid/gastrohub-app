@@ -5,6 +5,7 @@ import 'package:gastrohub_app/src/features/auth/models/order.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/layout.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/table.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/table_order_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/order_provider.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
@@ -233,8 +234,15 @@ class _EditOrderScreenState extends ConsumerState<EditOrderScreen> {
       };
       ref
           .read(orderNotifierProvider.notifier)
-          .updateOrder(widget.order.id, body);
-      Navigator.pop(context);
+          .updateOrder(widget.order.id, body)
+          .then((_) {
+        final tableId =
+            _isBar ? null : (_selectedTableId ?? widget.order.tableId);
+        if (tableId != null) {
+          ref.read(tableOrderNotifierProvider(tableId).notifier).loadOrders();
+        }
+        Navigator.pop(context);
+      });
     }
   }
 }

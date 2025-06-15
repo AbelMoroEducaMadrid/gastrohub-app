@@ -4,6 +4,7 @@ import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/layout.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/table.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/providers/table_order_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/order_provider.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
@@ -80,10 +81,8 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
         _selectedLayoutId = widget.preselectedLayoutId;
       });
 
-      // Cargar las mesas y esperar a que termine
       await _loadTables(widget.preselectedLayoutId!);
 
-      // Verificar si _tables está vacía
       if (_tables.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -93,7 +92,6 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
         return;
       }
 
-      // Buscar la mesa preseleccionada
       final selectedTable = _tables.firstWhere(
         (table) => table.id == widget.preselectedTableId,
         orElse: () => RestaurantTable(
@@ -249,8 +247,14 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
                 })
             .toList(),
       };
-      ref.read(orderNotifierProvider.notifier).addOrder(body);
-      Navigator.pop(context);
+      ref.read(orderNotifierProvider.notifier).addOrder(body).then((_) {
+        if (_selectedTableId != null) {
+          ref
+              .read(tableOrderNotifierProvider(_selectedTableId!).notifier)
+              .loadOrders();
+        }
+        Navigator.pop(context);
+      });
     }
   }
 }
