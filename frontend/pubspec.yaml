@@ -25,6 +25,9 @@ dependencies:
   qr_flutter: ^4.0.0
   awesome_snackbar_content: ^0.1.6
   mobile_scanner: ^7.0.1
+  image_picker: ^1.0.7         
+  image_cropper: ^9.1.0        
+  flutter_image_compress: ^2.1.0
 
 dev_dependencies:
   flutter_test:

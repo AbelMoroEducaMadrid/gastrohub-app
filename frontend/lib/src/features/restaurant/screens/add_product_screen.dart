@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
@@ -6,6 +9,10 @@ import 'package:gastrohub_app/src/core/widgets/common/component_selector.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/product_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/category_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/ingredient_provider.dart';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class AddProductScreen extends ConsumerStatefulWidget {
   const AddProductScreen({super.key});
@@ -23,6 +30,9 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   bool _isKitchen = true;
   final List<Map<String, Object>> _ingredients = [];
 
+  String? _imageBase64;
+  Uint8List? _imagePreviewBytes;
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +40,71 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
       ref
           .read(ingredientNotifierProvider.notifier)
           .loadNonCompositeIngredients();
+    });
+  }
+
+  Future<void> _pickImageSource() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Galería'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _pickAndProcessImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Cámara'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _pickAndProcessImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickAndProcessImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile == null) return;
+
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: pickedFile.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      compressFormat: ImageCompressFormat.jpg,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Recorta la imagen',
+          lockAspectRatio: true,
+        ),
+        IOSUiSettings(title: 'Recorta la imagen'),
+      ],
+    );
+
+    if (croppedFile == null) return;
+
+    final compressedBytes = await FlutterImageCompress.compressWithFile(
+      croppedFile.path,
+      quality: 60,
+      minWidth: 200,
+      minHeight: 200,
+      format: CompressFormat.jpeg,
+    );
+
+    if (compressedBytes == null) return;
+
+    setState(() {
+      _imageBase64 = base64Encode(compressedBytes);
+      _imagePreviewBytes = Uint8List.fromList(compressedBytes);
     });
   }
 
@@ -140,6 +215,26 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _pickImageSource,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+              child: const Text('Seleccionar Imagen'),
+            ),
+            const SizedBox(height: 16),
+            if (_imagePreviewBytes != null)
+              Center(
+                child: Image.memory(
+                  _imagePreviewBytes!,
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _submit,
               style: ElevatedButton.styleFrom(
@@ -169,6 +264,8 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                   'quantity': i['quantity'] as Object,
                 })
             .toList(),
+        // TODO - añadir la imagen base64
+        //'imageBase64': _imageBase64 ?? null,
       };
       ref.read(productNotifierProvider.notifier).addProduct(body);
       Navigator.pop(context);
