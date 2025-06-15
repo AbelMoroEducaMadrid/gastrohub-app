@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
 import 'package:gastrohub_app/src/features/auth/models/order.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/order_provider.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
@@ -153,20 +154,6 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         .every((item) => item.state == 'listo' || item.state == 'cancelada');
   }
 
-  Color _getOrderCardColor() {
-    if (_currentOrder.paymentState == 'completado') {
-      return Colors.blue.shade100;
-    }
-    switch (_currentOrder.state) {
-      case 'servida':
-        return Colors.green.shade100;
-      case 'cancelada':
-        return Colors.red.shade100;
-      default:
-        return Colors.white;
-    }
-  }
-
   Widget? _buildFab() {
     final userRole = ref.read(authProvider).user?.role;
 
@@ -272,15 +259,28 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Comanda #${_currentOrder.id}',
-            style: const TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Comanda #${_currentOrder.id} - Mesa: ${_currentOrder.tableNumber ?? 'Barra'}',
+                style: const TextStyle(color: Colors.black),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (_currentOrder.urgent)
+              const Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Icon(Icons.notification_important, color: Colors.red),
+              ),
+          ],
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Card(
-            color: _getOrderCardColor(),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -290,34 +290,64 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Mesa: ${_currentOrder.tableNumber ?? 'Barra'}${_currentOrder.urgent ? ' (Urgente)' : ''}',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
+                        Row(
+                          children: [
+                            const Icon(Icons.info_outline, color: Colors.black),
+                            const SizedBox(width: 8),
+                            Text(_currentOrder.state.toUpperCase(),
+                                style: const TextStyle(color: Colors.black)),
+                          ],
                         ),
-                        Text('Estado: ${_currentOrder.state}',
-                            style: const TextStyle(color: Colors.black)),
-                        Text(
-                            'Pago: ${_currentOrder.paymentState} - ${_currentOrder.paymentMethod}',
-                            style: const TextStyle(color: Colors.black)),
-                        if (_currentOrder.notes != null)
-                          Text('Notas: ${_currentOrder.notes}',
-                              style: const TextStyle(color: Colors.black)),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.payment_outlined,
+                                color: Colors.black),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${_currentOrder.paymentState} - ${_currentOrder.paymentMethod}',
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        if (_currentOrder.notes != null && _currentOrder.notes!.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(Icons.note_outlined,
+                                  color: Colors.black),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  '${_currentOrder.notes}',
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         if (_currentOrder.state == 'servida' &&
-                            _currentOrder.paymentState != 'completado')
-                          ElevatedButton(
+                            _currentOrder.paymentState != 'completado') ...[
+                          const SizedBox(height: 12),
+                          CustomButton(
                             onPressed: () =>
                                 _updatePayment('completado', 'efectivo'),
-                            child: const Text('Marcar como Pagado (Efectivo)',
-                                style: TextStyle(color: Colors.black)),
+                            text: 'Pagado (Efectivo)',
+                            iconData: Icons.payments_outlined,
                           ),
+                        ],
                       ],
                     ),
                   ),
-                  if (_currentOrder.state != 'servida' &&
+                  if (_currentOrder.paymentState == 'completado')
+                    const Icon(Icons.paid,
+                        color: Colors.green, size: 40)
+                  else if (_currentOrder.state != 'servida' &&
                       _currentOrder.state != 'cancelada')
                     IconButton(
-                      icon: const Icon(Icons.cancel, color: Colors.red),
+                      icon:
+                          const Icon(Icons.cancel, color: Colors.red, size: 40),
                       onPressed: () => _confirmCancelOrder(),
                       tooltip: 'Cancelar comanda',
                     ),
