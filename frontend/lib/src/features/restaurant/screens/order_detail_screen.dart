@@ -44,7 +44,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 
   Future<void> _updateOrderState(String newState) async {
     try {
-      final body = {'state': newState};
+      final body = {'newState': newState};
       final updatedOrder = await ref
           .read(orderServiceProvider)
           .updateOrderState(
@@ -81,6 +81,171 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     }
   }
 
+  Future<void> _confirmCancelOrder() async {
+    if (_currentOrder.state == 'servida') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('No se puede cancelar una comanda servida')),
+      );
+      return;
+    }
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar cancelación'),
+        content:
+            const Text('¿Estás seguro de que quieres cancelar esta comanda?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Sí'),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      _updateOrderState('cancelada');
+    }
+  }
+
+  Future<void> _confirmCancelItem(OrderItem item) async {
+    if (item.state == 'listo') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('No se puede cancelar un ítem que ya está listo')),
+      );
+      return;
+    }
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar cancelación'),
+        content: const Text('¿Estás seguro de que quieres cancelar este ítem?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Sí'),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      _updateItemState(item.id!, 'cancelada');
+    }
+  }
+
+  bool _canMarkAsServida() {
+    return _currentOrder.items
+        .every((item) => item.state == 'listo' || item.state == 'cancelada');
+  }
+
+  Widget _buildOrderActionButtons() {
+    switch (_currentOrder.state) {
+      case 'pendiente':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.play_arrow, color: Colors.orange),
+              onPressed: () => _updateOrderState('preparando'),
+              tooltip: 'Iniciar preparación',
+            ),
+            IconButton(
+              icon: const Icon(Icons.cancel, color: Colors.red),
+              onPressed: () => _confirmCancelOrder(),
+              tooltip: 'Cancelar comanda',
+            ),
+          ],
+        );
+      case 'preparando':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.check, color: Colors.green),
+              onPressed: _canMarkAsServida()
+                  ? () => _updateOrderState('servida')
+                  : null,
+              tooltip: 'Marcar como servida',
+            ),
+            IconButton(
+              icon: const Icon(Icons.cancel, color: Colors.red),
+              onPressed: () => _confirmCancelOrder(),
+              tooltip: 'Cancelar comanda',
+            ),
+          ],
+        );
+      case 'servida':
+      case 'cancelada':
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildItemActionButtons(OrderItem item) {
+    switch (item.state ?? 'pendiente') {
+      case 'pendiente':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.play_arrow, color: Colors.orange),
+              onPressed: () => _updateItemState(item.id!, 'preparando'),
+              tooltip: 'Iniciar preparación',
+            ),
+            IconButton(
+              icon: const Icon(Icons.cancel, color: Colors.red),
+              onPressed: () => _confirmCancelItem(item),
+              tooltip: 'Cancelar ítem',
+            ),
+          ],
+        );
+      case 'preparando':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.check, color: Colors.green),
+              onPressed: () => _updateItemState(item.id!, 'listo'),
+              tooltip: 'Marcar como listo',
+            ),
+            IconButton(
+              icon: const Icon(Icons.cancel, color: Colors.red),
+              onPressed: () => _confirmCancelItem(item),
+              tooltip: 'Cancelar ítem',
+            ),
+          ],
+        );
+      case 'listo':
+      case 'cancelada':
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Icon _getStateIcon(String? state) {
+    switch (state ?? 'pendiente') {
+      case 'pendiente':
+        return const Icon(Icons.hourglass_empty, color: Colors.grey);
+      case 'preparando':
+        return const Icon(Icons.autorenew, color: Colors.orange);
+      case 'listo':
+        return const Icon(Icons.check_circle, color: Colors.green);
+      case 'cancelada':
+        return const Icon(Icons.cancel, color: Colors.red);
+      default:
+        return const Icon(Icons.help, color: Colors.black);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,55 +272,37 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   if (_currentOrder.notes != null)
                     Text('Notas: ${_currentOrder.notes}'),
                   const SizedBox(height: 10),
-                  DropdownButton<String>(
-                    value: _currentOrder.state,
-                    items: ['pendiente', 'preparando', 'servida', 'cancelada']
-                        .map((state) => DropdownMenuItem(
-                              value: state,
-                              child: Text(state.toUpperCase()),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null && value != _currentOrder.state) {
-                        _updateOrderState(value);
-                      }
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Acciones:'),
+                      _buildOrderActionButtons(),
+                    ],
                   ),
                   ElevatedButton(
-                    onPressed: () => _updatePayment('completado', 'efectivo'),
+                    onPressed: _currentOrder.state == 'servida'
+                        ? () => _updatePayment('completado', 'efectivo')
+                        : null,
                     child: const Text('Marcar como Pagado (Efectivo)'),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 10),          
+          const SizedBox(height: 10),
           ..._currentOrder.items.map((item) {
             return Card(
               child: ListTile(
+                leading: _getStateIcon(item.state),
                 title: Text(item.productName),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Estado: ${item.state ?? 'pending'}'),
                     Text('Cantidad: ${item.quantity}'),
                     if (item.notes != null) Text('Notas: ${item.notes}'),
                   ],
                 ),
-                trailing: DropdownButton<String>(
-                  value: item.state ?? 'pending',
-                  items: ['pendiente', 'preparando', 'listo', 'cancelado']
-                      .map((state) => DropdownMenuItem(
-                            value: state,
-                            child: Text(state.toUpperCase()),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null && value != item.state) {
-                      _updateItemState(item.id!, value);
-                    }
-                  },
-                ),
+                trailing: _buildItemActionButtons(item),
               ),
             );
           }),

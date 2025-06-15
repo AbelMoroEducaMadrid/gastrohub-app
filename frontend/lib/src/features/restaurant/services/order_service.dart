@@ -69,7 +69,7 @@ class OrderService {
     }
   }
 
-   Future<void> updateOrderItemState(
+  Future<void> updateOrderItemState(
       String token, int orderId, int itemId, Map<String, dynamic> body) async {
     final url = Uri.parse('$baseUrl/api/orders/$orderId/items/$itemId/state');
     final response = await http.patch(
