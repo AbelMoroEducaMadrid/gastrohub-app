@@ -128,6 +128,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 iconData: Icons.exit_to_app_outlined,
                 iconPosition: IconPosition.right,
               ),
+              const SizedBox(height: 16),
+              CustomButton(
+                onPressed: _logout,
+                text: 'Cerrar sesión',
+                iconData: Icons.logout_outlined,
+                iconPosition: IconPosition.right,
+              ),
             ],
           ),
         ),
@@ -141,6 +148,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: Icon(_isEditing ? Icons.close : Icons.edit),
       ),
     );
+  }
+
+  void _logout() async {
+    ref.read(authProvider.notifier).logout();
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   void _updateProfile() async {
