@@ -47,8 +47,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       final body = {'newState': newState};
       final updatedOrder = await ref
           .read(orderServiceProvider)
-          .updateOrderState(
-              ref.read(authProvider).token ?? '', _currentOrder.id, body);
+          .updateOrderState(ref.read(authProvider).token ?? '', _currentOrder.id, body);
       setState(() {
         _currentOrder = updatedOrder;
       });
@@ -68,8 +67,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       };
       final updatedOrder = await ref
           .read(orderServiceProvider)
-          .updateOrderPayment(
-              ref.read(authProvider).token ?? '', _currentOrder.id, body);
+          .updateOrderPayment(ref.read(authProvider).token ?? '', _currentOrder.id, body);
       setState(() {
         _currentOrder = updatedOrder;
       });
@@ -84,8 +82,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   Future<void> _confirmCancelOrder() async {
     if (_currentOrder.state == 'servida') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('No se puede cancelar una comanda servida')),
+        const SnackBar(content: Text('No se puede cancelar una comanda servida')),
       );
       return;
     }
@@ -93,8 +90,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirmar cancelación'),
-        content:
-            const Text('¿Estás seguro de que quieres cancelar esta comanda?'),
+        content: const Text('¿Estás seguro de que quieres cancelar esta comanda?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -115,8 +111,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   Future<void> _confirmCancelItem(OrderItem item) async {
     if (item.state == 'listo') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('No se puede cancelar un ítem que ya está listo')),
+        const SnackBar(content: Text('No se puede cancelar un ítem que ya está listo')),
       );
       return;
     }
@@ -143,92 +138,100 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   }
 
   bool _canMarkAsServida() {
-    return _currentOrder.items
-        .every((item) => item.state == 'listo' || item.state == 'cancelada');
+    return _currentOrder.items.every((item) => item.state == 'listo' || item.state == 'cancelada');
   }
 
-  Widget _buildOrderActionButtons() {
+  Color _getOrderCardColor() {
+    if (_currentOrder.paymentState == 'completado') {
+      return Colors.blue.shade100;
+    }
+    switch (_currentOrder.state) {
+      case 'servida':
+        return Colors.green.shade100;
+      case 'cancelada':
+        return Colors.red.shade100;
+      default:
+        return Colors.white;
+    }
+  }
+
+  Widget? _buildFab() {
     switch (_currentOrder.state) {
       case 'pendiente':
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.play_arrow, color: Colors.orange),
-              onPressed: () => _updateOrderState('preparando'),
-              tooltip: 'Iniciar preparación',
-            ),
-            IconButton(
-              icon: const Icon(Icons.cancel, color: Colors.red),
-              onPressed: () => _confirmCancelOrder(),
-              tooltip: 'Cancelar comanda',
-            ),
-          ],
+        return FloatingActionButton(
+          onPressed: () => _updateOrderState('preparando'),
+          backgroundColor: Colors.orange,
+          child: const Icon(Icons.play_arrow, color: Colors.white),
         );
       case 'preparando':
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.check, color: Colors.green),
-              onPressed: _canMarkAsServida()
-                  ? () => _updateOrderState('servida')
-                  : null,
-              tooltip: 'Marcar como servida',
-            ),
-            IconButton(
-              icon: const Icon(Icons.cancel, color: Colors.red),
-              onPressed: () => _confirmCancelOrder(),
-              tooltip: 'Cancelar comanda',
-            ),
-          ],
+        return FloatingActionButton(
+          onPressed: _canMarkAsServida() ? () => _updateOrderState('servida') : null,
+          backgroundColor: Colors.green,
+          child: const Icon(Icons.check, color: Colors.white),
         );
-      case 'servida':
-      case 'cancelada':
       default:
-        return const SizedBox.shrink();
+        return null;
     }
   }
 
-  Widget _buildItemActionButtons(OrderItem item) {
+  List<Widget> _buildItemActionButtons(OrderItem item) {
+    List<Widget> buttons = [];
     switch (item.state ?? 'pendiente') {
       case 'pendiente':
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.play_arrow, color: Colors.orange),
-              onPressed: () => _updateItemState(item.id!, 'preparando'),
-              tooltip: 'Iniciar preparación',
+        buttons.add(
+          Container(
+            width: 50,
+            height: double.infinity,
+            color: Colors.orange,
+            child: GestureDetector(
+              onTap: () => _updateItemState(item.id!, 'preparando'),
+              child: const Center(
+                  child: Icon(Icons.play_arrow_outlined,
+                      color: Colors.white, size: 30)),
             ),
-            IconButton(
-              icon: const Icon(Icons.cancel, color: Colors.red),
-              onPressed: () => _confirmCancelItem(item),
-              tooltip: 'Cancelar ítem',
-            ),
-          ],
+          ),
         );
+        break;
       case 'preparando':
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.check, color: Colors.green),
-              onPressed: () => _updateItemState(item.id!, 'listo'),
-              tooltip: 'Marcar como listo',
+        buttons.add(
+          Container(
+            width: 50,
+            height: double.infinity,
+            color: Colors.green,
+            child: GestureDetector(
+              onTap: () => _updateItemState(item.id!, 'listo'),
+              child: const Center(
+                  child: Icon(Icons.check, color: Colors.white, size: 30)),
             ),
-            IconButton(
-              icon: const Icon(Icons.cancel, color: Colors.red),
-              onPressed: () => _confirmCancelItem(item),
-              tooltip: 'Cancelar ítem',
-            ),
-          ],
+          ),
         );
-      case 'listo':
-      case 'cancelada':
-      default:
-        return const SizedBox.shrink();
+        break;
     }
+
+    if (item.state != 'listo' && item.state != 'cancelada') {
+      buttons.add(
+        ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(12),
+            bottomRight: Radius.circular(12),
+          ),
+          child: Container(
+            width: 50,
+            height: double.infinity,
+            color: Colors.red,
+            child: GestureDetector(
+              onTap: () => _confirmCancelItem(item),
+              child: const Center(
+                child:
+                    Icon(Icons.cancel_outlined, color: Colors.white, size: 30),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return buttons;
   }
 
   Icon _getStateIcon(String? state) {
@@ -258,33 +261,38 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           Card(
+            color: _getOrderCardColor(),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                      'Mesa: ${_currentOrder.tableNumber ?? 'Barra'}${_currentOrder.urgent ? ' (Urgente)' : ''}',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text('Estado: ${_currentOrder.state}'),
-                  Text(
-                      'Pago: ${_currentOrder.paymentState} - ${_currentOrder.paymentMethod}'),
-                  if (_currentOrder.notes != null)
-                    Text('Notas: ${_currentOrder.notes}'),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Acciones:'),
-                      _buildOrderActionButtons(),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Mesa: ${_currentOrder.tableNumber ?? 'Barra'}${_currentOrder.urgent ? ' (Urgente)' : ''}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                        Text('Estado: ${_currentOrder.state}', style: const TextStyle(color: Colors.black)),
+                        Text('Pago: ${_currentOrder.paymentState} - ${_currentOrder.paymentMethod}', style: const TextStyle(color: Colors.black)),
+                        if (_currentOrder.notes != null)
+                          Text('Notas: ${_currentOrder.notes}', style: const TextStyle(color: Colors.black)),
+                        if (_currentOrder.state == 'servida' && _currentOrder.paymentState != 'completado')
+                          ElevatedButton(
+                            onPressed: () => _updatePayment('completado', 'efectivo'),
+                            child: const Text('Marcar como Pagado (Efectivo)', style: TextStyle(color: Colors.black)),
+                          ),
+                      ],
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: _currentOrder.state == 'servida'
-                        ? () => _updatePayment('completado', 'efectivo')
-                        : null,
-                    child: const Text('Marcar como Pagado (Efectivo)'),
-                  ),
+                  if (_currentOrder.state != 'servida' && _currentOrder.state != 'cancelada')
+                    IconButton(
+                      icon: const Icon(Icons.cancel, color: Colors.red),
+                      onPressed: () => _confirmCancelOrder(),
+                      tooltip: 'Cancelar comanda',
+                    ),
                 ],
               ),
             ),
@@ -292,23 +300,62 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           const SizedBox(height: 10),
           ..._currentOrder.items.map((item) {
             return Card(
-              child: ListTile(
-                leading: _getStateIcon(item.state),
-                title: Text(item.productName),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              color: _getCardColor(item.state),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Cantidad: ${item.quantity}'),
-                    if (item.notes != null) Text('Notas: ${item.notes}'),
+                    Expanded(
+                      child: Container(
+                        constraints: const BoxConstraints(minHeight: 80),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: _getStateIcon(item.state),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      item.productName,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                    ),
+                                    if (item.notes != null && item.notes!.isNotEmpty)
+                                      Text('${item.notes}', style: const TextStyle(color: Colors.black)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ..._buildItemActionButtons(item),
                   ],
                 ),
-                trailing: _buildItemActionButtons(item),
               ),
             );
           }),
         ],
       ),
+      floatingActionButton: _buildFab(),
     );
+  }
+}
+
+Color _getCardColor(String? state) {
+  switch (state) {
+    case 'listo':
+      return Colors.green.shade100;
+    case 'cancelada':
+      return Colors.red.shade100;
+    default:
+      return Colors.white;
   }
 }
 
