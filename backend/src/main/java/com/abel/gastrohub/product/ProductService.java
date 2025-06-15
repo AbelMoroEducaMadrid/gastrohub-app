@@ -77,6 +77,8 @@ public class ProductService {
     public Product updateProduct(Integer id, Product productDetails) {
         Product product = getProductById(id);
         product.setName(productDetails.getName());
+        product.setDescription(productDetails.getDescription());
+        product.setImageBase64(productDetails.getImageBase64());
         product.setCategory(productDetails.getCategory());
         product.setAvailable(productDetails.getAvailable());
         product.setIsKitchen(productDetails.getIsKitchen());
