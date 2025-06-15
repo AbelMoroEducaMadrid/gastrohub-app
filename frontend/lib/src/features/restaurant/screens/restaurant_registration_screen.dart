@@ -1,7 +1,9 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gastrohub_app/src/core/utils/logger.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/payment_plan.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/services/restaurant_service.dart';
@@ -54,8 +56,11 @@ class _RestaurantRegistrationScreenState
 
       final authState = ref.read(authProvider);
       if (authState.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(authState.error!)),
+        SnackbarUtils.showAwesomeSnackbar(
+          context: context,
+          title: 'Error de autenticación',
+          message: authState.error!,
+          contentType: ContentType.failure,
         );
       } else {
         Navigator.of(context).pushNamedAndRemoveUntil(

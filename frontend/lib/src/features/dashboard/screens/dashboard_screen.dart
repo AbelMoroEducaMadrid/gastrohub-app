@@ -1,5 +1,7 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/auth/screens/profile_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
@@ -207,10 +209,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   });
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -234,10 +237,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   });
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -257,10 +261,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   _onItemTapped(0);
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -284,10 +289,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   });
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -312,10 +318,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   });
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -339,10 +346,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   });
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -366,10 +374,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   });
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -393,10 +402,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   });
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -420,10 +430,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   });
                   Navigator.pop(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'No tienes permisos para acceder a esta pantalla')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },
@@ -443,9 +454,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ref.read(authProvider.notifier).logout();
                   Navigator.of(context).pushReplacementNamed('/login');
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('No tienes permisos para cerrar sesión')),
+                  SnackbarUtils.showAwesomeSnackbar(
+                    context: context,
+                    title: 'Acceso denegado',
+                    message: 'No tienes permisos para acceder a esta pantalla',
+                    contentType: ContentType.failure,
                   );
                 }
               },

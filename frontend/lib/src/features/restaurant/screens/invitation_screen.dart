@@ -1,5 +1,7 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/services.dart'; // Para copiar al portapapeles
 import 'package:gastrohub_app/src/features/restaurant/providers/invitation_provider.dart';
@@ -50,9 +52,11 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                     icon: const Icon(Icons.copy),
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: code));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Código copiado al portapapeles')),
+                      SnackbarUtils.showAwesomeSnackbar(
+                        context: context,
+                        title: 'Éxito',
+                        message: 'Código copiado al portapapeles',
+                        contentType: ContentType.success,
                       );
                     },
                   ),

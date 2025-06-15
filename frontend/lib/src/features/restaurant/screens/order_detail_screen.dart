@@ -1,5 +1,7 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
 import 'package:gastrohub_app/src/features/auth/models/order.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/order_provider.dart';
@@ -43,8 +45,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 
       ref.read(orderNotifierProvider.notifier).loadOrders();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al actualizar estado del ítem: $e')),
+      SnackbarUtils.showAwesomeSnackbar(
+        context: context,
+        title: 'Error',
+        message: 'Error al actualizar estado del ítem: $e',
+        contentType: ContentType.failure,
       );
     }
   }
@@ -61,8 +66,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       });
       ref.read(orderNotifierProvider.notifier).loadOrders();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al actualizar estado de la comanda: $e')),
+      SnackbarUtils.showAwesomeSnackbar(
+        context: context,
+        title: 'Error',
+        message: 'Error al actualizar estado de la comanda: $e',
+        contentType: ContentType.failure,
       );
     }
   }
@@ -82,18 +90,25 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       });
       ref.read(orderNotifierProvider.notifier).loadOrders();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al actualizar pago: $e')),
-      );
+SnackbarUtils.showAwesomeSnackbar(
+  context: context,
+  title: 'Error',
+  message: 'Error al actualizar pago: $e',
+  contentType: ContentType.failure,
+);
+
     }
   }
 
   Future<void> _confirmCancelOrder() async {
     if (_currentOrder.state == 'servida') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('No se puede cancelar una comanda servida')),
-      );
+SnackbarUtils.showAwesomeSnackbar(
+  context: context,
+  title: 'Advertencia',
+  message: 'No se puede cancelar una comanda servida',
+  contentType: ContentType.warning,
+);
+
       return;
     }
     final confirm = await showDialog<bool>(
@@ -121,10 +136,13 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 
   Future<void> _confirmCancelItem(OrderItem item) async {
     if (item.state == 'listo') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('No se puede cancelar un ítem que ya está listo')),
-      );
+SnackbarUtils.showAwesomeSnackbar(
+  context: context,
+  title: 'Advertencia',
+  message: 'No se puede cancelar un ítem que ya está listo',
+  contentType: ContentType.warning,
+);
+
       return;
     }
     final confirm = await showDialog<bool>(

@@ -1,5 +1,7 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/table.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
@@ -67,13 +69,11 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               final number = int.tryParse(numberController.text) ?? 0;
               final capacity = int.tryParse(capacityController.text) ?? 0;
               if (number <= 0 || capacity <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Número y capacidad deben ser mayores a 0',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
+                SnackbarUtils.showAwesomeSnackbar(
+                  context: context,
+                  title: 'Campos inválidos',
+                  message: 'Número y capacidad deben ser mayores a 0',
+                  contentType: ContentType.warning,
                 );
                 return;
               }
@@ -242,14 +242,13 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               final number = int.tryParse(numberController.text) ?? 0;
               final capacity = int.tryParse(capacityController.text) ?? 0;
               if (number <= 0 || capacity <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Número y capacidad deben ser mayores a 0',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
+                SnackbarUtils.showAwesomeSnackbar(
+                  context: context,
+                  title: 'Campos inválidos',
+                  message: 'Número y capacidad deben ser mayores a 0',
+                  contentType: ContentType.warning,
                 );
+
                 return;
               }
               ref

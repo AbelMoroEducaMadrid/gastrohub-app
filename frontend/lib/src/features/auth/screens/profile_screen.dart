@@ -1,6 +1,8 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gastrohub_app/src/core/utils/logger.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/exceptions/api_exception.dart';
@@ -39,7 +41,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final authState = ref.watch(authProvider);
     final user = authState.user!;
 
-    return Scaffold(      
+    return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -157,19 +159,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         setState(() {
           _isEditing = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perfil actualizado con éxito')),
+        SnackbarUtils.showAwesomeSnackbar(
+          context: context,
+          title: 'Éxito',
+          message: 'Perfil actualizado con éxito',
+          contentType: ContentType.success,
         );
       } catch (e) {
         if (e is ApiException) {
           AppLogger.error('Error al actualizar perfil: ${e.message}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${e.message}')),
+          SnackbarUtils.showAwesomeSnackbar(
+            context: context,
+            title: 'Error',
+            message: 'Error: ${e.message}',
+            contentType: ContentType.failure,
           );
         } else {
           AppLogger.error('Error inesperado: $e');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error inesperado')),
+          SnackbarUtils.showAwesomeSnackbar(
+            context: context,
+            title: 'Error',
+            message: 'Error inesperado',
+            contentType: ContentType.failure,
           );
         }
       }
@@ -186,13 +197,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     } catch (e) {
       if (e is ApiException) {
         AppLogger.error('Error al abandonar restaurante: ${e.message}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.message}')),
+        SnackbarUtils.showAwesomeSnackbar(
+          context: context,
+          title: 'Error',
+          message: 'Error: ${e.message}',
+          contentType: ContentType.failure,
         );
       } else {
         AppLogger.error('Error inesperado: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error inesperado')),
+        SnackbarUtils.showAwesomeSnackbar(
+          context: context,
+          title: 'Error',
+          message: 'Error inesperado',
+          contentType: ContentType.failure,
         );
       }
     }

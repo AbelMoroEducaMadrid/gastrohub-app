@@ -1,6 +1,8 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/utils/dialog_utils.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
@@ -62,8 +64,11 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   void _scanQRCode() {
     // TODO: Implementar lógica para escanear QR code en el futuro
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Escaneo de QR code no implementado aún')),
+    SnackbarUtils.showAwesomeSnackbar(
+      context: context,
+      title: 'Información',
+      message: 'Escaneo de QR code no implementado aún',
+      contentType: ContentType.help,
     );
   }
 
@@ -168,31 +173,12 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
             children: [
               GestureDetector(
                 onTap: () {
-                  showDialog(
+                  SnackbarUtils.showAwesomeSnackbar(
                     context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title:
-                            const Text('¿Qué es el código de establecimiento?'),
-                        content: Text(
-                          'Es un código único que te permite unirte a un establecimiento específico. Pídelo a tu gerente o dueño.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.black54,
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text(
-                              'Cerrar',
-                              style: TextStyle(
-                                color: AppTheme.secondaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                    title: 'Información',
+                    message:
+                        'Pide el código a un dueño de local.',
+                    contentType: ContentType.help,
                   );
                 },
                 child: Icon(

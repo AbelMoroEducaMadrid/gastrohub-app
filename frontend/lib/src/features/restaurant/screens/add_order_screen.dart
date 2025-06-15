@@ -1,5 +1,7 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/layout.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/table.dart';
@@ -84,11 +86,13 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
       await _loadTables(widget.preselectedLayoutId!);
 
       if (_tables.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content:
-                  Text('No se encontraron mesas para el layout seleccionado')),
+        SnackbarUtils.showAwesomeSnackbar(
+          context: context,
+          title: 'Aviso',
+          message: 'No se encontraron mesas para el layout seleccionado',
+          contentType: ContentType.warning,
         );
+
         return;
       }
 
@@ -104,8 +108,11 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
       );
 
       if (selectedTable.id == -1) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Mesa preseleccionada no encontrada')),
+        SnackbarUtils.showAwesomeSnackbar(
+          context: context,
+          title: 'Aviso',
+          message: 'Mesa preseleccionada no encontrada',
+          contentType: ContentType.warning,
         );
       } else {
         setState(() {
@@ -227,10 +234,13 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
       if (_items.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('No se puede crear una comanda sin productos')),
+        SnackbarUtils.showAwesomeSnackbar(
+          context: context,
+          title: 'Advertencia',
+          message: 'No se puede crear una comanda sin productos',
+          contentType: ContentType.warning,
         );
+
         return;
       }
       final restaurantId = ref.read(authProvider).user!.restaurantId!;
