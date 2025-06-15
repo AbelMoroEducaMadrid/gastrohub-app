@@ -182,33 +182,47 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 
   List<Widget> _buildItemActionButtons(OrderItem item) {
     List<Widget> buttons = [];
+
+    Widget buildActionButton({
+      required Color color,
+      required IconData icon,
+      required VoidCallback onTap,
+      BorderRadius? borderRadius,
+    }) {
+      return ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        child: Material(
+          color: color,
+          child: InkWell(
+            onTap: onTap,
+            child: SizedBox(
+              width: 50,
+              height: double.infinity,
+              child: Center(
+                child: Icon(icon, color: Colors.white, size: 30),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     switch (item.state ?? 'pendiente') {
       case 'pendiente':
         buttons.add(
-          Container(
-            width: 50,
-            height: double.infinity,
+          buildActionButton(
             color: Colors.orange,
-            child: GestureDetector(
-              onTap: () => _updateItemState(item.id!, 'preparando'),
-              child: const Center(
-                  child: Icon(Icons.play_arrow_outlined,
-                      color: Colors.white, size: 30)),
-            ),
+            icon: Icons.play_arrow_outlined,
+            onTap: () => _updateItemState(item.id!, 'preparando'),
           ),
         );
         break;
       case 'preparando':
         buttons.add(
-          Container(
-            width: 50,
-            height: double.infinity,
+          buildActionButton(
             color: Colors.green,
-            child: GestureDetector(
-              onTap: () => _updateItemState(item.id!, 'listo'),
-              child: const Center(
-                  child: Icon(Icons.check, color: Colors.white, size: 30)),
-            ),
+            icon: Icons.check,
+            onTap: () => _updateItemState(item.id!, 'listo'),
           ),
         );
         break;
@@ -216,22 +230,13 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 
     if (item.state != 'listo' && item.state != 'cancelada') {
       buttons.add(
-        ClipRRect(
+        buildActionButton(
+          color: Colors.red,
+          icon: Icons.cancel_outlined,
+          onTap: () => _confirmCancelItem(item),
           borderRadius: const BorderRadius.only(
             topRight: Radius.circular(12),
             bottomRight: Radius.circular(12),
-          ),
-          child: Container(
-            width: 50,
-            height: double.infinity,
-            color: Colors.red,
-            child: GestureDetector(
-              onTap: () => _confirmCancelItem(item),
-              child: const Center(
-                child:
-                    Icon(Icons.cancel_outlined, color: Colors.white, size: 30),
-              ),
-            ),
           ),
         ),
       );

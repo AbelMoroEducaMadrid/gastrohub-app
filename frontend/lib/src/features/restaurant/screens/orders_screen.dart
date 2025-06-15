@@ -186,24 +186,24 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                               ),
                             ),
                             if (canEdit)
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(12),
-                                  bottomRight: Radius.circular(12),
-                                ),
-                                child: Container(
-                                  width: 50,
-                                  color: Colors.blue,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              EditOrderScreen(order: order),
-                                        ),
-                                      );
-                                    },
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditOrderScreen(order: order),
+                                    ),
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(12),
+                                    bottomRight: Radius.circular(12),
+                                  ),
+                                  child: Container(
+                                    width: 50,
+                                    color: Colors.blue,
                                     child: const Center(
                                       child: Icon(Icons.edit_outlined,
                                           color: Colors.white, size: 30),
