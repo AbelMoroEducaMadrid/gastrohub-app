@@ -21,9 +21,9 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = -1;
   String _role = '';
-  bool _isSpecialScreen = false;
+  bool _isSpecialScreen = true;
   Widget? _specialScreen;
 
   @override
@@ -33,6 +33,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (authState.user != null) {
       _role = authState.user!.role;
       _loadInitialData(authState.user!.restaurantId!, _role);
+      _specialScreen = const ProfileScreen();
     }
   }
 
@@ -40,7 +41,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ref.read(layoutNotifierProvider(restaurantId).notifier).loadLayouts();
   }
 
-  // Función para verificar permisos según el rol y la pantalla
   bool hasPermission(String role, String screen) {
     if (role == 'ROLE_ADMIN' || role == 'ROLE_SYSTEM') return true;
     switch (screen) {
@@ -63,7 +63,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
   }
 
-  // Botones inferiores según el rol
   List<BottomNavigationBarItem> _getBottomNavItems(String role) {
     if (role == 'ROLE_USER') {
       return [];
@@ -147,6 +146,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               setState(() {
                 _isSpecialScreen = true;
                 _specialScreen = const ProfileScreen();
+                _selectedIndex = -1;
               });
             },
           ),
@@ -203,6 +203,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const ProfileScreen();
+                    _selectedIndex = -1;
                   });
                   Navigator.pop(context);
                 } else {
@@ -229,6 +230,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const ProductsScreen();
+                    _selectedIndex = 2;
                   });
                   Navigator.pop(context);
                 } else {
@@ -278,6 +280,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const OrdersScreen();
+                    _selectedIndex = 1;
                   });
                   Navigator.pop(context);
                 } else {
@@ -305,6 +308,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     _isSpecialScreen = true;
                     _specialScreen =
                         LayoutsScreen(restaurantId: user.restaurantId!);
+                    _selectedIndex = -1;
                   });
                   Navigator.pop(context);
                 } else {
@@ -331,6 +335,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const IngredientsScreen();
+                    _selectedIndex = -1;
                   });
                   Navigator.pop(context);
                 } else {
@@ -357,6 +362,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const EmployeesScreen();
+                    _selectedIndex = -1;
                   });
                   Navigator.pop(context);
                 } else {
@@ -383,6 +389,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const InvitationScreen();
+                    _selectedIndex = -1;
                   });
                   Navigator.pop(context);
                 } else {
@@ -409,6 +416,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const AllergensScreen();
+                    _selectedIndex = -1;
                   });
                   Navigator.pop(context);
                 } else {
@@ -449,7 +457,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       bottomNavigationBar: bottomNavItems.isNotEmpty
           ? BottomNavigationBar(
               items: bottomNavItems,
-              currentIndex: _selectedIndex,
+              currentIndex: _selectedIndex == -1 ? 0 : _selectedIndex,
               selectedItemColor: Theme.of(context).primaryColor,
               onTap: _onItemTapped,
             )
