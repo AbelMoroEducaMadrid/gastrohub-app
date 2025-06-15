@@ -310,7 +310,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             ),
                           ],
                         ),
-                        if (_currentOrder.notes != null && _currentOrder.notes!.isNotEmpty) ...[
+                        if (_currentOrder.notes != null &&
+                            _currentOrder.notes!.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,22 +328,36 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             ],
                           ),
                         ],
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.paid_outlined,
+                                color: Colors.black),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${_currentOrder.total.toStringAsFixed(2)} €',
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
                         if (_currentOrder.state == 'servida' &&
                             _currentOrder.paymentState != 'completado') ...[
                           const SizedBox(height: 12),
-                          CustomButton(
-                            onPressed: () =>
-                                _updatePayment('completado', 'efectivo'),
-                            text: 'Pagado (Efectivo)',
-                            iconData: Icons.payments_outlined,
+                          SizedBox(
+                            width: double.infinity,
+                            child: CustomButton(
+                              onPressed: () =>
+                                  _updatePayment('completado', 'efectivo'),
+                              text: 'Pagar (Efectivo)',
+                              iconData: Icons.payments_outlined,
+                            ),
                           ),
                         ],
                       ],
                     ),
                   ),
                   if (_currentOrder.paymentState == 'completado')
-                    const Icon(Icons.paid,
-                        color: Colors.green, size: 40)
+                    const Icon(Icons.paid, color: Colors.green, size: 40)
                   else if (_currentOrder.state != 'servida' &&
                       _currentOrder.state != 'cancelada')
                     IconButton(
