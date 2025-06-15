@@ -18,3 +18,4 @@ backend/.env
 frontend/.env.local
 backend/database/playground.sql
 frontend/key.properties
+frontend/my-release-key.jks
