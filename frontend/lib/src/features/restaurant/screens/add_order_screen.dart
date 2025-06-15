@@ -195,11 +195,11 @@ class OrderItemSelector extends StatelessWidget {
   final Function(int) onRemoveItem;
 
   const OrderItemSelector({
-    Key? key,
+    super.key,
     required this.items,
     required this.onAddItem,
     required this.onRemoveItem,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
