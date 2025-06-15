@@ -29,6 +29,15 @@ class TableNotifier extends StateNotifier<List<RestaurantTable>> {
       AppLogger.error('Failed to add table: $e');
     }
   }
+
+  Future<void> updateTable(int id, RestaurantTable updatedTable) async {
+  try {
+    final table = await _tableService.updateTable(_token, id, updatedTable);
+    state = state.map((t) => t.id == id ? table : t).toList();
+  } catch (e) {
+    AppLogger.error('Failed to update table: $e');
+  }
+}
 }
 
 final tableNotifierProvider =

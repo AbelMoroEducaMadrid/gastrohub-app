@@ -29,8 +29,8 @@ class TableService {
     }
   }
 
-  Future<RestaurantTable> createTable(String token, int layoutId, int number,
-      int capacity) async {
+  Future<RestaurantTable> createTable(
+      String token, int layoutId, int number, int capacity) async {
     final url = Uri.parse('$baseUrl/api/tables');
     final response = await http.post(
       url,
@@ -41,12 +41,34 @@ class TableService {
       body: jsonEncode({
         'layoutId': layoutId,
         'number': number,
-        'capacity': capacity,        
+        'capacity': capacity,
       }),
     );
     AppLogger.debug('POST /api/tables - Status: ${response.statusCode}');
     AppLogger.debug('Response body: ${response.body}');
     if (response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      return RestaurantTable.fromJson(data);
+    } else {
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
+    }
+  }
+
+  Future<RestaurantTable> updateTable(
+      String token, int id, RestaurantTable table) async {
+    final url = Uri.parse('$baseUrl/api/tables/$id');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(table.toJson()),
+    );
+    AppLogger.debug('PUT /api/tables/$id - Status: ${response.statusCode}');
+    AppLogger.debug('Response body: ${response.body}');
+    if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return RestaurantTable.fromJson(data);
     } else {
