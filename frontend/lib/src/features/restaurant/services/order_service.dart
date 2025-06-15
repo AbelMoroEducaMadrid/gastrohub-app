@@ -68,4 +68,64 @@ class OrderService {
       throw ApiException(error['title']!, error['message']!);
     }
   }
+
+   Future<void> updateOrderItemState(
+      String token, int orderId, int itemId, Map<String, dynamic> body) async {
+    final url = Uri.parse('$baseUrl/api/orders/$orderId/items/$itemId/state');
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode != 200) {
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
+    }
+  }
+
+  Future<Order> updateOrderState(
+      String token, int orderId, Map<String, dynamic> body) async {
+    final url = Uri.parse('$baseUrl/api/orders/$orderId/state');
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return Order.fromJson(data);
+    } else {
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
+    }
+  }
+
+  Future<Order> updateOrderPayment(
+      String token, int orderId, Map<String, dynamic> body) async {
+    final url = Uri.parse('$baseUrl/api/orders/$orderId/payment');
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return Order.fromJson(data);
+    } else {
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
+    }
+  }
 }

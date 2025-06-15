@@ -5,6 +5,7 @@ import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/order_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/add_order_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/edit_order_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/order_detail_screen.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
@@ -112,6 +113,15 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                               },
                             )
                           : null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OrderDetailScreen(order: order),
+                          ),
+                        );
+                      },
                     ),
                   );
                 }).toList(),
