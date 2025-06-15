@@ -236,6 +236,41 @@ public class OrderService {
         return relOrdersProductRepository.save(item);
     }
 
+    @Transactional
+    public OrderResponseDTO updateOrderPayment(Integer orderId, UpdatePaymentDTO paymentDTO) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException("Comanda no encontrada con ID: " + orderId));
+        if (!order.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
+            throw new SecurityException("No autorizado para actualizar esta comanda");
+        }
+
+        if (paymentDTO.getPaymentState() != null) {
+            order.setPaymentState(paymentDTO.getPaymentState());
+        }
+        if (paymentDTO.getPaymentMethod() != null) {
+            order.setPaymentMethod(paymentDTO.getPaymentMethod());
+        }
+
+        Order updatedOrder = orderRepository.save(order);
+        return mapToResponseDTO(updatedOrder);
+    }
+
+    @Transactional
+    public OrderResponseDTO updateOrderState(Integer orderId, UpdateOrderStateDTO stateDTO) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException("Comanda no encontrada con ID: " + orderId));
+        if (!order.getRestaurant().getId().equals(getCurrentUserRestaurantId())) {
+            throw new SecurityException("No autorizado para actualizar esta comanda");
+        }
+
+        if (stateDTO.getNewState() != null) {
+            order.setState(stateDTO.getNewState());
+        }
+
+        Order updatedOrder = orderRepository.save(order);
+        return mapToResponseDTO(updatedOrder);
+    }
+
     private OrderResponseDTO mapToResponseDTO(Order order) {
         OrderResponseDTO responseDTO = new OrderResponseDTO(order);
         List<OrderItemResponseDTO> items = relOrdersProductRepository.findByOrderId(order.getId()).stream()

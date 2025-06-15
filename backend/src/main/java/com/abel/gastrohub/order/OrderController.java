@@ -100,4 +100,22 @@ public class OrderController {
         OrderItemResponseDTO responseDTO = new OrderItemResponseDTO(item);
         return ResponseEntity.ok(responseDTO);
     }
+
+    @PatchMapping("/{orderId}/payment")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
+    public ResponseEntity<OrderResponseDTO> updateOrderPayment(
+            @PathVariable Integer orderId,
+            @RequestBody UpdatePaymentDTO paymentDTO) {
+        OrderResponseDTO updatedOrder = orderService.updateOrderPayment(orderId, paymentDTO);
+        return ResponseEntity.ok(updatedOrder);
+    }
+
+    @PatchMapping("/{orderId}/state")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER', 'MANAGER', 'WAITER')")
+    public ResponseEntity<OrderResponseDTO> updateOrderState(
+            @PathVariable Integer orderId,
+            @RequestBody UpdateOrderStateDTO stateDTO) {
+        OrderResponseDTO updatedOrder = orderService.updateOrderState(orderId, stateDTO);
+        return ResponseEntity.ok(updatedOrder);
+    }
 }
