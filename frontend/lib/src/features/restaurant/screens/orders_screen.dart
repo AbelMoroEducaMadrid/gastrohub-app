@@ -30,6 +30,21 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
     });
   }
 
+  Icon _getStateIcon(String? state) {
+    switch (state ?? 'pendiente') {
+      case 'pendiente':
+        return const Icon(Icons.hourglass_empty, color: Colors.grey);
+      case 'preparando':
+        return const Icon(Icons.autorenew, color: Colors.orange);
+      case 'servida':
+        return const Icon(Icons.check_circle, color: Colors.green);
+      case 'cancelada':
+        return const Icon(Icons.cancel, color: Colors.red);
+      default:
+        return const Icon(Icons.help, color: Colors.black);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -70,49 +85,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                     margin:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     elevation: 2,
-                    child: ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Comanda #${order.id} - ${order.tableNumber != null ? 'Mesa ${order.tableNumber}' : 'Barra'}',
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                          if (order.urgent)
-                            const Icon(Icons.notification_important,
-                                color: Colors.red),
-                        ],
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Estado: ${order.state.toUpperCase()}',
-                              style: const TextStyle(color: Colors.black54)),
-                          Text('Pago: ${order.paymentState}',
-                              style: const TextStyle(color: Colors.black54)),
-                          Text('Total: ${order.total.toStringAsFixed(2)} €',
-                              style: const TextStyle(color: Colors.black54)),
-                          Text('Items: ${order.items.length}',
-                              style: const TextStyle(color: Colors.black54)),
-                          if (order.notes != null)
-                            Text('Notas: ${order.notes}',
-                                style: const TextStyle(color: Colors.black54)),
-                        ],
-                      ),
-                      trailing: canEdit
-                          ? IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.black),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditOrderScreen(order: order),
-                                  ),
-                                );
-                              },
-                            )
-                          : null,
+                    child: InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
@@ -122,6 +95,125 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                           ),
                         );
                       },
+                      child: IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        _getStateIcon(order.state),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            'Comanda #${order.id} - ${order.tableNumber != null ? 'Mesa ${order.tableNumber}' : 'Barra'}',
+                                            style: const TextStyle(
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                        if (order.urgent)
+                                          const Padding(
+                                            padding: EdgeInsets.only(left: 8),
+                                            child: Icon(
+                                                Icons.notification_important,
+                                                color: Colors.red),
+                                          ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.payment_outlined,
+                                                color: Colors.black),
+                                            const SizedBox(width: 4),
+                                            Text(order.paymentState,
+                                                style: const TextStyle(
+                                                    color: Colors.black54)),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.fastfood_outlined,
+                                                color: Colors.black),
+                                            const SizedBox(width: 4),
+                                            Text('${order.items.length}',
+                                                style: const TextStyle(
+                                                    color: Colors.black54)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.paid_outlined,
+                                            color: Colors.black),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                            '${order.total.toStringAsFixed(2)} €',
+                                            style: const TextStyle(
+                                                color: Colors.black54)),
+                                      ],
+                                    ),
+                                    if (order.notes != null &&
+                                        order.notes!.isNotEmpty) ...[
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Icon(Icons.note_outlined,
+                                              color: Colors.black),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text('${order.notes}',
+                                                style: const TextStyle(
+                                                    color: Colors.black54)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (canEdit)
+                              ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(12),
+                                  bottomRight: Radius.circular(12),
+                                ),
+                                child: Container(
+                                  width: 50,
+                                  color: Colors.blue,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditOrderScreen(order: order),
+                                        ),
+                                      );
+                                    },
+                                    child: const Center(
+                                      child: Icon(Icons.edit_outlined,
+                                          color: Colors.white, size: 30),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 }).toList(),
