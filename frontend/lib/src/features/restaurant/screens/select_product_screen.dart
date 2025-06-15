@@ -5,11 +5,22 @@ import 'package:gastrohub_app/src/features/restaurant/models/category.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/product.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/product_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/category_provider.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class SelectProductScreen extends ConsumerWidget {
   final Function(Product, int, String) onSelect;
 
   const SelectProductScreen({super.key, required this.onSelect});
+
+  Uint8List? _base64ToUint8List(String? base64String) {
+    if (base64String == null) return null;
+    try {
+      return base64Decode(base64String);
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,60 +44,103 @@ class SelectProductScreen extends ConsumerWidget {
                 final category = categorizedProducts.keys.elementAt(index);
                 final categoryProducts = categorizedProducts[category]!;
                 return ExpansionTile(
-                  title: Text(category.name,
-                      style: const TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold)),
+                  title: Text(
+                    category.name,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  backgroundColor: Colors.grey[100],
+                  collapsedBackgroundColor: Colors.grey[200],
                   children: categoryProducts.map((product) {
-                    String ingredientsText = '';
-                    if (product.ingredients != null &&
-                        product.ingredients!.length > 1) {
-                      ingredientsText =
-                          'ING: ${product.ingredients!.map((i) => i.ingredientName.toLowerCase()).join(', ')}';
-                    }
-                    return ListTile(
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: Text(product.name,
-                                style: const TextStyle(color: Colors.black)),
-                          ),
-                          Row(
-                            children: product.attributes.map((attr) {
-                              final iconPath =
-                                  'assets/images/allergens/$attr.svg';
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 4.0),
-                                child: SvgPicture.asset(iconPath,
-                                    width: 24, height: 24),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (ingredientsText.isNotEmpty)
-                            Text(ingredientsText,
-                                style: const TextStyle(
-                                    color: Colors.black87, fontSize: 14)),
-                          const SizedBox(height: 4),
-                          Row(
+                    return GestureDetector(
+                      onTap: () => _showQuantityDialog(context, product),
+                      child: Card(
+                        color: Colors.white,
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        elevation: 2,
+                        child: SizedBox(
+                          height: 100,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text('${product.price.toStringAsFixed(2)} €',
-                                  style:
-                                      const TextStyle(color: Colors.black54)),
-                              if (!product.available)
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 18.0),
-                                  child: Text('AGOTADO',
-                                      style: TextStyle(color: Colors.red)),
+                              ClipRRect(
+                                borderRadius: const BorderRadius.horizontal(
+                                    left: Radius.circular(12)),
+                                child: product.imageBase64 != null
+                                    ? Image.memory(
+                                        _base64ToUint8List(
+                                            product.imageBase64)!,
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Container(
+                                        width: 100,
+                                        height: 100,
+                                        color: Colors.grey[800],
+                                        child: const Icon(
+                                            Icons.image_not_supported,
+                                            color: Colors.white,
+                                            size: 40),
+                                      ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0, vertical: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        product.name,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children:
+                                            product.attributes.map((attr) {
+                                          final iconPath =
+                                              'assets/images/allergens/$attr.svg';
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 4.0),
+                                            child: SvgPicture.asset(iconPath,
+                                                width: 24, height: 24),
+                                          );
+                                        }).toList(),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${product.price.toStringAsFixed(2)} €',
+                                        style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      if (!product.available)
+                                        const Padding(
+                                          padding: EdgeInsets.only(top: 4.0),
+                                          child: Text(
+                                            'AGOTADO',
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
+                              ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                      onTap: () => _showQuantityDialog(context, product),
                     );
                   }).toList(),
                 );
