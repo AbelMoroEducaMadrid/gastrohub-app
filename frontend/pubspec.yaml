@@ -24,6 +24,7 @@ dependencies:
   flex_color_scheme: ^8.2.0
   qr_flutter: ^4.0.0
   awesome_snackbar_content: ^0.1.6
+  mobile_scanner: ^7.0.1
 
 dev_dependencies:
   flutter_test:

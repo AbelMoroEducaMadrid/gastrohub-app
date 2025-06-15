@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +12,7 @@ import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/core/widgets/forms/form_container.dart';
+import 'package:gastrohub_app/src/features/auth/screens/qr_scanner_screen.dart';
 
 class WelcomeScreen extends ConsumerStatefulWidget {
   const WelcomeScreen({super.key});
@@ -62,14 +66,28 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     }
   }
 
-  void _scanQRCode() {
-    // TODO: Implementar lógica para escanear QR code en el futuro
-    SnackbarUtils.showAwesomeSnackbar(
-      context: context,
-      title: 'Información',
-      message: 'Escaneo de QR code no implementado aún',
-      contentType: ContentType.help,
-    );
+  void _scanQRCode() async {
+    if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) {
+      SnackbarUtils.showAwesomeSnackbar(
+        context: context,
+        title: 'Información',
+        message: 'El escaneo de QR solo está disponible en Android/iOS',
+        contentType: ContentType.help,
+      );
+    } else {
+      final result = await Navigator.of(context).push<String>(
+        MaterialPageRoute(builder: (_) => const QRScannerScreen()),
+      );
+      if (result != null && result.isNotEmpty) {
+        codeController.text = result;
+        SnackbarUtils.showAwesomeSnackbar(
+          context: context,
+          title: 'Código escaneado',
+          message: 'Se ha rellenado el código automáticamente.',
+          contentType: ContentType.success,
+        );
+      }
+    }
   }
 
   @override
@@ -176,8 +194,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                   SnackbarUtils.showAwesomeSnackbar(
                     context: context,
                     title: 'Información',
-                    message:
-                        'Pide el código a un dueño de local.',
+                    message: 'Pide el código a un dueño de local.',
                     contentType: ContentType.help,
                   );
                 },
