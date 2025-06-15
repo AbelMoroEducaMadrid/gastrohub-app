@@ -25,6 +25,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
     final user = ref.read(authProvider).user!;
     _nameController = TextEditingController(text: user.name);
     _emailController = TextEditingController(text: user.email);
@@ -34,99 +38,121 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         TextEditingController(text: user.restaurantName ?? 'No asignado');
   }
 
+  Future<void> _refreshUserData() async {
+    final authNotifier = ref.read(authProvider.notifier);
+    final token = ref.read(authProvider).token;
+    if (token != null) {
+      try {
+        final updatedUser = await authNotifier.getUserData(token);
+        authNotifier.updateUser(updatedUser);
+        _initializeControllers();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Perfil actualizado')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al actualizar datos: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final user = authState.user!;
 
-    return Scaffold(      
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              CustomTextField(
-                label: 'Nombre',
-                controller: _nameController,
-                enabled: _isEditing,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Requerido' : null,
-                fillColor: Colors.white,
-                textColor: Colors.black,
-                borderColor: Colors.black,
-                cursorColor: Colors.black,
-                placeholderColor: Colors.black54,
-                icon: Icons.person_outline,
-              ),
-              CustomTextField(
-                label: 'Email',
-                controller: _emailController,
-                enabled: _isEditing,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Requerido' : null,
-                fillColor: Colors.white,
-                textColor: Colors.black,
-                borderColor: Colors.black,
-                cursorColor: Colors.black,
-                placeholderColor: Colors.black54,
-                icon: Icons.email_outlined,
-              ),
-              CustomTextField(
-                label: 'Teléfono',
-                controller: _phoneController,
-                enabled: _isEditing,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Requerido' : null,
-                fillColor: Colors.white,
-                textColor: Colors.black,
-                borderColor: Colors.black,
-                cursorColor: Colors.black,
-                placeholderColor: Colors.black54,
-                icon: Icons.phone_outlined,
-              ),
-              ..._isEditing
-                  ? [
-                      const SizedBox(height: 16),
-                      CustomButton(
-                        onPressed: _updateProfile,
-                        text: 'Guardar cambios',
-                        iconData: Icons.save_outlined,
-                        iconPosition: IconPosition.right,
-                      ),
-                      const SizedBox(height: 16),
-                    ]
-                  : [],
-              CustomTextField(
-                label: 'Rol',
-                controller: _roleController,
-                enabled: false,
-                fillColor: Colors.white,
-                textColor: Colors.black,
-                borderColor: Colors.black,
-                cursorColor: Colors.black,
-                placeholderColor: Colors.black54,
-                icon: Icons.badge_outlined,
-              ),
-              CustomTextField(
-                label: 'Restaurante',
-                controller: _restaurantController,
-                enabled: false,
-                fillColor: Colors.white,
-                textColor: Colors.black,
-                borderColor: Colors.black,
-                cursorColor: Colors.black,
-                placeholderColor: Colors.black54,
-                icon: Icons.restaurant_outlined,
-              ),
-              const SizedBox(height: 16),
-              CustomButton(
-                onPressed: _leaveRestaurant,
-                text: 'Abandonar restaurante',
-                iconData: Icons.exit_to_app_outlined,
-                iconPosition: IconPosition.right,
-              ),
-            ],
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: _refreshUserData,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                CustomTextField(
+                  label: 'Nombre',
+                  controller: _nameController,
+                  enabled: _isEditing,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Requerido' : null,
+                  fillColor: Colors.white,
+                  textColor: Colors.black,
+                  borderColor: Colors.black,
+                  cursorColor: Colors.black,
+                  placeholderColor: Colors.black54,
+                  icon: Icons.person_outline,
+                ),
+                CustomTextField(
+                  label: 'Email',
+                  controller: _emailController,
+                  enabled: _isEditing,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Requerido' : null,
+                  fillColor: Colors.white,
+                  textColor: Colors.black,
+                  borderColor: Colors.black,
+                  cursorColor: Colors.black,
+                  placeholderColor: Colors.black54,
+                  icon: Icons.email_outlined,
+                ),
+                CustomTextField(
+                  label: 'Teléfono',
+                  controller: _phoneController,
+                  enabled: _isEditing,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Requerido' : null,
+                  fillColor: Colors.white,
+                  textColor: Colors.black,
+                  borderColor: Colors.black,
+                  cursorColor: Colors.black,
+                  placeholderColor: Colors.black54,
+                  icon: Icons.phone_outlined,
+                ),
+                ..._isEditing
+                    ? [
+                        const SizedBox(height: 16),
+                        CustomButton(
+                          onPressed: _updateProfile,
+                          text: 'Guardar cambios',
+                          iconData: Icons.save_outlined,
+                          iconPosition: IconPosition.right,
+                        ),
+                        const SizedBox(height: 16),
+                      ]
+                    : [],
+                CustomTextField(
+                  label: 'Rol',
+                  controller: _roleController,
+                  enabled: false,
+                  fillColor: Colors.white,
+                  textColor: Colors.black,
+                  borderColor: Colors.black,
+                  cursorColor: Colors.black,
+                  placeholderColor: Colors.black54,
+                  icon: Icons.badge_outlined,
+                ),
+                CustomTextField(
+                  label: 'Restaurante',
+                  controller: _restaurantController,
+                  enabled: false,
+                  fillColor: Colors.white,
+                  textColor: Colors.black,
+                  borderColor: Colors.black,
+                  cursorColor: Colors.black,
+                  placeholderColor: Colors.black54,
+                  icon: Icons.restaurant_outlined,
+                ),
+                const SizedBox(height: 16),
+                CustomButton(
+                  onPressed: _leaveRestaurant,
+                  text: 'Abandonar restaurante',
+                  iconData: Icons.exit_to_app_outlined,
+                  iconPosition: IconPosition.right,
+                ),
+              ],
+            ),
           ),
         ),
       ),

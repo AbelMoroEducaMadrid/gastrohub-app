@@ -148,6 +148,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = AuthState();
   }
 
+  Future<User> getUserData(String token) async {
+    return await _authService.getUserData(token);
+  }
+
   void resetRegistration() {
     state = AuthState();
   }
