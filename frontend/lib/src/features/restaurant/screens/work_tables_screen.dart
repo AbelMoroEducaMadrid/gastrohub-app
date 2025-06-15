@@ -55,7 +55,11 @@ class _WorkTablesScreenState extends ConsumerState<WorkTablesScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TableOrdersScreen(tableId: table.id),
+              builder: (context) => TableOrdersScreen(
+                tableId: table.id,
+                layoutId: table.layoutId,
+                tableNumber: table.number,
+              ),
             ),
           );
         },

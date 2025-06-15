@@ -4,11 +4,19 @@ import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_order_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/order_detail_screen.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/edit_order_screen.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/add_order_screen.dart';
 
 class TableOrdersScreen extends ConsumerStatefulWidget {
   final int tableId;
+  final int layoutId;
+  final int tableNumber;
 
-  const TableOrdersScreen({super.key, required this.tableId});
+  const TableOrdersScreen({
+    super.key,
+    required this.tableId,
+    required this.layoutId,
+    required this.tableNumber,
+  });
 
   @override
   ConsumerState<TableOrdersScreen> createState() => _TableOrdersScreenState();
@@ -47,6 +55,19 @@ class _TableOrdersScreenState extends ConsumerState<TableOrdersScreen> {
     }
   }
 
+  void _addOrder(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddOrderScreen(
+          preselectedLayoutId: widget.layoutId,
+          preselectedTableId: widget.tableId,
+          preselectedTableNumber: widget.tableNumber,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -56,7 +77,7 @@ class _TableOrdersScreenState extends ConsumerState<TableOrdersScreen> {
     final ordersAsync = ref.watch(tableOrderNotifierProvider(widget.tableId));
 
     return Scaffold(
-      appBar: AppBar(title: Text('Comandas de Mesa ${widget.tableId}')),
+      appBar: AppBar(title: Text('Comandas de Mesa ${widget.tableNumber}')),
       body: ordersAsync.when(
         data: (orders) {
           return ListView.builder(
@@ -204,6 +225,12 @@ class _TableOrdersScreenState extends ConsumerState<TableOrdersScreen> {
             child: Text('Error: $error',
                 style: const TextStyle(color: Colors.black))),
       ),
+      floatingActionButton: canEdit
+          ? FloatingActionButton(
+              onPressed: () => _addOrder(context),
+              child: const Icon(Icons.add, color: Colors.black),
+            )
+          : null,
     );
   }
 }

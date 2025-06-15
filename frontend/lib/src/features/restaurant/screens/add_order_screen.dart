@@ -10,7 +10,16 @@ import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/select_product_screen.dart';
 
 class AddOrderScreen extends ConsumerStatefulWidget {
-  const AddOrderScreen({super.key});
+  final int? preselectedLayoutId;
+  final int? preselectedTableNumber;
+  final int? preselectedTableId;
+
+  const AddOrderScreen({
+    super.key,
+    this.preselectedLayoutId,
+    this.preselectedTableNumber,
+    this.preselectedTableId,
+  });
 
   @override
   ConsumerState<AddOrderScreen> createState() => _AddOrderScreenState();
@@ -19,7 +28,7 @@ class AddOrderScreen extends ConsumerStatefulWidget {
 class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
   final _formKey = GlobalKey<FormState>();
   final _notesController = TextEditingController();
-  bool _isBar = true; // Por defecto, es para la barra
+  bool _isBar = true;
   bool _urgent = false;
   final List<Map<String, dynamic>> _items = [];
   int? _selectedLayoutId;
@@ -30,6 +39,15 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.preselectedLayoutId != null &&
+        widget.preselectedTableNumber != null) {
+      _isBar = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadPreselectedTable();
+      });
+    } else {
+      _isBar = true;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadLayouts();
     });
@@ -51,6 +69,46 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
     setState(() {
       _tables = ref.read(tableNotifierProvider(layoutId));
     });
+  }
+
+  Future<void> _loadPreselectedTable() async {
+    if (widget.preselectedLayoutId != null &&
+        widget.preselectedTableNumber != null) {
+      setState(() {
+        _selectedLayoutId = widget.preselectedLayoutId;
+      });
+
+      await _loadTables(widget.preselectedLayoutId!);
+
+      if (_tables.isNotEmpty) {
+        final selectedTable = _tables.firstWhere(
+          (table) => table.number == widget.preselectedTableNumber,
+          orElse: () => RestaurantTable(
+            id: -1,
+            layoutId: widget.preselectedLayoutId!,
+            number: widget.preselectedTableNumber!,
+            capacity: 0,
+            state: '',
+          ),
+        );
+
+        if (selectedTable.id != -1) {
+          setState(() {
+            _selectedTableId = selectedTable.id;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Mesa preseleccionada no encontrada')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('No se encontraron mesas para el layout seleccionado')),
+        );
+      }
+    }
   }
 
   @override
@@ -76,16 +134,18 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
               title:
                   const Text('Es Barra', style: TextStyle(color: Colors.black)),
               value: _isBar,
-              onChanged: (value) {
-                setState(() {
-                  _isBar = value;
-                  if (value) {
-                    _selectedLayoutId = null;
-                    _selectedTableId = null;
-                    _tables = [];
-                  }
-                });
-              },
+              onChanged: widget.preselectedLayoutId == null
+                  ? (value) {
+                      setState(() {
+                        _isBar = value;
+                        if (value) {
+                          _selectedLayoutId = null;
+                          _selectedTableId = null;
+                          _tables = [];
+                        }
+                      });
+                    }
+                  : null,
             ),
             if (!_isBar) ...[
               DropdownButtonFormField<int>(
