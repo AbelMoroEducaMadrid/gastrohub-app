@@ -1,6 +1,8 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gastrohub_app/src/core/utils/snackbar_utils.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
 import 'package:gastrohub_app/src/core/utils/dialog_utils.dart';
 import 'package:gastrohub_app/src/core/widgets/common/custom_button.dart';
@@ -115,10 +117,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content:
-                              Text('Funcionalidad de recuperación no implementada')),
+                    SnackbarUtils.showAwesomeSnackbar(
+                      context: context,
+                      title: 'Atención',
+                      message: 'Funcionalidad de recuperación no implementada',
+                      contentType: ContentType.warning,
                     );
                   },
                   child: Text(
@@ -159,9 +162,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               backgroundColor: theme.colorScheme.surface,
               foregroundColor: Colors.blueGrey,
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('LogIn con Google no implementado aún')),
+                SnackbarUtils.showAwesomeSnackbar(
+                  context: context,
+                  title: 'En desarrollo',
+                  message: 'LogIn con Google no implementado aún',
+                  contentType: ContentType.help,
                 );
               },
             ),
