@@ -52,33 +52,78 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
   Widget build(BuildContext context) {
     final layouts = ref.watch(layoutNotifierProvider(widget.restaurantId));
 
-    return Scaffold(      
-      body: ListView.builder(
-        itemCount: layouts.length,
-        itemBuilder: (context, index) {
-          final layout = layouts[index];
-          return ListTile(
-            title: Text(layout.name),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => _editLayout(context, layout),
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView.builder(
+          itemCount: layouts.length,
+          itemBuilder: (context, index) {
+            final layout = layouts[index];
+            return Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                TablesScreen(layoutId: layout.id),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              layout.name,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _editLayout(context, layout),
+                      child: Container(
+                        width: 50,
+                        color: Colors.blue,
+                        child: const Center(
+                          child: Icon(Icons.edit_outlined,
+                              color: Colors.white, size: 24),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _confirmDelete(context, layout.id),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                        child: Container(
+                          width: 50,
+                          color: Colors.red,
+                          child: const Center(
+                            child: Icon(Icons.delete_outline,
+                                color: Colors.white, size: 24),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => _confirmDelete(context, layout.id),
-                ),
-              ],
-            ),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => TablesScreen(layoutId: layout.id)),
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addLayout(context),
