@@ -22,6 +22,7 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _selectedIndex = -1;
+  String _role = '';
   bool _isSpecialScreen = true;
   Widget? _specialScreen;
 
@@ -30,12 +31,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     super.initState();
     final authState = ref.read(authProvider);
     if (authState.user != null) {
-      _loadInitialData(authState.user!.restaurantId!);
+      _role = authState.user!.role;
+      _loadInitialData(authState.user!.restaurantId!, _role);
       _specialScreen = const ProfileScreen();
     }
   }
 
-  void _loadInitialData(int restaurantId) {
+  void _loadInitialData(int restaurantId, String role) {
     ref.read(layoutNotifierProvider(restaurantId).notifier).loadLayouts();
   }
 
@@ -124,13 +126,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final user = authState.user!;
-    final role = user.role; // Usamos el rol directamente desde authProvider
+    final bottomNavItems = _getBottomNavItems(user.role);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(_isSpecialScreen
             ? _specialScreenTitle()
-            : _getTitle(_selectedIndex, role)),
+            : _getTitle(_selectedIndex, user.role)),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -191,13 +193,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Perfil',
                 style: TextStyle(
-                  color: hasPermission(role, 'Perfil')
+                  color: hasPermission(_role, 'Perfil')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Perfil')) {
+                if (hasPermission(_role, 'Perfil')) {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const ProfileScreen();
@@ -218,13 +220,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Productos',
                 style: TextStyle(
-                  color: hasPermission(role, 'Productos')
+                  color: hasPermission(_role, 'Productos')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Productos')) {
+                if (hasPermission(_role, 'Productos')) {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const ProductsScreen();
@@ -245,12 +247,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Mesas',
                 style: TextStyle(
-                  color:
-                      hasPermission(role, 'Mesas') ? Colors.black : Colors.grey,
+                  color: hasPermission(_role, 'Mesas')
+                      ? Colors.black
+                      : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Mesas')) {
+                if (hasPermission(_role, 'Mesas')) {
                   _onItemTapped(0);
                   Navigator.pop(context);
                 } else {
@@ -267,13 +270,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Comandas',
                 style: TextStyle(
-                  color: hasPermission(role, 'Comandas')
+                  color: hasPermission(_role, 'Comandas')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Comandas')) {
+                if (hasPermission(_role, 'Comandas')) {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const OrdersScreen();
@@ -294,13 +297,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Zonas y mesas',
                 style: TextStyle(
-                  color: hasPermission(role, 'Zonas y mesas')
+                  color: hasPermission(_role, 'Zonas y mesas')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Zonas y mesas')) {
+                if (hasPermission(_role, 'Zonas y mesas')) {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen =
@@ -322,13 +325,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Ingredientes',
                 style: TextStyle(
-                  color: hasPermission(role, 'Ingredientes')
+                  color: hasPermission(_role, 'Ingredientes')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Ingredientes')) {
+                if (hasPermission(_role, 'Ingredientes')) {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const IngredientsScreen();
@@ -349,13 +352,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Empleados',
                 style: TextStyle(
-                  color: hasPermission(role, 'Empleados')
+                  color: hasPermission(_role, 'Empleados')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Empleados')) {
+                if (hasPermission(_role, 'Empleados')) {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const EmployeesScreen();
@@ -376,13 +379,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Código',
                 style: TextStyle(
-                  color: hasPermission(role, 'Código')
+                  color: hasPermission(_role, 'Código')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Código')) {
+                if (hasPermission(_role, 'Código')) {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const InvitationScreen();
@@ -403,13 +406,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Alérgenos',
                 style: TextStyle(
-                  color: hasPermission(role, 'Alérgenos')
+                  color: hasPermission(_role, 'Alérgenos')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Alérgenos')) {
+                if (hasPermission(_role, 'Alérgenos')) {
                   setState(() {
                     _isSpecialScreen = true;
                     _specialScreen = const AllergensScreen();
@@ -430,13 +433,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: Text(
                 'Cerrar sesión',
                 style: TextStyle(
-                  color: hasPermission(role, 'Cerrar sesión')
+                  color: hasPermission(_role, 'Cerrar sesión')
                       ? Colors.black
                       : Colors.grey,
                 ),
               ),
               onTap: () {
-                if (hasPermission(role, 'Cerrar sesión')) {
+                if (hasPermission(_role, 'Cerrar sesión')) {
                   ref.read(authProvider.notifier).logout();
                   Navigator.of(context).pushReplacementNamed('/login');
                 } else {
@@ -451,9 +454,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ),
       ),
       body: _isSpecialScreen ? _specialScreen! : _getMainScreen(_selectedIndex),
-      bottomNavigationBar: _getBottomNavItems(role).isNotEmpty
+      bottomNavigationBar: bottomNavItems.isNotEmpty
           ? BottomNavigationBar(
-              items: _getBottomNavItems(role),
+              items: bottomNavItems,
               currentIndex: _selectedIndex == -1 ? 0 : _selectedIndex,
               selectedItemColor: Theme.of(context).primaryColor,
               onTap: _onItemTapped,
