@@ -40,6 +40,7 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
   void initState() {
     super.initState();
     if (widget.preselectedLayoutId != null &&
+        widget.preselectedTableId != null &&
         widget.preselectedTableNumber != null) {
       _isBar = false;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -73,40 +74,45 @@ class _AddOrderScreenState extends ConsumerState<AddOrderScreen> {
 
   Future<void> _loadPreselectedTable() async {
     if (widget.preselectedLayoutId != null &&
+        widget.preselectedTableId != null &&
         widget.preselectedTableNumber != null) {
       setState(() {
         _selectedLayoutId = widget.preselectedLayoutId;
       });
 
+      // Cargar las mesas y esperar a que termine
       await _loadTables(widget.preselectedLayoutId!);
 
-      if (_tables.isNotEmpty) {
-        final selectedTable = _tables.firstWhere(
-          (table) => table.number == widget.preselectedTableNumber,
-          orElse: () => RestaurantTable(
-            id: -1,
-            layoutId: widget.preselectedLayoutId!,
-            number: widget.preselectedTableNumber!,
-            capacity: 0,
-            state: '',
-          ),
-        );
-
-        if (selectedTable.id != -1) {
-          setState(() {
-            _selectedTableId = selectedTable.id;
-          });
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Mesa preseleccionada no encontrada')),
-          );
-        }
-      } else {
+      // Verificar si _tables está vacía
+      if (_tables.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content:
                   Text('No se encontraron mesas para el layout seleccionado')),
         );
+        return;
+      }
+
+      // Buscar la mesa preseleccionada
+      final selectedTable = _tables.firstWhere(
+        (table) => table.id == widget.preselectedTableId,
+        orElse: () => RestaurantTable(
+          id: -1,
+          layoutId: widget.preselectedLayoutId!,
+          number: widget.preselectedTableNumber!,
+          capacity: 0,
+          state: '',
+        ),
+      );
+
+      if (selectedTable.id == -1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Mesa preseleccionada no encontrada')),
+        );
+      } else {
+        setState(() {
+          _selectedTableId = selectedTable.id;
+        });
       }
     }
   }

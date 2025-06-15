@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/utils/logger.dart';
 import 'package:gastrohub_app/src/core/widgets/grids/tables_grid.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
@@ -52,6 +53,8 @@ class _WorkTablesScreenState extends ConsumerState<WorkTablesScreen> {
       body: TablesGrid(
         tables: tables,
         onTableTap: (table) {
+          AppLogger.debug(
+              'Table ID: ${table.id}, Number: ${table.number}, Layout: ${table.layoutId}');
           Navigator.push(
             context,
             MaterialPageRoute(
