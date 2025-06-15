@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/layout.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/screens/tables_screen.dart';
@@ -35,8 +36,10 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child:
-                const Text('Cancelar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'No',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -45,8 +48,10 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                   .deleteLayout(layoutId);
               Navigator.pop(context);
             },
-            child:
-                const Text('Eliminar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Si',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
         ],
       ),
@@ -88,7 +93,7 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              layout.name,
+                              layout.name.toUpperCase(),
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
@@ -147,19 +152,22 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
       builder: (context) => AlertDialog(
         title:
             const Text('Agregar Layout', style: TextStyle(color: Colors.black)),
-        content: TextField(
+        content: CustomTextField(
+          label: 'Nombre',
           controller: nameController,
-          decoration: const InputDecoration(
-            labelText: 'Nombre',
-            labelStyle: TextStyle(color: Colors.black),
-          ),
-          style: const TextStyle(color: Colors.black),
+          icon: Icons.map,
+          textColor: Colors.black,
+          borderColor: Colors.black,
+          cursorColor: Colors.black,
+          placeholderColor: Colors.black,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child:
-                const Text('Cancelar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -168,7 +176,10 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                   .addLayout(nameController.text);
               Navigator.pop(context);
             },
-            child: const Text('Agregar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Agregar',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
         ],
       ),
@@ -182,19 +193,22 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
       builder: (context) => AlertDialog(
         title:
             const Text('Editar Layout', style: TextStyle(color: Colors.black)),
-        content: TextField(
+        content: CustomTextField(
+          label: 'Nombre',
           controller: nameController,
-          decoration: const InputDecoration(
-            labelText: 'Nombre',
-            labelStyle: TextStyle(color: Colors.black),
-          ),
-          style: const TextStyle(color: Colors.black),
+          icon: Icons.map,
+          textColor: Colors.black,
+          borderColor: Colors.black,
+          cursorColor: Colors.black,
+          placeholderColor: Colors.black,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child:
-                const Text('Cancelar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -203,7 +217,10 @@ class _LayoutsScreenState extends ConsumerState<LayoutsScreen> {
                   .updateLayout(layout.id, nameController.text);
               Navigator.pop(context);
             },
-            child: const Text('Guardar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Guardar',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
         ],
       ),

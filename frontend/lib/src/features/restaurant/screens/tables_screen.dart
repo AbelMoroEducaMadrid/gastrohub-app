@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/features/restaurant/models/table.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
 
@@ -31,31 +32,35 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
+            CustomTextField(
+              label: 'Número',
               controller: numberController,
-              decoration: const InputDecoration(
-                labelText: 'Número',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
+              icon: Icons.numbers,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.black),
             ),
-            TextField(
+            CustomTextField(
+              label: 'Capacidad',
               controller: capacityController,
-              decoration: const InputDecoration(
-                labelText: 'Capacidad',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
+              icon: Icons.people,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.black),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child:
-                const Text('Cancelar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -86,7 +91,10 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                   );
               Navigator.pop(context);
             },
-            child: const Text('Guardar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Guardar',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
         ],
       ),
@@ -99,7 +107,8 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Mesas', style: TextStyle(color: Colors.black))),
+          title: const Text('Gestión de mesas',
+              style: TextStyle(color: Colors.black))),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
@@ -122,17 +131,36 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Mesa ${table.number}',
+                              'Mesa ${table.number}'.toUpperCase(),
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
-                                  ?.copyWith(color: Colors.black),
+                                  ?.copyWith(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
-                            Text('Capacidad: ${table.capacity}',
-                                style: const TextStyle(color: Colors.black)),
-                            Text('Estado: ${table.state}',
-                                style: const TextStyle(color: Colors.black)),
+                            Row(
+                              children: [
+                                const Icon(Icons.chair_outlined,
+                                    color: Colors.black),
+                                const SizedBox(width: 8),
+                                Text('${table.capacity} sillas',
+                                    style:
+                                        const TextStyle(color: Colors.black)),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(Icons.info_outlined,
+                                    color: Colors.black),
+                                const SizedBox(width: 8),
+                                Text(table.state,
+                                    style:
+                                        const TextStyle(color: Colors.black)),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -179,31 +207,35 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
+            CustomTextField(
+              label: 'Número',
               controller: numberController,
-              decoration: const InputDecoration(
-                labelText: 'Número',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
+              icon: Icons.numbers,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.black),
             ),
-            TextField(
+            CustomTextField(
+              label: 'Capacidad',
               controller: capacityController,
-              decoration: const InputDecoration(
-                labelText: 'Capacidad',
-                labelStyle: TextStyle(color: Colors.black),
-              ),
+              icon: Icons.people,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.black),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child:
-                const Text('Cancelar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -225,7 +257,10 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                   .addTable(number, capacity);
               Navigator.pop(context);
             },
-            child: const Text('Agregar', style: TextStyle(color: Colors.black)),
+            child: Text(
+              'Agregar',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
           ),
         ],
       ),
