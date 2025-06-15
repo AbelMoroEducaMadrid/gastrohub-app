@@ -129,7 +129,7 @@ public class UserController {
         if (restaurantId == null) {
             throw new IllegalStateException("El usuario no pertenece a ningún restaurante");
         }
-        return userService.getUsersByRestaurantId(restaurantId).stream()
+        return userService.getUsersByRestaurantId(restaurantId, userId).stream()
                 .map(UserResponseDTO::new)
                 .collect(Collectors.toList());
     }

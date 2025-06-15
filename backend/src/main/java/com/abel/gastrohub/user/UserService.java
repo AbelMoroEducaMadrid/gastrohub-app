@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -128,8 +129,10 @@ public class UserService {
         User user = getUserById(userId);
         if (user.getRestaurant() != null) {
             user.setRestaurant(null);
-            MtRole userRole = getRoleByName("ROLE_USER");
-            user.setRole(userRole);
+            if (!user.getRole().getName().equals("ROLE_ADMIN") && !user.getRole().getName().equals("ROLE_SYSTEM")) {
+                MtRole userRole = getRoleByName("ROLE_USER");
+                user.setRole(userRole);
+            }
             userRepository.save(user);
         }
     }
@@ -148,8 +151,10 @@ public class UserService {
             throw new IllegalStateException("El propietario no puede expulsarse a sí mismo");
         }
         userToKick.setRestaurant(null);
-        MtRole userRole = getRoleByName("ROLE_USER");
-        userToKick.setRole(userRole);
+        if (!userToKick.getRole().getName().equals("ROLE_ADMIN") && !userToKick.getRole().getName().equals("ROLE_SYSTEM")) {
+            MtRole userRole = getRoleByName("ROLE_USER");
+            userToKick.setRole(userRole);
+        }
         userRepository.save(userToKick);
     }
 
@@ -173,8 +178,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> getUsersByRestaurantId(Integer restaurantId) {
-        return userRepository.findByRestaurantId(restaurantId);
+    public List<User> getUsersByRestaurantId(Integer restaurantId, Integer currentUserId) {
+        List<User> users = userRepository.findByRestaurantId(restaurantId);
+        return users.stream()
+                .filter(user -> !user.getId().equals(currentUserId))
+                .filter(user -> !user.getRole().getName().equals("ROLE_ADMIN") && !user.getRole().getName().equals("ROLE_SYSTEM"))
+                .collect(Collectors.toList());
     }
 
     public User updateUserRole(Integer userId, String newRoleName, Integer ownerId) {
