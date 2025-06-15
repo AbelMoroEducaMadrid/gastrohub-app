@@ -11,6 +11,8 @@ import java.util.List;
 public class ProductResponseDTO {
     private Integer id;
     private String name;
+    private String description;
+    private String imageBase64;
     private BigDecimal price;
     private Boolean available;
     private Boolean isKitchen;

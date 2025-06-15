@@ -190,24 +190,35 @@ VALUES (1, 1),
 
 
 -- Productos
-INSERT INTO products (name, restaurant_id, price, available, is_kitchen, category_id)
-VALUES ('Bruschetta', 1, 3.00, TRUE, TRUE, 1),
-       ('Pizza Margarita', 1, 7.00, TRUE, TRUE, 2),
-       ('Pizza Pepperoni', 1, 8.00, TRUE, TRUE, 2),
-       ('Spaghetti Carbonara', 1, 6.00, TRUE, TRUE, 2),
-       ('Lasagna', 1, 9.00, TRUE, TRUE, 2),
-       ('Tiramisú', 1, 4.00, TRUE, TRUE, 4),
-       ('Gelato', 1, 3.00, TRUE, TRUE, 4),
-       ('Agua Mineral', 1, 0.50, TRUE, FALSE, 5),
-       ('Vino Tinto', 1, 10.00, TRUE, FALSE, 5),
-       ('Pizza Cuatro Estaciones', 1, 9.00, TRUE, TRUE, 2),
-       ('Pasta con Salsa de Tomate', 1, 5.00, TRUE, TRUE, 2),
-       ('Pasta Bolognesa', 1, 7.00, TRUE, TRUE, 2),
-       ('Panna Cotta', 1, 4.50, TRUE, TRUE, 4),
-       ('Cerveza', 1, 2.00, TRUE, FALSE, 5),
-       ('Refresco', 1, 1.50, TRUE, FALSE, 5),
-       ('Ensalada Caprese', 1, 4.00, TRUE, TRUE, 1),
-       ('Focaccia', 1, 3.50, TRUE, TRUE, 1);
+INSERT INTO products (name, restaurant_id, price, available, is_kitchen, category_id, description)
+VALUES ('Bruschetta', 1, 3.00, TRUE, TRUE, 1,
+        'Tostadas de pan rústico con tomate fresco, albahaca y aceite de oliva virgen extra.'),
+       ('Pizza Margarita', 1, 7.00, TRUE, TRUE, 2,
+        'Pizza clásica con salsa de tomate, mozzarella fresca y hojas de albahaca.'),
+       ('Pizza Pepperoni', 1, 8.00, TRUE, TRUE, 2,
+        'Pizza con salsa de tomate, mozzarella y rodajas de pepperoni picante.'),
+       ('Spaghetti Carbonara', 1, 6.00, TRUE, TRUE, 2,
+        'Pasta larga con salsa cremosa de huevo, pancetta, queso parmesano y pimienta negra.'),
+       ('Lasagna', 1, 9.00, TRUE, TRUE, 2,
+        'Capas de pasta con salsa bolognesa, bechamel, mozzarella y parmesano, horneada al punto.'),
+       ('Tiramisú', 1, 4.00, TRUE, TRUE, 4,
+        'Postre italiano con capas de mascarpone, café, bizcocho y cacao en polvo.'),
+       ('Gelato', 1, 3.00, TRUE, TRUE, 4, 'Helado artesanal italiano, disponible en varios sabores cremosos.'),
+       ('Agua Mineral', 1, 0.50, TRUE, FALSE, 5, 'Agua mineral natural, con o sin gas, refrescante y ligera.'),
+       ('Vino Tinto', 1, 10.00, TRUE, FALSE, 5,
+        'Vino tinto de la casa, equilibrado y perfecto para acompañar pastas y pizzas.'),
+       ('Pizza Cuatro Estaciones', 1, 9.00, TRUE, TRUE, 2,
+        'Pizza con mozzarella, champiñones, alcachofas, jamón y aceitunas, dividida en cuatro secciones.'),
+       ('Pasta con Salsa de Tomate', 1, 5.00, TRUE, TRUE, 2,
+        'Pasta al dente con salsa de tomate casera y un toque de albahaca.'),
+       ('Pasta Bolognesa', 1, 7.00, TRUE, TRUE, 2,
+        'Pasta con rica salsa de carne molida, tomate, cebolla y hierbas aromáticas.'),
+       ('Panna Cotta', 1, 4.50, TRUE, TRUE, 4, 'Postre cremoso de nata con coulis de frutos rojos, suave y delicado.'),
+       ('Cerveza', 1, 2.00, TRUE, FALSE, 5, 'Cerveza italiana refrescante, ideal para acompañar cualquier comida.'),
+       ('Refresco', 1, 1.50, TRUE, FALSE, 5, 'Bebida carbonatada en varios sabores, perfecta para refrescar.'),
+       ('Ensalada Caprese', 1, 4.00, TRUE, TRUE, 1,
+        'Ensalada fresca con tomate, mozzarella de búfala, albahaca y aceite de oliva.'),
+       ('Focaccia', 1, 3.50, TRUE, TRUE, 1, 'Pan plano italiano horneado con romero, sal marina y aceite de oliva.');
 
 -- Relación Productos-Ingredientes
 INSERT INTO rel_products_ingredients (product_id, ingredient_id, quantity)

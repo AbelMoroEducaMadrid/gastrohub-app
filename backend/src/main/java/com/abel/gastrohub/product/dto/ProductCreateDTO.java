@@ -10,6 +10,8 @@ import java.util.List;
 @Getter
 public class ProductCreateDTO {
     private String name;
+    private String description;
+    private String imageBase64;
     private Integer categoryId;
     private Boolean available;
     private Boolean isKitchen;

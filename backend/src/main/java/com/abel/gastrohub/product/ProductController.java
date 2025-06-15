@@ -111,6 +111,8 @@ public class ProductController {
         ProductResponseDTO dto = new ProductResponseDTO();
         dto.setId(product.getId());
         dto.setName(product.getName());
+        dto.setDescription(product.getDescription());
+        dto.setImageBase64(product.getImageBase64());
         dto.setPrice(product.getPrice());
         dto.setAvailable(product.getAvailable());
         dto.setIsKitchen(product.getIsKitchen());
@@ -119,7 +121,6 @@ public class ProductController {
                 .map(this::toIngredientResponseDTO)
                 .collect(Collectors.toList()));
 
-        // Collect unique attribute names from ingredients
         Set<String> attributeNames = new HashSet<>();
         for (RelProductsIngredient rel : product.getRelProductsIngredients()) {
             Ingredient ingredient = rel.getIngredient();
@@ -135,6 +136,9 @@ public class ProductController {
     private Product toEntity(ProductCreateDTO dto) {
         Product product = new Product();
         product.setName(dto.getName());
+
+        product.setDescription(dto.getDescription());
+        product.setImageBase64(dto.getImageBase64());
 
         MtCategory category = mtCategoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada con ID: " + dto.getCategoryId()));
