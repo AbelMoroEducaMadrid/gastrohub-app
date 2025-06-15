@@ -24,6 +24,8 @@ class AddProductScreen extends ConsumerStatefulWidget {
 class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _descriptionController =
+      TextEditingController(); // Controlador para descripción
   final _priceController = TextEditingController();
   int? _selectedCategoryId;
   bool _available = true;
@@ -130,6 +132,15 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
               label: 'Nombre',
               controller: _nameController,
               validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+              fillColor: Colors.white,
+              textColor: Colors.black,
+              borderColor: Colors.black,
+              cursorColor: Colors.black,
+              placeholderColor: Colors.black54,
+            ),
+            CustomTextField(
+              label: 'Descripción',
+              controller: _descriptionController,
               fillColor: Colors.white,
               textColor: Colors.black,
               borderColor: Colors.black,
@@ -252,8 +263,12 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      final body = <String, Object>{
+      final body = <String, Object?>{
         'name': _nameController.text,
+        'description': _descriptionController.text.isEmpty
+            ? null
+            : _descriptionController.text,
+        'imageBase64': _imageBase64,
         'categoryId': _selectedCategoryId as Object,
         'price': double.parse(_priceController.text),
         'available': _available,
@@ -264,8 +279,6 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                   'quantity': i['quantity'] as Object,
                 })
             .toList(),
-        // TODO - añadir la imagen base64
-        //'imageBase64': _imageBase64 ?? null,
       };
       ref.read(productNotifierProvider.notifier).addProduct(body);
       Navigator.pop(context);

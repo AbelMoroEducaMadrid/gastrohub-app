@@ -1,6 +1,8 @@
 class Product {
   final int id;
   final String name;
+  final String? description;
+  final String? imageBase64;
   final double price;
   final bool available;
   final bool isKitchen;
@@ -11,6 +13,8 @@ class Product {
   Product({
     required this.id,
     required this.name,
+    this.description,
+    this.imageBase64,
     required this.price,
     required this.available,
     required this.isKitchen,
@@ -23,6 +27,8 @@ class Product {
     return Product(
       id: json['id'] as int,
       name: json['name'] as String,
+      description: json['description'] as String?,
+      imageBase64: json['imageBase64'] as String?,
       price: (json['price'] as num).toDouble(),
       available: json['available'] as bool,
       isKitchen: json['isKitchen'] as bool,
@@ -41,6 +47,8 @@ class Product {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      'description': description,
+      'imageBase64': imageBase64,
       'categoryId': categoryId,
       'price': price,
       'available': available,
