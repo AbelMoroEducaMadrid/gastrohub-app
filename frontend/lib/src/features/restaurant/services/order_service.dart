@@ -128,4 +128,23 @@ class OrderService {
       throw ApiException(error['title']!, error['message']!);
     }
   }
+
+  Future<List<Order>> getOrdersByTable(String token, int tableId) async {
+    final url = Uri.parse('$baseUrl/api/orders/table/$tableId');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Order.fromJson(json)).toList();
+    } else {
+      final error = ApiErrorHandler.handleErrorResponse(response);
+      throw ApiException(error['title']!, error['message']!);
+    }
+  }
 }

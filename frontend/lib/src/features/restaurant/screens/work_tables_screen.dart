@@ -4,6 +4,7 @@ import 'package:gastrohub_app/src/core/widgets/grids/tables_grid.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/layout_provider.dart';
 import 'package:gastrohub_app/src/features/restaurant/providers/table_provider.dart';
 import 'package:gastrohub_app/src/features/auth/providers/auth_provider.dart';
+import 'package:gastrohub_app/src/features/restaurant/screens/table_orders_screen.dart';
 
 class WorkTablesScreen extends ConsumerStatefulWidget {
   const WorkTablesScreen({super.key});
@@ -51,13 +52,12 @@ class _WorkTablesScreenState extends ConsumerState<WorkTablesScreen> {
       body: TablesGrid(
         tables: tables,
         onTableTap: (table) {
-          // TODO: Verificar si hay comanda activa
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text('Mostrar o añadir comanda para mesa ${table.number}')),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TableOrdersScreen(tableId: table.id),
+            ),
           );
-          // Lógica futura: if (hasActiveOrder) { showOrder(); } else { addOrder(); }
         },
       ),
       floatingActionButton: FloatingActionButton(
