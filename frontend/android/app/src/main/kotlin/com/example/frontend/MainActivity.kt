@@ -1,4 +1,4 @@
-package com.example.frontend
+package com.abel.gastrohub
 
 import io.flutter.embedding.android.FlutterActivity
 
