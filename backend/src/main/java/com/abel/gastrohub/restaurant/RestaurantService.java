@@ -1,6 +1,12 @@
 package com.abel.gastrohub.restaurant;
 
+import com.abel.gastrohub.layout.Layout;
+import com.abel.gastrohub.layout.LayoutRepository;
+import com.abel.gastrohub.table.Table;
+import com.abel.gastrohub.table.TableRepository;
+import com.abel.gastrohub.table.TableState;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,9 +17,15 @@ import java.util.UUID;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final LayoutRepository layoutRepository;
+    private final TableRepository tableRepository;
 
-    public RestaurantService(RestaurantRepository restaurantRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository,
+                             LayoutRepository layoutRepository,
+                             TableRepository tableRepository) {
         this.restaurantRepository = restaurantRepository;
+        this.layoutRepository = layoutRepository;
+        this.tableRepository = tableRepository;
     }
 
     public List<Restaurant> getAllRestaurants() {
@@ -25,8 +37,27 @@ public class RestaurantService {
                 .orElseThrow(() -> new NoSuchElementException("Restaurante no encontrado con ID: " + id));
     }
 
+    @Transactional
     public Restaurant createRestaurant(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+
+        Layout layout = new Layout();
+        layout.setRestaurant(savedRestaurant);
+        layout.setName("Layout por defecto");
+        layout.setCreatedAt(LocalDateTime.now());
+        layout.setUpdatedAt(LocalDateTime.now());
+        Layout savedLayout = layoutRepository.save(layout);
+
+        Table table = new Table();
+        table.setLayout(savedLayout);
+        table.setNumber(1);
+        table.setCapacity(4);
+        table.setCreatedAt(LocalDateTime.now());
+        table.setUpdatedAt(LocalDateTime.now());
+        table.setState(TableState.disponible);
+        tableRepository.save(table);
+
+        return savedRestaurant;
     }
 
     public Restaurant updateRestaurant(Integer id, Restaurant restaurantDetails) {
