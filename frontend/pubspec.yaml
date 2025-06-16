@@ -28,6 +28,8 @@ dependencies:
   image_picker: ^1.0.7         
   image_cropper: ^9.1.0        
   flutter_image_compress: ^2.1.0
+  flutter_native_splash: ^2.2.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -45,6 +47,8 @@ flutter:
     - assets/images/google_logo.svg
     - assets/images/background_00.png
     - assets/images/background_01.png
+    - assets/images/icon.png
+    - assets/images/splash.png
     - assets/images/allergens/
     - .env
     - .env.local
@@ -52,3 +56,17 @@ flutter:
     - family: BebasNeue
       fonts:
         - asset: assets/fonts/BebasNeue-Regular.ttf
+  
+flutter_launcher_icons:
+  image_path: "assets/images/icon.png"
+  android: true
+  ios: true
+  adaptive_icon_background: "#830B0B"
+  adaptive_icon_foreground: "assets/images/splash.png"
+
+flutter_native_splash:
+  color: "#830B0B"
+  image: assets/images/splash.png
+  android_12:
+    image: assets/images/splash.png
+    color: "#830B0B"
