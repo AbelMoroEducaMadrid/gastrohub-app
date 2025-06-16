@@ -49,6 +49,9 @@ flutter:
     - assets/images/background_01.png
     - assets/images/icon.png
     - assets/images/splash.png
+    - assets/images/android12splash.png
+    - assets/images/branding.png
+    - assets/images/android12branding.png
     - assets/images/allergens/
     - .env
     - .env.local
@@ -61,12 +64,21 @@ flutter_launcher_icons:
   image_path: "assets/images/icon.png"
   android: true
   ios: true
-  adaptive_icon_background: "#830B0B"
-  adaptive_icon_foreground: "assets/images/splash.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#C13D3D"
+  adaptive_icon_foreground: "assets/images/icon.png"
 
 flutter_native_splash:
-  color: "#830B0B"
+  color: "#C13D3D"
   image: assets/images/splash.png
+
+  branding: assets/images/branding.png
+  branding_mode: bottom
+  branding_bottom_padding: 24
+
   android_12:
-    image: assets/images/splash.png
-    color: "#830B0B"
+    image: assets/images/android12splash.png
+    color: "#C13D3D"
+    branding: assets/images/android12branding.png
+    branding_mode: bottom
+    branding_bottom_padding: 24
