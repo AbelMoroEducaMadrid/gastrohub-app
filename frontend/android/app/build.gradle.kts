@@ -1,11 +1,14 @@
 import java.util.Properties
 import java.io.FileInputStream
+import java.io.File
 
-val keystorePropertiesFile = rootProject.file("key.properties")
+val keystorePropertiesFile = file("../../key.properties")
 val keystoreProperties = Properties()
 
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+} else {
+    throw GradleException("key.properties file not found at ${keystorePropertiesFile.path}")
 }
 
 plugins {
@@ -15,7 +18,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.frontend"
+    namespace = "com.abel.gastrohub"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -29,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.frontend"
+        applicationId = "com.abel.gastrohub"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
