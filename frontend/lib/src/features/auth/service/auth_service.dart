@@ -9,6 +9,16 @@ class AuthService {
 
   AuthService({required this.baseUrl});
 
+  Future<bool> ping() async {
+    final url = Uri.parse('$baseUrl/api/ping');
+    try {
+      final response = await http.get(url).timeout(const Duration(seconds: 60));
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<String?> login(String email, String password) async {
     final url = Uri.parse('$baseUrl/api/auth/login');
     final response = await http.post(
@@ -58,8 +68,7 @@ class AuthService {
       }),
     );
 
-    if (response.statusCode == 201) {
-      // Registro exitoso
+    if (response.statusCode == 201) {      
     } else {
       final error = ApiErrorHandler.handleErrorResponse(response);
       throw ApiException(error['title']!, error['message']!);

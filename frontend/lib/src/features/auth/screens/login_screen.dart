@@ -10,6 +10,7 @@ import 'package:gastrohub_app/src/core/widgets/common/custom_text_field.dart';
 import 'package:gastrohub_app/src/core/themes/app_theme.dart';
 import 'package:gastrohub_app/src/core/utils/form_validators.dart';
 import 'package:gastrohub_app/src/core/widgets/forms/form_container.dart';
+import 'package:flutter/services.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -22,6 +23,62 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isPinging = true;
+  bool _pingSuccessful = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _performPing();
+  }
+
+  Future<void> _performPing() async {
+    final authService = ref.read(authServiceProvider);
+    try {
+      final success = await authService.ping();
+      setState(() {
+        _isPinging = false;
+        _pingSuccessful = success;
+      });
+      if (!success) {
+        _showErrorDialog();
+      }
+    } catch (e) {
+      setState(() {
+        _isPinging = false;
+        _pingSuccessful = false;
+      });
+      _showErrorDialog();
+    }
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Error de conexión',
+          style: TextStyle(color: Colors.black),
+        ),
+        content: const Text(
+          'No se pudo conectar a la API. Por favor, intente más tarde.',
+          style: TextStyle(color: Colors.black87),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              SystemNavigator.pop();
+            },
+            child: const Text(
+              'Cerrar',
+              style: TextStyle(color: AppTheme.primaryColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _validateAndSubmit() async {
     if (_formKey.currentState!.validate()) {
@@ -60,140 +117,154 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final theme = Theme.of(context);
     final fillColor = Colors.grey.shade500.withAlpha((255 * 0.5).toInt());
 
-    return FormContainer(
-      backgroundImage: 'assets/images/background_01.png',
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SvgPicture.asset(
-              'assets/images/logo.svg',
-              height: 150,
-              semanticsLabel: 'Logo de Gastro & Hub',
-              colorFilter: ColorFilter.mode(
-                AppTheme.secondaryColor,
-                BlendMode.srcIn,
-              ),
-            ),
-            const SizedBox(height: 16),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                'GASTRO & HUB',
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  fontSize: 200,
-                  color: AppTheme.secondaryColor,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Correo',
-              controller: emailController,
-              icon: Icons.email_outlined,
-              fillColor: fillColor,
-              validator: FormValidators.emailField,
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Contraseña',
-              obscureText: true,
-              controller: passwordController,
-              icon: Icons.key,
-              fillColor: fillColor,
-              validator: FormValidators.passwordField,
-              keyboardType: TextInputType.visiblePassword,
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+    return Stack(
+      children: [
+        FormContainer(
+          backgroundImage: 'assets/images/background_01.png',
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  '¿Has olvidado tu contraseña? ',
-                  style: theme.textTheme.labelMedium,
+                SvgPicture.asset(
+                  'assets/images/logo.svg',
+                  height: 150,
+                  semanticsLabel: 'Logo de Gastro & Hub',
+                  colorFilter: ColorFilter.mode(
+                    AppTheme.secondaryColor,
+                    BlendMode.srcIn,
+                  ),
                 ),
-                GestureDetector(
-                  onTap: () {
+                const SizedBox(height: 16),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'GASTRO & HUB',
+                    style: theme.textTheme.headlineLarge?.copyWith(
+                      fontSize: 200,
+                      color: AppTheme.secondaryColor,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  label: 'Correo',
+                  controller: emailController,
+                  icon: Icons.email_outlined,
+                  fillColor: fillColor,
+                  validator: FormValidators.emailField,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  label: 'Contraseña',
+                  obscureText: true,
+                  controller: passwordController,
+                  icon: Icons.key,
+                  fillColor: fillColor,
+                  validator: FormValidators.passwordField,
+                  keyboardType: TextInputType.visiblePassword,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      '¿Has olvidado tu contraseña? ',
+                      style: theme.textTheme.labelMedium,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        SnackbarUtils.showAwesomeSnackbar(
+                          context: context,
+                          title: 'Atención',
+                          message:
+                              'Funcionalidad de recuperación no implementada',
+                          contentType: ContentType.warning,
+                        );
+                      },
+                      child: Text(
+                        'Recuperar',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: AppTheme.hyperlinkColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                CustomButton(
+                  text: 'Iniciar sesión',
+                  onPressed: authState.isLoading || !_pingSuccessful
+                      ? null
+                      : _validateAndSubmit,
+                  iconData: Icons.login,
+                  iconPosition: IconPosition.right,
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        'O SI LO PREFIERES',
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                CustomButton(
+                  text: 'Iniciar sesión con Google',
+                  iconAssetPath: 'assets/images/google_logo.svg',
+                  isSvg: true,
+                  backgroundColor: theme.colorScheme.surface,
+                  foregroundColor: Colors.blueGrey,
+                  onPressed: () {
                     SnackbarUtils.showAwesomeSnackbar(
                       context: context,
-                      title: 'Atención',
-                      message: 'Funcionalidad de recuperación no implementada',
-                      contentType: ContentType.warning,
+                      title: 'En desarrollo',
+                      message: 'LogIn con Google no implementado aún',
+                      contentType: ContentType.help,
                     );
                   },
-                  child: Text(
-                    'Recuperar',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: AppTheme.hyperlinkColor,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '¿No tienes cuenta? ',
+                      style: theme.textTheme.labelMedium,
                     ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            CustomButton(
-              text: 'Iniciar sesión',
-              onPressed: authState.isLoading ? null : _validateAndSubmit,
-              iconData: Icons.login,
-              iconPosition: IconPosition.right,
-            ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                const Expanded(child: Divider()),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    'O SI LO PREFIERES',
-                    style: theme.textTheme.labelMedium,
-                  ),
-                ),
-                const Expanded(child: Divider()),
-              ],
-            ),
-            const SizedBox(height: 32),
-            CustomButton(
-              text: 'Iniciar sesión con Google',
-              iconAssetPath: 'assets/images/google_logo.svg',
-              isSvg: true,
-              backgroundColor: theme.colorScheme.surface,
-              foregroundColor: Colors.blueGrey,
-              onPressed: () {
-                SnackbarUtils.showAwesomeSnackbar(
-                  context: context,
-                  title: 'En desarrollo',
-                  message: 'LogIn con Google no implementado aún',
-                  contentType: ContentType.help,
-                );
-              },
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '¿No tienes cuenta? ',
-                  style: theme.textTheme.labelMedium,
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pushNamed('/register'),
-                  child: Text(
-                    'Regístrate gratis',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: AppTheme.hyperlinkColor,
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pushNamed('/register'),
+                      child: Text(
+                        'Regístrate gratis',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: AppTheme.hyperlinkColor,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+                if (authState.isLoading)
+                  const Center(child: CircularProgressIndicator()),
               ],
             ),
-            if (authState.isLoading)
-              const Center(child: CircularProgressIndicator()),
-          ],
+          ),
         ),
-      ),
+        if (_isPinging)
+          Container(
+            color: Colors.black.withAlpha(130),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+      ],
     );
   }
 }
