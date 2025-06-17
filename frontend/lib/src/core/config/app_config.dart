@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:gastrohub_app/src/core/utils/logger.dart';
 
 class AppConfig {
@@ -8,14 +9,20 @@ class AppConfig {
   static bool get isProduction => dotenv.env['ENV'] == 'production';
   //static const int apiTimeoutSeconds = 30;
 
-
   static Future<void> initialize() async {
-    try {
-      await dotenv.load(fileName: '.env.local');
-      AppLogger.debug(".env.local cargado");
-    } catch (_) {
+    if (!kReleaseMode) {
+      // En modo debug (flutter run) intenta cargar .env.local
+      try {
+        await dotenv.load(fileName: '.env.local');
+        AppLogger.debug(".env.local cargado (modo debug)");
+      } catch (_) {
+        await dotenv.load(fileName: '.env');
+        AppLogger.debug(".env.local no encontrado, usando .env (modo debug)");
+      }
+    } else {
+      // En modo release (flutter build) carga siempre .env
       await dotenv.load(fileName: '.env');
-      AppLogger.debug(".env.local no encontrado, usando .env");
+      AppLogger.debug(".env cargado (modo release)");
     }
   }
 }
